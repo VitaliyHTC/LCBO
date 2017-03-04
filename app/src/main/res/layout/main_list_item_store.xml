@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/main_list_item"
+    android:padding="0dp"
+    android:layout_width="fill_parent"
+    android:layout_height="40dp"
+    android:minWidth="196.0dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/item_title"
+        android:textAppearance="?textAppearanceLargePopupMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_centerVertical="true"
+        android:textSize="@dimen/main_list_item__store_textsize"
+        android:maxLines="1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <!--
+        android:layout_toStartOf="@+id/fav_star_image"
+        android:layout_toLeftOf="@+id/fav_star_image"
+    <ImageView
+        android:id="@+id/fav_star_image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_menu_star"
+        android:tint="@color/orange400"
+        android:contentDescription="@string/list_favourite_star_icon"/>
+    -->
+
+</RelativeLayout>

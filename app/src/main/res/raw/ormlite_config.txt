@@ -1,0 +1,298 @@
+#
+# generated on 2017/03/02 05:31:30
+#
+# --table-start--
+dataClass=com.vitaliyhtc.lcbo.model.Product
+tableName=products
+# --table-fields-start--
+# --field-start--
+fieldName=id
+id=true
+# --field-end--
+# --field-start--
+fieldName=incrementalCounter
+# --field-end--
+# --field-start--
+fieldName=isDead
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=tags
+# --field-end--
+# --field-start--
+fieldName=isDiscontinued
+# --field-end--
+# --field-start--
+fieldName=priceInCents
+# --field-end--
+# --field-start--
+fieldName=regularPriceInCents
+# --field-end--
+# --field-start--
+fieldName=limitedTimeOfferSavingsInCents
+# --field-end--
+# --field-start--
+fieldName=limitedTimeOfferEndsOn
+# --field-end--
+# --field-start--
+fieldName=bonusRewardMiles
+# --field-end--
+# --field-start--
+fieldName=bonusRewardMilesEndsOn
+# --field-end--
+# --field-start--
+fieldName=stockType
+# --field-end--
+# --field-start--
+fieldName=primaryCategory
+# --field-end--
+# --field-start--
+fieldName=secondaryCategory
+# --field-end--
+# --field-start--
+fieldName=origin
+# --field-end--
+# --field-start--
+fieldName=packageOfProduct
+# --field-end--
+# --field-start--
+fieldName=packageUnitType
+# --field-end--
+# --field-start--
+fieldName=packageUnitVolumeInMilliliters
+# --field-end--
+# --field-start--
+fieldName=totalPackageUnits
+# --field-end--
+# --field-start--
+fieldName=volumeInMilliliters
+# --field-end--
+# --field-start--
+fieldName=alcoholContent
+# --field-end--
+# --field-start--
+fieldName=pricePerLiterOfAlcoholInCents
+# --field-end--
+# --field-start--
+fieldName=pricePerLiterInCents
+# --field-end--
+# --field-start--
+fieldName=inventoryCount
+# --field-end--
+# --field-start--
+fieldName=inventoryVolumeInMilliliters
+# --field-end--
+# --field-start--
+fieldName=inventoryPriceInCents
+# --field-end--
+# --field-start--
+fieldName=sugarContent
+# --field-end--
+# --field-start--
+fieldName=producerName
+# --field-end--
+# --field-start--
+fieldName=releasedOn
+# --field-end--
+# --field-start--
+fieldName=hasValueAddedPromotion
+# --field-end--
+# --field-start--
+fieldName=hasLimitedTimeOffer
+# --field-end--
+# --field-start--
+fieldName=hasBonusRewardMiles
+# --field-end--
+# --field-start--
+fieldName=isSeasonal
+# --field-end--
+# --field-start--
+fieldName=isVqa
+# --field-end--
+# --field-start--
+fieldName=isOcb
+# --field-end--
+# --field-start--
+fieldName=isKosher
+# --field-end--
+# --field-start--
+fieldName=valueAddedPromotionDescription
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=servingSuggestion
+# --field-end--
+# --field-start--
+fieldName=tastingNote
+# --field-end--
+# --field-start--
+fieldName=updatedAt
+# --field-end--
+# --field-start--
+fieldName=imageThumbUrl
+# --field-end--
+# --field-start--
+fieldName=imageUrl
+# --field-end--
+# --field-start--
+fieldName=varietal
+# --field-end--
+# --field-start--
+fieldName=style
+# --field-end--
+# --field-start--
+fieldName=tertiaryCategory
+# --field-end--
+# --field-start--
+fieldName=sugarInGramsPerLiter
+# --field-end--
+# --field-start--
+fieldName=clearanceSaleSavingsInCents
+# --field-end--
+# --field-start--
+fieldName=hasClearanceSale
+# --field-end--
+# --field-start--
+fieldName=productNo
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.vitaliyhtc.lcbo.model.Store
+tableName=stores
+# --table-fields-start--
+# --field-start--
+fieldName=id
+id=true
+# --field-end--
+# --field-start--
+fieldName=incrementalCounter
+# --field-end--
+# --field-start--
+fieldName=isDead
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=tags
+# --field-end--
+# --field-start--
+fieldName=addressLine1
+# --field-end--
+# --field-start--
+fieldName=addressLine2
+# --field-end--
+# --field-start--
+fieldName=city
+# --field-end--
+# --field-start--
+fieldName=postalCode
+# --field-end--
+# --field-start--
+fieldName=telephone
+# --field-end--
+# --field-start--
+fieldName=fax
+# --field-end--
+# --field-start--
+fieldName=latitude
+# --field-end--
+# --field-start--
+fieldName=longitude
+# --field-end--
+# --field-start--
+fieldName=productsCount
+# --field-end--
+# --field-start--
+fieldName=inventoryCount
+# --field-end--
+# --field-start--
+fieldName=inventoryPriceInCents
+# --field-end--
+# --field-start--
+fieldName=inventoryVolumeInMilliliters
+# --field-end--
+# --field-start--
+fieldName=hasWheelchairAccessability
+# --field-end--
+# --field-start--
+fieldName=hasBilingualServices
+# --field-end--
+# --field-start--
+fieldName=hasProductConsultant
+# --field-end--
+# --field-start--
+fieldName=hasTastingBar
+# --field-end--
+# --field-start--
+fieldName=hasBeerColdRoom
+# --field-end--
+# --field-start--
+fieldName=hasSpecialOccasionPermits
+# --field-end--
+# --field-start--
+fieldName=hasVintagesCorner
+# --field-end--
+# --field-start--
+fieldName=hasParking
+# --field-end--
+# --field-start--
+fieldName=hasTransitAccess
+# --field-end--
+# --field-start--
+fieldName=sundayOpen
+# --field-end--
+# --field-start--
+fieldName=sundayClose
+# --field-end--
+# --field-start--
+fieldName=mondayOpen
+# --field-end--
+# --field-start--
+fieldName=mondayClose
+# --field-end--
+# --field-start--
+fieldName=tuesdayOpen
+# --field-end--
+# --field-start--
+fieldName=tuesdayClose
+# --field-end--
+# --field-start--
+fieldName=wednesdayOpen
+# --field-end--
+# --field-start--
+fieldName=wednesdayClose
+# --field-end--
+# --field-start--
+fieldName=thursdayOpen
+# --field-end--
+# --field-start--
+fieldName=thursdayClose
+# --field-end--
+# --field-start--
+fieldName=fridayOpen
+# --field-end--
+# --field-start--
+fieldName=fridayClose
+# --field-end--
+# --field-start--
+fieldName=saturdayOpen
+# --field-end--
+# --field-start--
+fieldName=saturdayClose
+# --field-end--
+# --field-start--
+fieldName=updatedAt
+# --field-end--
+# --field-start--
+fieldName=storeNo
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
