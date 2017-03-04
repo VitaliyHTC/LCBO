@@ -9,7 +9,6 @@
     <string name="about_app_description">Some text about app.</string>
 
 
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -26,7 +25,6 @@
     <string name="list_favourite_star_icon">Favourite star icon</string>
 
 
-
     <string name="action_clear_stores_table">Clear Stores Table</string>
     <string name="action_clear_products_table">Clear Products Table</string>
 
@@ -36,5 +34,41 @@
     <string name="dialog_ok_button">OK</string>
     <string name="dialog_reset_all_button">Reset all</string>
     <string name="dialog_set_stores_search_parameters_title">Select options</string>
+
+    <string name="store_key_name">Name:</string>
+    <string name="store_value_def">_</string>
+    <string name="store_key_tags">Tags:</string>
+    <string name="store_key_address_line_1">First address line:</string>
+    <string name="store_key_address_line_2">Second address line:</string>
+    <string name="store_key_city">City:</string>
+    <string name="store_key_postal_code">Postal code:</string>
+    <string name="store_key_telephone">Telephone:</string>
+    <string name="store_key_fax">Fax:</string>
+    <string name="store_key_latitude_longitude">Latitude and longitude:</string>
+    <string name="store_show_map_button">Show store on map</string>
+    <string name="store_key_products_count">Number of products available in store:</string>
+    <string name="store_key_has_wheelchair_accessability">Has wheelchair accessability:</string>
+    <string name="store_key_has_bilingual_services">Has bilingual services:</string>
+    <string name="store_key_has_product_consultant">Has product consultant:</string>
+    <string name="store_key_has_tasting_bar">Has tasting bar:</string>
+    <string name="store_key_has_beer_cold_room">Has beer cold room:</string>
+    <string name="store_key_has_special_occasion_permits">Has special occasion permits:</string>
+    <string name="store_key_has_vintages_corner">Has vintages corner:</string>
+    <string name="store_key_has_parking">Has parking:</string>
+    <string name="store_key_has_transit_access">Has transit access:</string>
+    <string name="store_title_opening_hours">Opening hours:</string>
+    <string name="store_key_sunday">Sunday:</string>
+    <string name="store_key_monday">Monday:</string>
+    <string name="store_key_tuesday">Tuesday:</string>
+    <string name="store_key_wednesday">Wednesday:</string>
+    <string name="store_key_thursday">Thursday:</string>
+    <string name="store_key_friday">Friday:</string>
+    <string name="store_key_saturday">Saturday:</string>
+    <string name="store_key_id">Store ID:</string>
+    <string name="store_detail_activity_title">Store details</string>
+    <string name="main_activity_stores_title">Stores</string>
+
+    <string name="store_detail_activity_error_image">Error image. Meme face whyyy!</string>
+    <string name="store_detail_activity_error_text">Well, this should not happen!\r\nBut you see this.\r\nThis could happen because of the inability to obtain Store by its id.</string>
 
 </resources>

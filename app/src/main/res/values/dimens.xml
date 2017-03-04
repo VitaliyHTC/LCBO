@@ -11,4 +11,9 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="main_list_item__store_textsize">16sp</dimen>
+
+    <dimen name="detail_activity_key_text_size">16sp</dimen>
+    <dimen name="detail_activity_value_text_size">20sp</dimen>
+    <dimen name="detail_activity_title_text_size">22sp</dimen>
+
 </resources>

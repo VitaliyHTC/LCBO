@@ -97,9 +97,6 @@ public class StoresDataManager {
 
 
 
-
-
-
     public void performStoresSearch(StoresSearchParameters storesSearchParameters){
         mStoresSearchParameters = storesSearchParameters;
 
@@ -126,37 +123,42 @@ public class StoresDataManager {
         call.enqueue(new Callback<StoresResult>() {
             @Override
             public void onResponse(Call<StoresResult>call, Response<StoresResult> response) {
-                StoresResult storesResult = response.body();
-                mListToAdd.clear();
 
-                mStoresResult = storesResult.getResult();
-                int storesPage = storesResult.getPager().getCurrentPage();
+                if(response.isSuccessful()){
+                    StoresResult storesResult = response.body();
+                    mListToAdd.clear();
+                    mStoresResult = storesResult.getResult();
+                    int storesPage = storesResult.getPager().getCurrentPage();
 
-                try{
-                    Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    try{
+                        Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
 
-                    int i = 0;
-                    int incrementalCounter;
-                    int storeId = 0;
-                    for (Store store : mStoresResult) {
-                        storeId = store.getId();
-                        if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
-                            // Why storesPage-1 ? On first page elements numbers starts from 0!
-                            incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
-                            store.setIncrementalCounter(incrementalCounter);
-                            i++;
-                            mListToAdd.add(store);
+                        int i = 0;
+                        int incrementalCounter;
+                        int storeId = 0;
+                        for (Store store : mStoresResult) {
+                            storeId = store.getId();
+                            if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
+                                // Why storesPage-1 ? On first page elements numbers starts from 0!
+                                incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
+                                store.setIncrementalCounter(incrementalCounter);
+                                i++;
+                                mListToAdd.add(store);
+                            }
                         }
+                        storeDao.create(mListToAdd);
+                    } catch (SQLException e) {
+                        Log.e(LOG_TAG, "Database exception", e);
+                        e.printStackTrace();
                     }
-                    storeDao.create(mListToAdd);
 
-                } catch (SQLException e) {
-                    Log.e(LOG_TAG, "Database exception", e);
-                    e.printStackTrace();
+                    Toast.makeText(mContext, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.e(LOG_TAG, "loadAndSaveStores() - response problem.");
                 }
 
-                Toast.makeText(mContext, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
-
+                // if mStoresResult containt stores perform new request for more stores.
+                // if mStoresResult isEmpty - perform search in DB.
                 if(!mStoresResult.isEmpty()){
                     int newOffset = offset+1;
                     loadAndSaveStores(newOffset);
@@ -170,6 +172,9 @@ public class StoresDataManager {
             public void onFailure(Call<StoresResult>call, Throwable t) {
                 // Log error here since request failed
                 Log.e(LOG_TAG, t.toString());
+
+                // Continue work.
+                getSearchStoresPage(1);
             }
         });
 
@@ -266,10 +271,6 @@ public class StoresDataManager {
 
 
 
-
-
-
-
     /**
      * Consumer must implement StoresDataManager.StoresListLoadedListener interface
      * for accepting of result. Method call one of two callback methods depending on
@@ -327,48 +328,56 @@ public class StoresDataManager {
     }
 
     private void getStoresPageFromNetwork(final int offset, final boolean isInitialLoading){
+        mStoresResult.clear();
         ApiInterface apiService = RetrofitApiClient.getClient().create(ApiInterface.class);
 
         Call<StoresResult> call = apiService.getStoresResult(offset, Config.STORES_PER_PAGE, Config.LCBO_API_ACCESS_KEY);
         call.enqueue(new Callback<StoresResult>() {
             @Override
             public void onResponse(Call<StoresResult>call, Response<StoresResult> response) {
-                StoresResult storesResult = response.body();
-                mListToAdd.clear();
 
-                mStoresResult = storesResult.getResult();
-                int storesPage = storesResult.getPager().getCurrentPage();
+                if(response.isSuccessful()){
+                    StoresResult storesResult = response.body();
+                    mListToAdd.clear();
+                    mStoresResult = storesResult.getResult();
+                    int storesPage = storesResult.getPager().getCurrentPage();
 
-                try{
-                    Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    try{
+                        Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
 
-                    int i = 0;
-                    int incrementalCounter;
-                    int storeId = 0;
-                    for (Store store : mStoresResult) {
-                        storeId = store.getId();
-                        if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
-                            // Why storesPage-1 ? On first page elements numbers starts from 0!
-                            incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
-                            store.setIncrementalCounter(incrementalCounter);
-                            i++;
-                            mListToAdd.add(store);
+                        int i = 0;
+                        int incrementalCounter;
+                        int storeId = 0;
+                        for (Store store : mStoresResult) {
+                            storeId = store.getId();
+                            if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
+                                // Why storesPage-1 ? On first page elements numbers starts from 0!
+                                incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
+                                store.setIncrementalCounter(incrementalCounter);
+                                i++;
+                                mListToAdd.add(store);
+                            }
                         }
+                        storeDao.create(mListToAdd);
+                    } catch (SQLException e) {
+                        Log.e(LOG_TAG, "Database exception in getStoresPageFromNetwork", e);
+                        e.printStackTrace();
                     }
-                    storeDao.create(mListToAdd);
-
-                } catch (SQLException e) {
-                    Log.e(LOG_TAG, "Database exception", e);
-                    e.printStackTrace();
+                }else{
+                    Log.e(LOG_TAG, "getStoresPageFromNetwork() - response problem.");
                 }
 
                 onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
+
             }
 
             @Override
             public void onFailure(Call<StoresResult>call, Throwable t) {
                 // Log error here since request failed
                 Log.e(LOG_TAG, t.toString());
+
+                // Continue work.
+                onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
             }
         });
 
@@ -376,7 +385,7 @@ public class StoresDataManager {
 
 
 
-    public boolean getNetworkAvailability() {
+    private boolean getNetworkAvailability() {
         return Utils.isNetworkAvailable(mContext);
     }
 

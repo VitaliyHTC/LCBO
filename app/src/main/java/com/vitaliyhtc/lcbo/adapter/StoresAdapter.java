@@ -39,6 +39,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
                 public void onClick(View v) {
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                     makeToastForItemOnClick("Element " + getAdapterPosition() + " clicked.");
+                    sContext.startStoreDetailActivity(getAdapterPosition());
                 }
             });
             textView = (TextView) v.findViewById(R.id.item_title);
@@ -61,6 +62,10 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
 
     public void appendToStores(List<Store> stores){
         mStores.addAll(stores);
+    }
+
+    public Store getStoreAtPosition(int position){
+        return mStores.get(position);
     }
 
     public void clearStoresList(){

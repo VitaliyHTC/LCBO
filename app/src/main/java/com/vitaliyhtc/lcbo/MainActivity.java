@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,12 +57,12 @@ public class MainActivity extends CoreActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         initiateUserInterface();
+        this.setTitle(R.string.main_activity_stores_title);
 
         storesDataManager = getStoresDataManager();
         initStoresSearchParameters();
 
         initStoresList();
-
     }
 
     @Override
@@ -109,8 +110,8 @@ public class MainActivity extends CoreActivity
         LinearLayout searchViewSearchPlate = (LinearLayout) searchView.findViewById(R.id.search_plate);
         searchViewSearchPlate.addView(searchOptionsButton);
         searchOptionsButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        ImageView searchGoBtnImageView = (ImageView) searchView.findViewById(R.id.search_go_btn);
-        searchGoBtnImageView.setPadding(0, 0, 0, 0);
+        //ImageView searchGoBtnImageView = (ImageView) searchView.findViewById(R.id.search_go_btn);
+        //searchGoBtnImageView.setPadding(0, 0, 0, 0);
 
         searchOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,14 +147,12 @@ public class MainActivity extends CoreActivity
         return super.onOptionsItemSelected(item);
     }
 
-
     private void onSearchOptionsButtonClicked(View view){
         FragmentManager fragmentManager = getSupportFragmentManager();
         SetStoresSearchParametersDialog setStoresSearchParametersDialog = new SetStoresSearchParametersDialog();
         setStoresSearchParametersDialog.setStoresSearchParameters(this, mStoresSearchParameters);
         setStoresSearchParametersDialog.show(fragmentManager, "SetStoresSearchParametersDialog");
     }
-
 
     /**
      * Called when the user submits the query. This could be due to a key press on the
@@ -168,7 +167,12 @@ public class MainActivity extends CoreActivity
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mStoresSearchParameters.setSearchStringQuery(query);
+        // TODO: problem that SearchView don't submit empty query!
+        if(".".equals(query)){
+            mStoresSearchParameters.setSearchStringQuery("");
+        }else{
+            mStoresSearchParameters.setSearchStringQuery(query);
+        }
         performStoresSearch(mStoresSearchParameters);
         return true;
     }
@@ -182,7 +186,6 @@ public class MainActivity extends CoreActivity
      */
     @Override
     public boolean onQueryTextChange(String newText) {
-        //See javadoc.
         return false;
     }
 
@@ -206,20 +209,11 @@ public class MainActivity extends CoreActivity
         handler.post(r);
     }
 
-
-
     private void onSearchViewCollapsed(){
         if(mIsInSearchState){
             storesDataManager.getStoresPage(1, false);
         }
     }
-
-
-
-
-
-
-
 
 
 
@@ -315,18 +309,24 @@ public class MainActivity extends CoreActivity
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-
         if(!mIsInSearchState){
             storesDataManager.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
         }else{
             storesDataManager.getSearchStoresPage(offset);// >>> onStoresSearchListLoaded Callback
         }
-
-        //Toast.makeText(getApplicationContext(), "loadNextDataFromApi", Toast.LENGTH_SHORT).show();
     }
 
     public int getCountOfStoresInAdapter(){
         return mStoresAdapter.getItemCount();
+    }
+
+    public void startStoreDetailActivity(int positionInAdapter){
+        Store store = mStoresAdapter.getStoreAtPosition(positionInAdapter);
+        int storeId = store.getId();
+
+        Intent intent = new Intent(this, StoreDetailActivity.class);
+        intent.putExtra("targetStoreId", storeId);
+        startActivity(intent);
     }
 
 }

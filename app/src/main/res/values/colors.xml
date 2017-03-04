@@ -10,4 +10,8 @@
     <color name="orange400">#FFA726</color>
 
     <color name="recyclerViewBackground">#fffaf2</color>
+
+    <color name="detail_activity_key_text_color">#757575</color>
+    <color name="detail_activity_value_text_color">#212121</color>
+
 </resources>
