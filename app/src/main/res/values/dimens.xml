@@ -10,7 +10,7 @@
     <dimen name="main_activity_margin">0dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="main_list_item__store_textsize">16sp</dimen>
+    <dimen name="main_list_item_store_textsize">16sp</dimen>
 
     <dimen name="detail_activity_key_text_size">16sp</dimen>
     <dimen name="detail_activity_value_text_size">20sp</dimen>

@@ -45,7 +45,7 @@
     <string name="store_key_telephone">Telephone:</string>
     <string name="store_key_fax">Fax:</string>
     <string name="store_key_latitude_longitude">Latitude and longitude:</string>
-    <string name="store_show_map_button">Show store on map</string>
+    <string name="store_open_map_button">Open the map with marker of Store</string>
     <string name="store_key_products_count">Number of products available in store:</string>
     <string name="store_key_has_wheelchair_accessability">Has wheelchair accessability:</string>
     <string name="store_key_has_bilingual_services">Has bilingual services:</string>
@@ -70,5 +70,9 @@
 
     <string name="store_detail_activity_error_image">Error image. Meme face whyyy!</string>
     <string name="store_detail_activity_error_text">Well, this should not happen!\r\nBut you see this.\r\nThis could happen because of the inability to obtain Store by its id.</string>
+    <string name="store_make_call_button">Make call</string>
+    <string name="products_tab_beer">Beer</string>
+    <string name="products_tab_wine">Wine</string>
+    <string name="products_tab_spirits">Spirits</string>
 
 </resources>

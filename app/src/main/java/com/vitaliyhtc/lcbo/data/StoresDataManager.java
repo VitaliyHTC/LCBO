@@ -31,7 +31,7 @@ import retrofit2.Response;
  */
 public class StoresDataManager {
 
-    private static final String LOG_TAG = MainActivity.LOG_TAG;
+    private static final String LOG_TAG = StoresDataManager.class.getSimpleName();
 
     private MainActivity mContext;
 
@@ -272,7 +272,7 @@ public class StoresDataManager {
 
 
     /**
-     * Consumer must implement StoresDataManager.StoresListLoadedListener interface
+     * Consumer must implement StoresDataManager.StoresDataManagerCallbacs interface
      * for accepting of result. Method call one of two callback methods depending on
      * {@code isInitialLoading} flag: {@code onInitStoresListLoaded} or {@code onStoresListLoaded}.
      *
@@ -392,9 +392,11 @@ public class StoresDataManager {
     /**
      * Callback methods. One for first page loading due adapter and RecyclerView initialization.
      * Second for the second and subsequent pages.
+     * Also, one method for Search results.
      */
-    public interface StoresListLoadedListener {
+    public interface StoresDataManagerCallbacs {
         void onInitStoresListLoaded(List<Store> stores, int offset);
         void onStoresListLoaded(List<Store> stores, int offset);
+        void onStoresSearchListLoaded(final List<Store> stores, final int offset);
     }
 }

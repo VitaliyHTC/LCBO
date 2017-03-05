@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
@@ -28,9 +27,7 @@ import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 import java.util.List;
 
 public class MainActivity extends CoreActivity
-        implements StoresDataManager.StoresListLoadedListener, SearchView.OnQueryTextListener {
-
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+        implements StoresDataManager.StoresDataManagerCallbacs, SearchView.OnQueryTextListener {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -236,6 +233,8 @@ public class MainActivity extends CoreActivity
         return storesDataManager;
     }
 
+
+
     /**
      * Execution flow:
      * onCreate()
@@ -248,6 +247,9 @@ public class MainActivity extends CoreActivity
      * loadNextDataFromApi() ==> storesDataManager.getStoresPage(offset, false) ==>
      * onStoresListLoaded() - add stores to adapter and notify them.
      */
+    private void initStoresList(){
+        storesDataManager.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
+    }
 
     @Override
     public void onInitStoresListLoaded(List<Store> stores, int offset){
@@ -272,10 +274,6 @@ public class MainActivity extends CoreActivity
             }
         };
         handler.post(r);
-    }
-
-    private void initStoresList(){
-        storesDataManager.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
     }
 
     private void loadStores(List<Store> initialStoresList){

@@ -82,6 +82,22 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+
+
+    <!--
+    <Button
+        android:text="openTestActivity()"
+        android:textAllCaps="false"
+        android:textSize="13sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:id="@+id/openTestActivityButton"
+        android:layout_below="@+id/textView2"
+        style="@style/Widget.AppCompat.Button.Small" />
+    -->
     <Button
         android:text="clearStoresTable()"
         android:textAllCaps="false"
@@ -92,8 +108,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:id="@+id/clearStoresTableButton"
-        android:layout_below="@+id/textView2"
-        android:onClick="clearStoresTable"
+        android:layout_below="@+id/openTestActivityButton"
         style="@style/Widget.AppCompat.Button.Small" />
     <Button
         android:text="clearProductsTable()"
@@ -106,7 +121,6 @@
         android:layout_marginTop="8dp"
         android:id="@+id/clearProductsTableButton"
         android:layout_below="@+id/clearStoresTableButton"
-        android:onClick="clearProductsTable"
         style="@style/Widget.AppCompat.Button.Small" />
 
 </RelativeLayout>

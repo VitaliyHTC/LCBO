@@ -4,8 +4,10 @@
     <color name="colorPrimaryDark">#263838</color>
     <color name="colorPrimaryButton">#263838</color>
     <color name="colorAccent">#f44336</color>
-
+    <color name="tabsScrollColor">#ffffff</color>
+    <color name="tabsUnselectedTab">#808080</color>
     <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
 
     <color name="orange400">#FFA726</color>
 

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StoreDetailActivity" android:label="@string/store_detail_activity_title"
+        <activity
+            android:name=".StoreDetailActivity"
+            android:label="@string/store_detail_activity_title"
             android:parentActivityName="com.vitaliyhtc.lcbo.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -48,6 +51,7 @@
             android:name=".AboutActivity"
             android:label="@string/nav_about"
             android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

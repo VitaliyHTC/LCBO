@@ -250,12 +250,23 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/store_value_def"
                 android:textSize="@dimen/detail_activity_value_text_size"
                 android:textColor="@color/detail_activity_value_text_color"/>
+            <Button
+                android:id="@+id/store_make_call_button"
+                android:layout_gravity="end"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/store_make_call_button"
+                android:textAllCaps="false"
+                style="@style/Widget.AppCompat.Button.Small" />
 
             <TextView
                 android:id="@+id/store_key_fax"
@@ -791,16 +802,16 @@
                 android:textSize="@dimen/detail_activity_value_text_size"
                 android:textColor="@color/detail_activity_value_text_color"/>
             <Button
-                android:id="@+id/store_show_map_button"
+                android:id="@+id/store_open_map_button"
                 android:layout_gravity="end"
                 android:layout_marginRight="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/store_show_map_button"
+                android:text="@string/store_open_map_button"
                 android:textAllCaps="false"
-                style="@style/Widget.AppCompat.Button.Small"/>
+                style="@style/Widget.AppCompat.Button.Small" />
 
         </LinearLayout>
 

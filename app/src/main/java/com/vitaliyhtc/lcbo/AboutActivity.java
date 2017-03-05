@@ -1,9 +1,11 @@
 package com.vitaliyhtc.lcbo;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,8 @@ public class AboutActivity extends CoreActivity {
         initiateUserInterface();
 
         fillVersionCodeTextView();
+
+        setButtonsListeners();
     }
 
     @Override
@@ -53,6 +57,47 @@ public class AboutActivity extends CoreActivity {
 
 
 
+
+
+
+
+
+    private void setButtonsListeners(){
+        //final Button openTestActivityButton = (Button) findViewById(R.id.openTestActivityButton);
+        final Button clearStoresTableButton = (Button) findViewById(R.id.clearStoresTableButton);
+        final Button clearProductsTableButton = (Button) findViewById(R.id.clearProductsTableButton);
+
+        /*
+        openTestActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openTestActivity();
+            }
+        });
+        */
+
+        clearStoresTableButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                clearStoresTable();
+            }
+        });
+        clearProductsTableButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                clearProductsTable();
+            }
+        });
+    }
+
+
+    /*
+    private void openTestActivity(){
+        Intent intent = new Intent(AboutActivity.this, TestActivity.class);
+        startActivity(intent);
+    }
+    */
+
+
+
     private DatabaseHelper mDatabaseHelper = null;
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
@@ -67,12 +112,12 @@ public class AboutActivity extends CoreActivity {
         }
     }
 
-    public void clearStoresTable(View view){
+    private void clearStoresTable(){
         getDatabaseHelper().clearStoresTable();
         Toast.makeText(this, "clearStoresTable()", Toast.LENGTH_LONG).show();
     }
 
-    public void clearProductsTable(View view){
+    private void clearProductsTable(){
         getDatabaseHelper().clearProductsTable();
         Toast.makeText(this, "clearProductsTable()", Toast.LENGTH_LONG).show();
     }

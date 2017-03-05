@@ -1,6 +1,5 @@
 package com.vitaliyhtc.lcbo.adapter;
 
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,21 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.vitaliyhtc.lcbo.MainActivity;
+import com.vitaliyhtc.lcbo.ProductsTab;
 import com.vitaliyhtc.lcbo.R;
-import com.vitaliyhtc.lcbo.model.Store;
+import com.vitaliyhtc.lcbo.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Provide views to RecyclerView with data from mStores.
- */
-public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder>  {
-    private static final String LOG_TAG = "StoresAdapter";
+public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsByCategoriesAdapter.ViewHolder> {
+    private static final String LOG_TAG = "ProductsByCatsAdapter";
 
-    private static MainActivity sContext;
-    private List<Store> mStores;
+    private static ProductsTab sContext;
+    private List<Product> mProducts;
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
@@ -36,7 +32,8 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sContext.startStoreDetailActivity(getAdapterPosition());
+                    //Do some action!
+                    //sContext.startStoreDetailActivity(getAdapterPosition());
                 }
             });
             textView = (TextView) v.findViewById(R.id.item_title);
@@ -52,36 +49,24 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
      *
      * @param stores List<Store> containing the data to populate views to be used by RecyclerView.
      */
-    public StoresAdapter(MainActivity context) {
+    public ProductsByCategoriesAdapter(ProductsTab context){
         sContext = context;
-        mStores = new ArrayList<>();
+        mProducts = new ArrayList<>();
     }
 
-    public void appendToStores(List<Store> stores){
-        mStores.addAll(stores);
+    public void appendToProducts(List<Product> products) {
+        mProducts.addAll(products);
     }
 
-    public Store getStoreAtPosition(int position){
-        return mStores.get(position);
-    }
-
-    public void clearStoresList(){
-        final int oldItemsCount = getItemCount();
-        mStores.clear();
-        Handler handler = new Handler();
-        final Runnable r = new Runnable() {
-            public void run() {
-                notifyItemRangeRemoved(0, oldItemsCount);
-            }
-        };
-        handler.post(r);
+    public Product getProductAtPosition(int position) {
+        return mProducts.get(position);
     }
 
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.main_list_item_store, viewGroup, false);
+                .inflate(R.layout.products_list_item, viewGroup, false);
         return new ViewHolder(v);
     }
 
@@ -93,14 +78,13 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         // TODO: change item design.
-        Store currentStore = mStores.get(position);
-        viewHolder.getTextView().setText(currentStore.getIncrementalCounter() + " " + currentStore.getName());
+        Product currentProduct = mProducts.get(position);
+        viewHolder.getTextView().setText(currentProduct.getName());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mStores.size();
+        return mProducts.size();
     }
-
 }
