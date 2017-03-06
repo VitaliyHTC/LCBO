@@ -84,9 +84,9 @@
 
 
 
-    <!--
+
     <Button
-        android:text="openTestActivity()"
+        android:text="Disabled!"
         android:textAllCaps="false"
         android:textSize="13sp"
         android:layout_width="wrap_content"
@@ -94,10 +94,9 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:id="@+id/openTestActivityButton"
+        android:id="@+id/disabledButton"
         android:layout_below="@+id/textView2"
         style="@style/Widget.AppCompat.Button.Small" />
-    -->
     <Button
         android:text="clearStoresTable()"
         android:textAllCaps="false"

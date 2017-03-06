@@ -3,7 +3,6 @@ package com.vitaliyhtc.lcbo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.Toast;
 
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
 import com.vitaliyhtc.lcbo.data.ProductsByCategoriesDataManager;
@@ -36,6 +35,7 @@ public class ProductsByCategoriesActivity extends CoreActivity
 
         productsByCategoriesDataManager = getProductsByCategoriesDataManager();
         initProductsByCategoriesQueues();
+        productsByCategoriesDataManager.performInitialLoading();
     }
 
     @Override
@@ -68,16 +68,14 @@ public class ProductsByCategoriesActivity extends CoreActivity
     public void setProductsTab(ProductsTab productsTab){
         if(productsTab.getCategory() == ProductsTab.TAB_CATEGORY_BEER){
             beerFragment = productsTab;
-            Toast.makeText(this, beerFragment.getCategoryString()+"tab added", Toast.LENGTH_LONG).show();
         }
         if(productsTab.getCategory() == ProductsTab.TAB_CATEGORY_WINE){
             wineFragment = productsTab;
-            Toast.makeText(this, wineFragment.getCategoryString()+"tab added", Toast.LENGTH_LONG).show();
         }
         if(productsTab.getCategory() == ProductsTab.TAB_CATEGORY_SPIRITS){
             spiritsFragment = productsTab;
-            Toast.makeText(this, spiritsFragment.getCategoryString()+"tab added", Toast.LENGTH_LONG).show();
         }
+
     }
 
     private ProductsByCategoriesDataManager getProductsByCategoriesDataManager(){
@@ -95,8 +93,37 @@ public class ProductsByCategoriesActivity extends CoreActivity
 
 
     @Override
-    public void onDataManagerResultLoaded(List<Product> products, int category){
+    public void onDataManagerInitialResultLoaded(List<Product> products){
+        appendResultToLists(products);
 
+        if(beerFragment!=null){
+            fireBeerCallback();
+        }
+        if(wineFragment!=null){
+            fireWineCallback();
+        }
+        if(spiritsFragment!=null){
+            fireSpiritsCallback();
+        }
+    }
+
+    @Override
+    public void onDataManagerResultLoaded(List<Product> products, int category){
+        appendResultToLists(products);
+
+        if(ProductsTab.TAB_CATEGORY_BEER==category){
+            fireBeerCallback();
+        }
+        if(ProductsTab.TAB_CATEGORY_WINE==category){
+            fireWineCallback();
+        }
+        if(ProductsTab.TAB_CATEGORY_SPIRITS==category){
+            fireSpiritsCallback();
+        }
+
+    }
+
+    private void appendResultToLists(List<Product> products){
         for (Product product : products) {
             String categoryString = product.getPrimaryCategory();
             if(Config.PRODUCT_CATEGORY_BEER.equals(categoryString)){
@@ -109,17 +136,6 @@ public class ProductsByCategoriesActivity extends CoreActivity
                 spiritsList.add(product);
             }
         }
-
-        if(ProductsTab.TAB_CATEGORY_BEER==category){
-            fireBeerCallback();
-        }
-        if(ProductsTab.TAB_CATEGORY_WINE==category){
-            fireWineCallback();
-        }
-        if(ProductsTab.TAB_CATEGORY_SPIRITS==category){
-            fireSpiritsCallback();
-        }
-
     }
 
 

@@ -63,18 +63,8 @@ public class AboutActivity extends CoreActivity {
 
 
     private void setButtonsListeners(){
-        //final Button openTestActivityButton = (Button) findViewById(R.id.openTestActivityButton);
         final Button clearStoresTableButton = (Button) findViewById(R.id.clearStoresTableButton);
         final Button clearProductsTableButton = (Button) findViewById(R.id.clearProductsTableButton);
-
-        /*
-        openTestActivityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openTestActivity();
-            }
-        });
-        */
 
         clearStoresTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -87,14 +77,6 @@ public class AboutActivity extends CoreActivity {
             }
         });
     }
-
-
-    /*
-    private void openTestActivity(){
-        Intent intent = new Intent(AboutActivity.this, TestActivity.class);
-        startActivity(intent);
-    }
-    */
 
 
 

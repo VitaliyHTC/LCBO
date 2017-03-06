@@ -13,10 +13,9 @@ import android.view.ViewGroup;
 
 public class ProductsTabFragment extends Fragment {
 
-    public static TabLayout tabLayout;
-    public static ViewPager viewPager;
-    public static int int_items = 3 ;
-    ProductsTabAdapter productsTabAdapter;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private static int int_items = 3 ;
 
     @Nullable
     @Override
@@ -27,11 +26,12 @@ public class ProductsTabFragment extends Fragment {
         View view =  inflater.inflate(R.layout.products_by_categories_content, null);
         tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(int_items-1);
 
         /**
          *Set an Apater for the View Pager
          */
-        productsTabAdapter = new ProductsTabAdapter(getChildFragmentManager());
+        ProductsTabAdapter productsTabAdapter = new ProductsTabAdapter(getChildFragmentManager());
         viewPager.setAdapter(productsTabAdapter);
         /**
          * Now , this is a workaround ,
@@ -74,29 +74,6 @@ public class ProductsTabFragment extends Fragment {
         @Override
         public int getCount() {
             return int_items;
-        }
-
-        // Here we can finally safely save a reference to the created
-        // Fragment, no matter where it came from (either getItem() or
-        // FragmentManger). Simply save the returned Fragment from
-        // super.instantiateItem() into an appropriate reference depending
-        // on the ViewPager position.
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            // save the appropriate reference depending on position
-            switch (position) {
-                case 0:
-                    beerTab = (ProductsTab) createdFragment;
-                    break;
-                case 1:
-                    wineTab = (ProductsTab) createdFragment;
-                    break;
-                case 2:
-                    spiritsTab = (ProductsTab) createdFragment;
-                    break;
-            }
-            return createdFragment;
         }
 
         /**

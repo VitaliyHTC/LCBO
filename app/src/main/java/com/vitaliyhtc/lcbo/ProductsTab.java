@@ -76,7 +76,8 @@ public class ProductsTab extends Fragment {
 
     private void initProductsList(){
         initialState = true;
-        parentActivity.getNItemsOf(Config.PRODUCTS_PER_PAGE, mCategory);
+        // parentActivity.getNItemsOf(Config.PRODUCTS_PER_PAGE, mCategory);
+        // ProductsByCategoriesActivity - automatically perform initial callbacks.
     }
 
     public void onProductsListLoaded(final List<Product> products){

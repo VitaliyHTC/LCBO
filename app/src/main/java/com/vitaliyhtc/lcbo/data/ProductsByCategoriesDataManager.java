@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.data;
 
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,14 +36,18 @@ public class ProductsByCategoriesDataManager {
 
     private HashSet<Integer> productIds = new HashSet<>();
 
-    private int pageOffsetLoadedFromServer;
-    private int beerProductsDbOffset;
-    private int wineProductsDbOffset;
-    private int spiritsProductsDbOffset;
+    private int pageOffsetLoadedFromServer = 0;
+    private int beerProductsDbOffset = 0;
+    private int wineProductsDbOffset = 0;
+    private int spiritsProductsDbOffset = 0;
 
-    private int productByCategoryUniqueItemsLoaded;
+    private int productByCategoryUniqueItemsLoaded = 0;
 
-    private int currentPageRecordCount;
+    private int beerUniqueItems = 0;
+    private int wineUniqueItems = 0;
+    private int spiritsUniqueItems = 0;
+
+    private int currentPageRecordCount = 0;
 
     private List<Product> uniqueProductsLoaded = new ArrayList<>();
     private List<Product> uniqueProductsByCategoryLoaded = new ArrayList<>();
@@ -100,16 +105,216 @@ public class ProductsByCategoriesDataManager {
 
 
 
+
+
+
+
+
+
+    public void performInitialLoading(){
+        if(getNetworkAvailability()){
+            //load from server
+            initialLoadFromServerAndSaveToDb();
+        } else {
+            //load from DB
+            initialLoadFromDb();
+        }
+    }
+
+
+
+    private void initialLoadFromServerAndSaveToDb(){
+        ApiInterface apiService = RetrofitApiClient.getClient().create(ApiInterface.class);
+
+        int offset = pageOffsetLoadedFromServer+1;
+        currentPageRecordCount = 0;
+
+        Call<ProductsResult> call = apiService.getProductsResult(offset, Config.STORES_PER_PAGE,
+                Config.PRODUCTS_WHERE_NOT, Config.LCBO_API_ACCESS_KEY);
+        call.enqueue(new Callback<ProductsResult>() {
+            @Override
+            public void onResponse(Call<ProductsResult>call, Response<ProductsResult> response) {
+
+                /**
+                 * Clear lists. Get productsResult from response. Get current page number for offset.
+                 * Get DAO. Foreach productsResult and count unique items and add them to uniqueProductsList.
+                 * Add unique in DB items to listToAddToDb. Save listToAddToDb to DB.
+                 */
+
+                uniqueProductsList.clear();
+                listToAddToDb.clear();
+                productsLoadedFromServer.clear();
+
+                if(response.isSuccessful()){
+                    ProductsResult productsResult = response.body();
+
+                    currentPageRecordCount = productsResult.getPager().getCurrentPageRecordCount();
+
+                    int productsPage = productsResult.getPager().getCurrentPage();
+
+                    if(currentPageRecordCount > 0){
+                        productsLoadedFromServer = productsResult.getResult();
+
+                        pageOffsetLoadedFromServer = productsPage;
+
+                        try{
+                            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+
+                            int productId;
+                            for (Product product : productsLoadedFromServer) {
+                                productId = product.getId();
+                                if(!productIds.contains(productId)){
+                                    productIds.add(productId);
+                                    if(Config.PRODUCT_CATEGORY_BEER.equals(product.getPrimaryCategory())){
+                                        beerUniqueItems++;
+                                    }
+                                    if(Config.PRODUCT_CATEGORY_WINE.equals(product.getPrimaryCategory())){
+                                        wineUniqueItems++;
+                                    }
+                                    if(Config.PRODUCT_CATEGORY_SPIRITS.equals(product.getPrimaryCategory())){
+                                        spiritsUniqueItems++;
+                                    }
+                                    uniqueProductsList.add(product);
+                                }
+                                if(productDao.queryBuilder().where().eq("id", productId).countOf() == 0){
+                                    listToAddToDb.add(product);
+                                }
+                            }
+
+                            productDao.create(listToAddToDb);
+                        } catch (SQLException e) {
+                            Log.e(LOG_TAG, "Database exception", e);
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Toast.makeText(mContext, "loadFromServerAndSaveToDb() :: Page: "+productsPage, Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.e(LOG_TAG, "loadFromServerAndSaveToDb() - response problem.");
+                }
+
+
+
+                if(currentPageRecordCount > 0){
+                    if(!uniqueProductsList.isEmpty()){
+                        uniqueProductsLoaded.addAll(uniqueProductsList);
+                        int min = getMinOf(beerUniqueItems, wineUniqueItems, spiritsUniqueItems);
+                        if(min < Config.PRODUCTS_PER_PAGE){
+                            initialLoadFromServerAndSaveToDb();
+                        }else{
+                            sendInitialResultToActivity(uniqueProductsLoaded);
+                        }
+                    }else{
+                        initialLoadFromServerAndSaveToDb();
+                    }
+                }else{
+                    sendInitialResultToActivity(uniqueProductsLoaded);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ProductsResult>call, Throwable t) {
+                // Log error here since request failed
+                Log.e(LOG_TAG, t.toString());
+
+                // Continue work.
+                sendInitialResultToActivity(uniqueProductsLoaded);
+            }
+        });
+
+    }
+
+
+
+    private void initialLoadFromDb(){
+        Toast.makeText(mContext, "Products in DB: "+getCountOfProductsInDatabase(), Toast.LENGTH_LONG).show();
+        initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_BEER);
+        productByCategoryUniqueItemsLoaded = 0;
+        initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_WINE);
+        productByCategoryUniqueItemsLoaded = 0;
+        initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_SPIRITS);
+        productByCategoryUniqueItemsLoaded = 0;
+    }
+
+    private void initialLoadFromDb(int numberOfItems, int category){
+        productsLoadedFromDb.clear();
+        uniqueProductsList.clear();
+        try{
+            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+            String categoryString = intCategoryToStringCategory(category);
+            long startOffset = (int) getDbOffsetByCategory(category);
+
+            QueryBuilder<Product, Integer> queryBuilder = productDao.queryBuilder();
+            queryBuilder.where().eq("primaryCategory", categoryString);
+            queryBuilder.offset(startOffset);
+            queryBuilder.limit((long)Config.PRODUCTS_PER_PAGE);
+            productsLoadedFromDb.addAll(productDao.query(queryBuilder.prepare()));
+
+            int productId;
+            int uniqueCounter=0;
+            for (Product product : productsLoadedFromDb) {
+                productId = product.getId();
+                if(!productIds.contains(productId)){
+                    productIds.add(productId);
+                    uniqueCounter++;
+                    productByCategoryUniqueItemsLoaded++;
+                    uniqueProductsList.add(product);
+                }
+            }
+
+            appendDbOffsetByCategory(uniqueCounter, category);
+
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Database exception in loadFromDB()", e);
+            e.printStackTrace();
+        }
+        if(!uniqueProductsList.isEmpty()){
+            uniqueProductsByCategoryLoaded.addAll(uniqueProductsList);
+            if(productByCategoryUniqueItemsLoaded < numberOfItems){
+                initialLoadFromDb(numberOfItems, category);
+            }
+        }
+
+        if(uniqueProductsByCategoryLoaded.size()==120){
+            // sendInitialResultToActivity(uniqueProductsByCategoryLoaded);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    sendInitialResultToActivity(uniqueProductsByCategoryLoaded);
+                }
+            }, 100);
+        }
+    }
+
+
+
+    private void sendInitialResultToActivity(List<Product> products){
+        mContext.onDataManagerInitialResultLoaded(products);
+        uniqueProductsLoaded.clear();
+        uniqueProductsByCategoryLoaded.clear();
+    }
+
+
+
+
+
+
+
+
+
+
+
     public void getNItemsOf(int numberOfItems, int category){
         if(getNetworkAvailability()){
             //load from server
             loadFromServerAndSaveToDb(numberOfItems, category);
         } else {
             //load from DB
-            loadFromDB(numberOfItems, category);
+            loadFromDb(numberOfItems, category);
         }
     }
-
 
 
 
@@ -219,7 +424,7 @@ public class ProductsByCategoriesDataManager {
 
 
 
-    private void loadFromDB(int numberOfItems, int category){
+    private void loadFromDb(int numberOfItems, int category){
         productsLoadedFromDb.clear();
         uniqueProductsList.clear();
         try{
@@ -238,6 +443,7 @@ public class ProductsByCategoriesDataManager {
             for (Product product : productsLoadedFromDb) {
                 productId = product.getId();
                 if(!productIds.contains(productId)){
+                    uniqueCounter++;
                     productIds.add(productId);
                     productByCategoryUniqueItemsLoaded++;
                     uniqueProductsList.add(product);
@@ -253,11 +459,13 @@ public class ProductsByCategoriesDataManager {
         if(!uniqueProductsList.isEmpty()){
             uniqueProductsByCategoryLoaded.addAll(uniqueProductsList);
             if(productByCategoryUniqueItemsLoaded < numberOfItems){
-                loadFromDB(numberOfItems, category);
+                loadFromDb(numberOfItems, category);
             }else{
+                Toast.makeText(mContext, "Load "+uniqueProductsByCategoryLoaded.size()+" products.", Toast.LENGTH_LONG).show();
                 sendResultToActivity(uniqueProductsByCategoryLoaded, category);
             }
         }else{
+            Toast.makeText(mContext, "Load "+uniqueProductsByCategoryLoaded.size()+" products.", Toast.LENGTH_LONG).show();
             sendResultToActivity(uniqueProductsByCategoryLoaded, category);
         }
     }
@@ -316,7 +524,20 @@ public class ProductsByCategoriesDataManager {
         return Utils.isNetworkAvailable(mContext);
     }
 
+    private int getMinOf(int a, int b, int c){
+        int smallest;
+        if(a<b && a<c){
+            smallest = a;
+        }else if(b<c && b<a){
+            smallest = b;
+        }else{
+            smallest = c;
+        }
+        return smallest;
+    }
+
     public interface ProductsByCategoriesDataManagerCallbacks{
+        void onDataManagerInitialResultLoaded(List<Product> products);
         void onDataManagerResultLoaded(List<Product> products, int category);
     }
 }
