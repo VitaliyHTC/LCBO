@@ -66,6 +66,21 @@ Simple screen with data about the app purposes<br>
 
 
 <br><br><br>
+<b>LCBO_1.00_Build_2.apk _2017.03.07 16:18</b>:<br>
+CRC32: E25E37D5<br>
+MD5: 4CA487425976D7C12ABFE9D991110C5C<br>
+SHA-1: 321E8D23172779A4ACE15B7F8E9CB18E5111AE01<br>
+<br>
+Fixes:<br>
+- In products by store fixed add to card button.<br>
+- In shopping cart added total products price calculation.<br>
+
+<br>
+Download links:<br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbbFRCX0NnQ18zLXM" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/INdFYJdY3FDRLb" target="_blank">Yandex Disk</a><br>
+
+<br><br><br>
 <b>LCBO_1.00_Build_1.apk _2017.03.07 06:02</b>:<br>
 CRC32: 96BF4679<br>
 MD5: 8A1918687AAF7AC8A6F237A6EEE535B8<br>
