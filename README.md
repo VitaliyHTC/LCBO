@@ -3,7 +3,7 @@ Android, Retrofit, ORMLite, Picasso, ... lcboapi.com ...<br><br><br>
 Well, most of tasks implemented.<br>
 Not implemented:<br>
 Product search screen and Favorite stores.<br>
-Product search screen algorithmically similar to stores search. So no problems to make it.<br>
+Product search screen partialy similar to stores search. So no problems to make it.<br>
 For favourite stores crated table in DB, so rest implementation is work with GUI design and little code.<br>
 <br>
 The rest work fine.
