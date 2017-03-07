@@ -72,7 +72,7 @@ MD5: 4CA487425976D7C12ABFE9D991110C5C<br>
 SHA-1: 321E8D23172779A4ACE15B7F8E9CB18E5111AE01<br>
 <br>
 Fixes:<br>
-- In products by store fixed add to card button.<br>
+- In products by store fixed add to cart button.<br>
 - In shopping cart added total products price calculation.<br>
 
 <br>
