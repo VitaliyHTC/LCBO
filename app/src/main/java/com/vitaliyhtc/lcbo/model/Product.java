@@ -1,5 +1,7 @@
 package com.vitaliyhtc.lcbo.model;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -640,4 +642,5 @@ public class Product {
     public void setProductNo(int productNo) {
         this.productNo = productNo;
     }
+
 }

@@ -180,6 +180,7 @@ public class StoreDetailActivity extends AppCompatActivity {
 
         mStore = store;
         setMakeCallOnClickListener();
+        setShowProductsOnClickListener();
         setOpenMapOnClickListener();
 
         setActivityTitle(store.getName());
@@ -274,6 +275,23 @@ public class StoreDetailActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+
+
+    private void setShowProductsOnClickListener(){
+        final Button button = (Button) findViewById(R.id.store_show_products_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showProductsOfStore();
+            }
+        });
+    }
+
+    private void showProductsOfStore(){
+        Intent intent = new Intent(this, ProductsByStoreActivity.class);
+        intent.putExtra("targetStoreId", mStore.getId());
+        intent.putExtra("targetStoreName", mStore.getName());
+        startActivity(intent);
     }
 
 

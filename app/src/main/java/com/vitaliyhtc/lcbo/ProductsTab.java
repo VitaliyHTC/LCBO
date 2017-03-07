@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,10 +14,13 @@ import android.view.ViewGroup;
 import com.vitaliyhtc.lcbo.adapter.ProductsByCategoriesAdapter;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
+import com.vitaliyhtc.lcbo.util.ProductDetailsDialog;
+import com.vitaliyhtc.lcbo.util.ShoppingCartDialog;
 
 import java.util.List;
 
-public class ProductsTab extends Fragment {
+public class ProductsTab extends Fragment
+        implements ProductsByCategoriesAdapter.ProductItemClickCallbacks {
     public static final String LOG_TAG = ProductsTab.class.getSimpleName();
 
     public static final int TAB_CATEGORY_BEER = 730;
@@ -134,6 +138,29 @@ public class ProductsTab extends Fragment {
     }
 
 
+
+
+
+
+
+
+
+
+    @Override
+    public void onProductItemDetailsClicked(int position) {
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        ProductDetailsDialog productDetailsDialog = new ProductDetailsDialog();
+        productDetailsDialog.setContextAndProduct(getContext(), mProductsAdapter.getProductAtPosition(position));
+        productDetailsDialog.show(manager, "ProductDetailsDialog");
+    }
+
+    @Override
+    public void onProductItemCartClicked(int position) {
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        ShoppingCartDialog shoppingCartDialog = new ShoppingCartDialog();
+        shoppingCartDialog.setContextAndProduct(getContext(), mProductsAdapter.getProductAtPosition(position));
+        shoppingCartDialog.show(manager, "ShoppingCartDialog");
+    }
 
 
 

@@ -10,7 +10,9 @@ import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.vitaliyhtc.lcbo.R;
+import com.vitaliyhtc.lcbo.model.FavoriteStore;
 import com.vitaliyhtc.lcbo.model.Product;
+import com.vitaliyhtc.lcbo.model.ShoppingCart;
 import com.vitaliyhtc.lcbo.model.Store;
 
 import java.sql.SQLException;
@@ -24,12 +26,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String LOG_TAG = DatabaseHelper.class.getName();
 
     private static final String DATABASE_NAME = "lcbo.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private Dao<Store, Integer> storeDao = null;
     private Dao<Product, Integer> productDao = null;
+    private Dao<FavoriteStore, Integer> favoriteStoresDao = null;
+    private Dao<ShoppingCart, Integer> shoppingCartDao = null;
     private RuntimeExceptionDao<Store, Integer> storeRuntimeDao = null;
     private RuntimeExceptionDao<Product, Integer> productRuntimeDao = null;
+    private RuntimeExceptionDao<FavoriteStore, Integer> favoriteStoresRuntimeDao = null;
+    private RuntimeExceptionDao<ShoppingCart, Integer> shoppingCartRuntimeDao = null;
 
     public DatabaseHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -45,6 +51,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             Log.i(LOG_TAG, "onCreate");
             TableUtils.createTable(connectionSource, Store.class);
             TableUtils.createTable(connectionSource, Product.class);
+            TableUtils.createTable(connectionSource, FavoriteStore.class);
+            TableUtils.createTable(connectionSource, ShoppingCart.class);
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Can't create database", e);
             e.printStackTrace();
@@ -61,6 +69,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             Log.i(LOG_TAG, "onUpgrade");
             TableUtils.dropTable(connectionSource, Store.class, true);
             TableUtils.dropTable(connectionSource, Product.class, true);
+            TableUtils.dropTable(connectionSource, FavoriteStore.class, true);
+            TableUtils.dropTable(connectionSource, ShoppingCart.class, true);
             onCreate(database, connectionSource);
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Can't drop databases", e);
@@ -118,6 +128,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return productDao;
     }
 
+    public Dao<FavoriteStore, Integer> getFavoriteStoresDao() throws SQLException {
+        if(favoriteStoresDao == null){
+            favoriteStoresDao = getDao(FavoriteStore.class);
+        }
+        return favoriteStoresDao;
+    }
+
+    public Dao<ShoppingCart, Integer> getShoppingCartDao() throws SQLException {
+        if(shoppingCartDao == null){
+            shoppingCartDao = getDao(ShoppingCart.class);
+        }
+        return shoppingCartDao;
+    }
+
     /**
      * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our Store class. It will
      * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
@@ -140,6 +164,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return productRuntimeDao;
     }
 
+    public RuntimeExceptionDao<FavoriteStore, Integer> getFavoriteStoresRuntimeDao() {
+        if (favoriteStoresRuntimeDao == null) {
+            favoriteStoresRuntimeDao = getRuntimeExceptionDao(FavoriteStore.class);
+        }
+        return favoriteStoresRuntimeDao;
+    }
+
+    public RuntimeExceptionDao<ShoppingCart, Integer> getShoppingCartRuntimeDao() {
+        if (shoppingCartRuntimeDao == null) {
+            shoppingCartRuntimeDao = getRuntimeExceptionDao(ShoppingCart.class);
+        }
+        return shoppingCartRuntimeDao;
+    }
+
     /**
      * Close the database connections and clear any cached DAOs.
      */
@@ -148,8 +186,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         super.close();
         storeDao = null;
         productDao = null;
+        favoriteStoresDao = null;
+        shoppingCartDao = null;
         storeRuntimeDao = null;
         productRuntimeDao = null;
+        favoriteStoresRuntimeDao = null;
+        shoppingCartRuntimeDao = null;
     }
 
 }

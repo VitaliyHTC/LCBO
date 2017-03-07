@@ -24,6 +24,8 @@ public class ProductsByCategoriesActivity extends CoreActivity
     private ArrayList<Product> wineList;
     private ArrayList<Product> spiritsList;
 
+    private int productsLoaded = 0;
+
 
 
     @Override
@@ -124,6 +126,7 @@ public class ProductsByCategoriesActivity extends CoreActivity
     }
 
     private void appendResultToLists(List<Product> products){
+        productsLoaded += products.size();
         for (Product product : products) {
             String categoryString = product.getPrimaryCategory();
             if(Config.PRODUCT_CATEGORY_BEER.equals(categoryString)){
@@ -169,6 +172,13 @@ public class ProductsByCategoriesActivity extends CoreActivity
             }
         }
 
+    }
+
+
+
+    @Override
+    public int getProductsLoaded() {
+        return productsLoaded;
     }
 
 

@@ -2,9 +2,11 @@ package com.vitaliyhtc.lcbo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
+import com.vitaliyhtc.lcbo.data.DatabaseHelper;
 import com.vitaliyhtc.lcbo.data.StoresDataManager;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
 import com.vitaliyhtc.lcbo.model.Store;
@@ -27,7 +32,7 @@ import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 import java.util.List;
 
 public class MainActivity extends CoreActivity
-        implements StoresDataManager.StoresDataManagerCallbacs, SearchView.OnQueryTextListener {
+        implements StoresDataManager.DataManagerCallbacks, SearchView.OnQueryTextListener {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -47,6 +52,8 @@ public class MainActivity extends CoreActivity
 
     private EndlessRecyclerViewScrollListener mScrollListener;
 
+    private ProgressBar progressBar;
+
 
 
     @Override
@@ -55,6 +62,12 @@ public class MainActivity extends CoreActivity
         setContentView(R.layout.main_activity);
         initiateUserInterface();
         this.setTitle(R.string.main_activity_stores_title);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,
+                R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        clearDbTables();
 
         storesDataManager = getStoresDataManager();
         initStoresSearchParameters();
@@ -74,6 +87,26 @@ public class MainActivity extends CoreActivity
 
         // Call to release resources
         storesDataManager.onDestroy();
+    }
+
+    private void clearDbTables(){
+        SharedPreferences sharedPreferences = this.getSharedPreferences("LCBO_DB_Clear_Time_Setting", 0);
+        long lastClearTimeInMillis = sharedPreferences.getLong("dbLastClearTimeInMillis", 0);
+        long currentTimeInMillis = System.currentTimeMillis();
+        long delta = 24*60*60*1000;
+        if(currentTimeInMillis - lastClearTimeInMillis >= delta){
+            DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+
+            databaseHelper.clearStoresTable();
+            databaseHelper.clearProductsTable();
+
+            OpenHelperManager.releaseHelper();
+            lastClearTimeInMillis = System.currentTimeMillis();
+        }
+
+        SharedPreferences.Editor editor = this.getSharedPreferences("LCBO_DB_Clear_Time_Setting", 0).edit();
+        editor.putLong("dbLastClearTimeInMillis", lastClearTimeInMillis);
+        editor.commit();
     }
 
     private void initStoresSearchParameters(){
@@ -187,10 +220,12 @@ public class MainActivity extends CoreActivity
     }
 
     private void performStoresSearch(StoresSearchParameters storesSearchParameters){
+        progressBar.setVisibility(View.VISIBLE);
         storesDataManager.performStoresSearch(storesSearchParameters);
     }
 
     public void onStoresSearchListLoaded(final List<Store> stores, final int offset){
+        progressBar.setVisibility(View.GONE);
         if(offset==1){
             mStoresAdapter.clearStoresList();
             mIsInSearchState=true;
@@ -208,6 +243,7 @@ public class MainActivity extends CoreActivity
 
     private void onSearchViewCollapsed(){
         if(mIsInSearchState){
+            progressBar.setVisibility(View.VISIBLE);
             storesDataManager.getStoresPage(1, false);
         }
     }
@@ -248,16 +284,19 @@ public class MainActivity extends CoreActivity
      * onStoresListLoaded() - add stores to adapter and notify them.
      */
     private void initStoresList(){
+        progressBar.setVisibility(View.VISIBLE);
         storesDataManager.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
     }
 
     @Override
     public void onInitStoresListLoaded(List<Store> stores, int offset){
+        progressBar.setVisibility(View.GONE);
         loadStores(stores);
     }
 
     @Override
     public void onStoresListLoaded(final List<Store> stores, final int offset){
+        progressBar.setVisibility(View.GONE);
 
         if(offset==1 || mIsInSearchState){
             mStoresAdapter.clearStoresList();
@@ -277,13 +316,13 @@ public class MainActivity extends CoreActivity
     }
 
     private void loadStores(List<Store> initialStoresList){
-        RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         //mStoresAdapter = new StoresAdapter(this); initiated at variables block
         mStoresAdapter.appendToStores(initialStoresList);
-        mRecycleView.setAdapter(mStoresAdapter);
+        mRecyclerView.setAdapter(mStoresAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mRecycleView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         // Retain an instance so that you can call `resetState()` for fresh searches
         mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -296,7 +335,7 @@ public class MainActivity extends CoreActivity
         };
         mScrollListener.setCounters(INITIAL_CURRENT_PAGE, INITIAL_PREVIOUS_TOTAL_ITEM_COUNT, INITIAL_STARTING_PAGE_INDEX);
         // Adds the scroll listener to RecyclerView
-        mRecycleView.addOnScrollListener(mScrollListener);
+        mRecyclerView.addOnScrollListener(mScrollListener);
     }
 
     // Append the next page of data into the adapter
@@ -307,6 +346,7 @@ public class MainActivity extends CoreActivity
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        progressBar.setVisibility(View.VISIBLE);
         if(!mIsInSearchState){
             storesDataManager.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
         }else{
@@ -314,6 +354,7 @@ public class MainActivity extends CoreActivity
         }
     }
 
+    @Override
     public int getCountOfStoresInAdapter(){
         return mStoresAdapter.getItemCount();
     }

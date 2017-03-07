@@ -19,17 +19,26 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".StoreDetailActivity"
             android:label="@string/store_detail_activity_title"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.vitaliyhtc.lcbo.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitaliyhtc.lcbo.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ProductsByStoreActivity"
+            android:label="@string/products_by_store_activity_title"
+            android:screenOrientation="portrait"
+            android:parentActivityName="com.vitaliyhtc.lcbo.StoreDetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vitaliyhtc.lcbo.StoreDetailActivity" />
         </activity>
         <activity
             android:name=".FavoritesStoresActivity"
@@ -38,6 +47,7 @@
         <activity
             android:name=".ProductsByCategoriesActivity"
             android:label="@string/nav_products_by_categories"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ProductSearchActivity"

@@ -81,7 +81,7 @@ public class StoresDataManager {
         try {
             mStoredInDatabaseCounter = getDatabaseHelper().getStoreDao().countOf();
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in performStoresSearch()", e);
+            Log.e(LOG_TAG, "Database exception in getCountOfStoresInDatabase", e);
             e.printStackTrace();
         }
         return mStoredInDatabaseCounter;
@@ -272,7 +272,7 @@ public class StoresDataManager {
 
 
     /**
-     * Consumer must implement StoresDataManager.StoresDataManagerCallbacs interface
+     * Consumer must implement StoresDataManager.DataManagerCallbacks interface
      * for accepting of result. Method call one of two callback methods depending on
      * {@code isInitialLoading} flag: {@code onInitStoresListLoaded} or {@code onStoresListLoaded}.
      *
@@ -308,9 +308,8 @@ public class StoresDataManager {
                 Toast.makeText(mContext, "Load from Network", Toast.LENGTH_SHORT).show();
                 getStoresPageFromNetwork(offset, isInitialLoading);
             } else {
-                Toast.makeText(mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
                 onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
-                // Jepa!
             }
 
         } catch (SQLException e) {
@@ -360,7 +359,7 @@ public class StoresDataManager {
                         }
                         storeDao.create(mListToAdd);
                     } catch (SQLException e) {
-                        Log.e(LOG_TAG, "Database exception in getStoresPageFromNetwork", e);
+                        Log.e(LOG_TAG, "Database exception in getStoresPageFromNetwork()", e);
                         e.printStackTrace();
                     }
                 }else{
@@ -394,9 +393,10 @@ public class StoresDataManager {
      * Second for the second and subsequent pages.
      * Also, one method for Search results.
      */
-    public interface StoresDataManagerCallbacs {
+    public interface DataManagerCallbacks {
         void onInitStoresListLoaded(List<Store> stores, int offset);
         void onStoresListLoaded(List<Store> stores, int offset);
         void onStoresSearchListLoaded(final List<Store> stores, final int offset);
+        int getCountOfStoresInAdapter();
     }
 }

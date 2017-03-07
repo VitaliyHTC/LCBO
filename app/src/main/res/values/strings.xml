@@ -9,6 +9,11 @@
     <string name="about_app_description">Some text about app.</string>
 
 
+    <string name="store_detail_activity_title">Store details</string>
+    <string name="main_activity_stores_title">Stores</string>
+    <string name="products_by_store_activity_title">Products by Store</string>
+
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -43,10 +48,12 @@
     <string name="store_key_city">City:</string>
     <string name="store_key_postal_code">Postal code:</string>
     <string name="store_key_telephone">Telephone:</string>
+    <string name="store_make_call_button">Make call</string>
     <string name="store_key_fax">Fax:</string>
     <string name="store_key_latitude_longitude">Latitude and longitude:</string>
     <string name="store_open_map_button">Open the map with marker of Store</string>
     <string name="store_key_products_count">Number of products available in store:</string>
+    <string name="store_show_products_button">Display products of Store</string>
     <string name="store_key_has_wheelchair_accessability">Has wheelchair accessability:</string>
     <string name="store_key_has_bilingual_services">Has bilingual services:</string>
     <string name="store_key_has_product_consultant">Has product consultant:</string>
@@ -65,14 +72,63 @@
     <string name="store_key_friday">Friday:</string>
     <string name="store_key_saturday">Saturday:</string>
     <string name="store_key_id">Store ID:</string>
-    <string name="store_detail_activity_title">Store details</string>
-    <string name="main_activity_stores_title">Stores</string>
 
     <string name="store_detail_activity_error_image">Error image. Meme face whyyy!</string>
     <string name="store_detail_activity_error_text">Well, this should not happen!\r\nBut you see this.\r\nThis could happen because of the inability to obtain Store by its id.</string>
-    <string name="store_make_call_button">Make call</string>
     <string name="products_tab_beer">Beer</string>
     <string name="products_tab_wine">Wine</string>
     <string name="products_tab_spirits">Spirits</string>
+
+    <string name="product_list_item_image_preview">Product image preview</string>
+    <string name="product_list_item_add_to_cart_button">Add to cart button</string>
+
+    <string name="product_value_def">_</string>
+    <string name="product_key_name">Name:</string>
+    <string name="product_key_tags">Tags:</string>
+    <string name="product_key_id">Product ID:</string>
+    <string name="product_key_price_in_cents">Price in cents:</string>
+    <string name="product_key_regular_price_in_cents">Regular price in cents:</string>
+    <string name="product_key_stock_type">Stock type:</string>
+    <string name="product_key_primary_category">Primary category:</string>
+    <string name="product_key_secondary_category">Secondary category:</string>
+    <string name="product_key_origin">Origin:</string>
+    <string name="product_key_package">Package:</string>
+    <string name="product_key_package_unit_type">Package unit type:</string>
+    <string name="product_key_package_unit_volume_in_milliliters">Package unit volume in milliliters:</string>
+    <string name="product_key_total_package_units">Total package units:</string>
+    <string name="product_key_volume_in_milliliters">Volume in milliliters:</string>
+    <string name="product_key_alcohol_content">Alcohol content:</string>
+    <string name="product_key_price_per_liter_of_alcohol_in_cents">Price per liter of alcohol in cents:</string>
+    <string name="product_key_price_per_liter_in_cents">Price per liter in cents:</string>
+    <string name="product_key_producer_name">Producer name:</string>
+    <string name="product_key_has_value_added_promotion">Has value added promotion:</string>
+    <string name="product_key_has_limited_time_offer">Has limited time offer:</string>
+    <string name="product_key_has_bonus_reward_miles">Has bonus reward miles:</string>
+    <string name="product_key_is_seasonal">Is seasonal:</string>
+    <string name="product_key_is_vqa">Is vqa:</string>
+    <string name="product_key_is_ocb">Is ocb:</string>
+    <string name="product_key_is_kosher">Is cosher:</string>
+    <string name="product_key_value_added_promotion_description">Value added promotion description:</string>
+    <string name="product_key_description">Description:</string>
+    <string name="product_key_serving_suggestion">Servicing suggestion:</string>
+    <string name="product_key_tasting_note">Tasting note:</string>
+    <string name="product_key_varietal">Varietal</string>
+    <string name="product_key_style">Style:</string>
+    <string name="product_key_tertiary_category">Tertiary category:</string>
+    <string name="product_key_sugar_in_grams_per_liter">Sugar in grams per liter:</string>
+    <string name="product_key_clearance_sale_savings_in_cents">Clearance sale saving in cents:</string>
+    <string name="product_key_has_clearance_sale">Has clearance sale:</string>
+    <string name="product_key_released_on">Released on:</string>
+    <string name="product_key_sugar_content">Sugar content:</string>
+    <string name="product_key_limited_time_offer_savings_in_cents">Limited time offer savings in cents:</string>
+    <string name="product_key_limited_time_offer_ends_on">Limited time offer ends on:</string>
+    <string name="product_key_bonus_reward_miles">Bonus reward miles:</string>
+    <string name="product_key_bonus_reward_miles_ends_on">Bonus reward miles ends on:</string>
+    <string name="products_details_dialog_product_image">Product image</string>
+    <string name="shopping_cart_dialog_quantity">QTY:</string>
+    <string name="shopping_cart_dialog_minus">-</string>
+    <string name="shopping_cart_dialog_plus">+</string>
+    <string name="product_key_price_per_item">Price per item:</string>
+    <string name="product_key_price_total">Total price:</string>
 
 </resources>

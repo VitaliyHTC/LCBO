@@ -21,28 +21,28 @@ import java.util.List;
 public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder>  {
     private static final String LOG_TAG = "StoresAdapter";
 
-    private static MainActivity sContext;
+    private MainActivity mContext;
     private List<Store> mStores;
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             // Define click listener for the ViewHolder's View.
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sContext.startStoreDetailActivity(getAdapterPosition());
+                    mContext.startStoreDetailActivity(getAdapterPosition());
                 }
             });
             textView = (TextView) v.findViewById(R.id.item_title);
         }
 
-        public TextView getTextView() {
+        TextView getTextView() {
             return textView;
         }
     }
@@ -53,7 +53,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
      * @param stores List<Store> containing the data to populate views to be used by RecyclerView.
      */
     public StoresAdapter(MainActivity context) {
-        sContext = context;
+        mContext = context;
         mStores = new ArrayList<>();
     }
 

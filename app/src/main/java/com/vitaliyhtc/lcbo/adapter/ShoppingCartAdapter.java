@@ -9,17 +9,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.vitaliyhtc.lcbo.ProductsTab;
 import com.vitaliyhtc.lcbo.R;
+import com.vitaliyhtc.lcbo.ShoppingCartActivity;
 import com.vitaliyhtc.lcbo.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsByCategoriesAdapter.ViewHolder> {
-    private static final String LOG_TAG = "ProductsByCatsAdapter";
+public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ViewHolder> {
+    private static final String LOG_TAG = "ShoppingCartAdapter";
 
-    private ProductsTab mContext;
+    private ShoppingCartActivity mContext;
     private List<Product> mProducts;
 
     /**
@@ -38,10 +38,10 @@ public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsBy
                     mContext.onProductItemDetailsClicked(getAdapterPosition());
                 }
             });
-            v.findViewById(R.id.cart_image_view).setOnClickListener(new View.OnClickListener() {
+            v.findViewById(R.id.delete_image_view).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.onProductItemCartClicked(getAdapterPosition());
+                    mContext.onProductItemDeleteClicked(getAdapterPosition());
                 }
             });
             titleTextView = (TextView) v.findViewById(R.id.item_title);
@@ -56,12 +56,7 @@ public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsBy
         }
     }
 
-    /* *
-     * Initialize the dataset of the Adapter.
-     *
-     * @param stores List<Store> containing the data to populate views to be used by RecyclerView.
-     */
-    public ProductsByCategoriesAdapter(ProductsTab context){
+    public ShoppingCartAdapter(ShoppingCartActivity context){
         mContext = context;
         mProducts = new ArrayList<>();
     }
@@ -76,10 +71,10 @@ public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsBy
 
     // Create new views (invoked by the layout manager)
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ShoppingCartAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.products_list_item, viewGroup, false);
-        return new ViewHolder(v);
+                .inflate(R.layout.shopping_cart_item, viewGroup, false);
+        return new ShoppingCartAdapter.ViewHolder(v);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -91,7 +86,7 @@ public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsBy
         // with that element
         Product currentProduct = mProducts.get(position);
         viewHolder.getTitleTextView().setText(currentProduct.getName());
-        Picasso.with(mContext.getContext())
+        Picasso.with(mContext.getApplicationContext())
                 .load(currentProduct.getImageThumbUrl())
                 .placeholder(R.drawable.list_item_bg)
                 .error(R.drawable.ic_broken_image)
@@ -104,8 +99,14 @@ public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsBy
         return mProducts.size();
     }
 
+    public void removeAt(int position) {
+        mProducts.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mProducts.size());
+    }
+
     public interface ProductItemClickCallbacks{
         void onProductItemDetailsClicked(int position);
-        void onProductItemCartClicked(int position);
+        void onProductItemDeleteClicked(int position);
     }
 }

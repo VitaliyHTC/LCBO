@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_store_detail_linear_layout_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/big_image_view"
+                android:layout_width="192dp"
+                android:layout_height="192dp"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/products_details_dialog_product_image"
+                />
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/detail_activity_title_text_size"
+                android:textColor="@color/detail_activity_key_text_color"
+                android:layout_margin="8dp"/>
+
+            <TextView
+                android:id="@+id/product_key_price_per_item"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_key_price_per_item"
+                android:textSize="@dimen/detail_activity_key_text_size"
+                android:textColor="@color/detail_activity_key_text_color"/>
+            <TextView
+                android:id="@+id/product_value_price"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_value_def"
+                android:textSize="@dimen/detail_activity_value_text_size"
+                android:textColor="@color/detail_activity_value_text_color"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/shopping_cart_dialog_quantity" />
+                <Button
+                    android:id="@+id/qty_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/shopping_cart_dialog_minus"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:inputType="numberDecimal"
+                    android:ems="6"
+                    android:id="@+id/editQuantity"
+                    android:layout_weight="1" />
+                <Button
+                    android:id="@+id/qty_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/shopping_cart_dialog_plus"/>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/product_key_price_total"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_key_price_total"
+                android:textSize="@dimen/detail_activity_key_text_size"
+                android:textColor="@color/detail_activity_key_text_color"/>
+            <TextView
+                android:id="@+id/product_value_price_total"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_value_def"
+                android:textSize="@dimen/detail_activity_value_text_size"
+                android:textColor="@color/detail_activity_value_text_color"/>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

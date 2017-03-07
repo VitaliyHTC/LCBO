@@ -107,7 +107,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:id="@+id/clearStoresTableButton"
-        android:layout_below="@+id/openTestActivityButton"
+        android:layout_below="@+id/disabledButton"
         style="@style/Widget.AppCompat.Button.Small" />
     <Button
         android:text="clearProductsTable()"
