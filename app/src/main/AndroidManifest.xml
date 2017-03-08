@@ -50,12 +50,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ProductSearchActivity"
+            android:name=".ProductsSearchActivity"
             android:label="@string/nav_products_search"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ShoppingCartActivity"
             android:label="@string/nav_shopping_cart"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AboutActivity"

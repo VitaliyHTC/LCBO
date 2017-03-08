@@ -26,8 +26,21 @@ public interface ApiInterface {
 
     @GET("products")
     Call<ProductsByStoreResult> getProductsByStore(@Query("store_id") int storeId, @Query("page") int page,
-                                                   @Query("per_page") int perPage, @Query("where_not") String whereNot ,
+                                                   @Query("per_page") int perPage, @Query("where_not") String whereNot,
                                                    @Query("access_key") String accessKey);
+
+    @GET("products")
+    Call<ProductsResult> getProductsSearchWithWResult(@Query("page") int page, @Query("per_page") int perPage,
+                                                      @Query("where_not") String whereNot, @Query("where") String where,
+                                                      @Query("access_key") String accessKey);
+    @GET("products")
+    Call<ProductsResult> getProductsSearchWithQResult(@Query("page") int page, @Query("per_page") int perPage,
+                                                      @Query("where_not") String whereNot,
+                                                      @Query("q") String query, @Query("access_key") String accessKey);
+    @GET("products")
+    Call<ProductsResult> getProductsSearchWithQWResult(@Query("page") int page, @Query("per_page") int perPage,
+                                                       @Query("where_not") String whereNot, @Query("q") String query,
+                                                       @Query("where") String where, @Query("access_key") String accessKey);
 
     @GET("products/{product_id}")
     Call<ProductResult> getOneProduct(@Path("product_id") int productId, @Query("access_key") String accessKey);

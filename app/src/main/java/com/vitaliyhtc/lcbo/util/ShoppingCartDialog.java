@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.data.ShoppingCartDataManager;
+import com.vitaliyhtc.lcbo.helpers.ShoppingCartDialogCloseListener;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.model.ShoppingCart;
 
@@ -30,8 +31,8 @@ public class ShoppingCartDialog extends DialogFragment {
 
     private EditText quantityEditText;
 
-    public void setContextAndProduct(Context mContext, Product product){
-        this.mContext = mContext;
+    public void setContextAndProduct(Context context, Product product){
+        this.mContext = context;
         this.mProduct = product;
     }
 
@@ -52,11 +53,15 @@ public class ShoppingCartDialog extends DialogFragment {
                 }else{
                     shoppingDataManager.removeShoppingCartById(mProduct.getId());
                 }
+                if(mContext instanceof ShoppingCartDialogCloseListener){
+                    ((ShoppingCartDialogCloseListener)mContext).handleShoppingCartDialogClose();
+                }
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // Do some action(). Nothing. We don't save shoppingCart to DB.
+
             }
         });
         builder.setCancelable(true);

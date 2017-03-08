@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import com.vitaliyhtc.lcbo.AboutActivity;
 import com.vitaliyhtc.lcbo.FavoritesStoresActivity;
 import com.vitaliyhtc.lcbo.MainActivity;
-import com.vitaliyhtc.lcbo.ProductSearchActivity;
+import com.vitaliyhtc.lcbo.ProductsSearchActivity;
 import com.vitaliyhtc.lcbo.ProductsByCategoriesActivity;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.ShoppingCartActivity;
@@ -50,7 +50,7 @@ public class CoreActivity extends AppCompatActivity
         } else if(id == R.id.nav_products_by_categories) {
             intent = new Intent(this, ProductsByCategoriesActivity.class);
         } else if(id == R.id.nav_products_search) {
-            intent = new Intent(this, ProductSearchActivity.class);
+            intent = new Intent(this, ProductsSearchActivity.class);
         } else if(id == R.id.nav_shopping_cart) {
             intent = new Intent(this, ShoppingCartActivity.class);
         } else if(id == R.id.nav_about) {
@@ -89,10 +89,5 @@ public class CoreActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(id);
     }
-
-
-
-
-
 
 }

@@ -39,6 +39,7 @@
     <string name="dialog_ok_button">OK</string>
     <string name="dialog_reset_all_button">Reset all</string>
     <string name="dialog_set_stores_search_parameters_title">Select options</string>
+    <string name="dialog_set_products_search_parameters_title">Select options</string>
 
     <string name="store_key_name">Name:</string>
     <string name="store_value_def">_</string>
@@ -81,6 +82,7 @@
 
     <string name="product_list_item_image_preview">Product image preview</string>
     <string name="product_list_item_add_to_cart_button">Add to cart button</string>
+    <string name="product_list_item_delete_button">Delete from cart button</string>
 
     <string name="product_value_def">_</string>
     <string name="product_key_name">Name:</string>
@@ -107,7 +109,7 @@
     <string name="product_key_is_seasonal">Is seasonal:</string>
     <string name="product_key_is_vqa">Is vqa:</string>
     <string name="product_key_is_ocb">Is ocb:</string>
-    <string name="product_key_is_kosher">Is cosher:</string>
+    <string name="product_key_is_kosher">Is kosher:</string>
     <string name="product_key_value_added_promotion_description">Value added promotion description:</string>
     <string name="product_key_description">Description:</string>
     <string name="product_key_serving_suggestion">Servicing suggestion:</string>
@@ -130,5 +132,7 @@
     <string name="shopping_cart_dialog_plus">+</string>
     <string name="product_key_price_per_item">Price per item:</string>
     <string name="product_key_price_total">Total price:</string>
+    <string name="shopping_cart_activity_key_total_price_of_products">Total price of products:</string>
+
 
 </resources>

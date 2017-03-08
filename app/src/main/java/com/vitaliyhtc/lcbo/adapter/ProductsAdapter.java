@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.adapter;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,17 +10,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.vitaliyhtc.lcbo.ProductsSearchActivity;
 import com.vitaliyhtc.lcbo.R;
-import com.vitaliyhtc.lcbo.ShoppingCartActivity;
 import com.vitaliyhtc.lcbo.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ViewHolder> {
-    private static final String LOG_TAG = "ShoppingCartAdapter";
+public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> {
+    private static final String LOG_TAG = "ProductsAdapter";
 
-    private ShoppingCartActivity mContext;
+    private ProductsSearchActivity mContext;
     private List<Product> mProducts;
 
     /**
@@ -28,7 +29,6 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleTextView;
         private final ImageView imageView;
-        private final TextView countTextView;
 
         ViewHolder(View v) {
             super(v);
@@ -39,15 +39,14 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
                     mContext.onProductItemDetailsClicked(getAdapterPosition());
                 }
             });
-            v.findViewById(R.id.delete_image_view).setOnClickListener(new View.OnClickListener() {
+            v.findViewById(R.id.cart_image_view).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.onProductItemDeleteClicked(getAdapterPosition());
+                    mContext.onProductItemCartClicked(getAdapterPosition());
                 }
             });
             titleTextView = (TextView) v.findViewById(R.id.item_title);
             imageView = (ImageView) v.findViewById(R.id.image_view);
-            countTextView = (TextView) v.findViewById(R.id.item_count);
         }
 
         TextView getTitleTextView() {
@@ -56,12 +55,9 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         ImageView getImageView() {
             return imageView;
         }
-        TextView getCountTextView() {
-            return countTextView;
-        }
     }
 
-    public ShoppingCartAdapter(ShoppingCartActivity context){
+    public ProductsAdapter(ProductsSearchActivity context){
         mContext = context;
         mProducts = new ArrayList<>();
     }
@@ -74,12 +70,24 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         return mProducts.get(position);
     }
 
+    public void clearProductsList(){
+        final int oldItemsCount = getItemCount();
+        mProducts.clear();
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                notifyItemRangeRemoved(0, oldItemsCount);
+            }
+        };
+        handler.post(r);
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
-    public ShoppingCartAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ProductsAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.shopping_cart_item, viewGroup, false);
-        return new ShoppingCartAdapter.ViewHolder(v);
+                .inflate(R.layout.products_list_item, viewGroup, false);
+        return new ProductsAdapter.ViewHolder(v);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -91,8 +99,6 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         // with that element
         Product currentProduct = mProducts.get(position);
         viewHolder.getTitleTextView().setText(currentProduct.getName());
-        String itemCount = "Qty: "+mContext.getProductItemCountForId(getProductAtPosition(position).getId());
-        viewHolder.getCountTextView().setText(itemCount);
         Picasso.with(mContext.getApplicationContext())
                 .load(currentProduct.getImageThumbUrl())
                 .placeholder(R.drawable.list_item_bg)
@@ -106,14 +112,8 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         return mProducts.size();
     }
 
-    public void removeAt(int position) {
-        mProducts.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, mProducts.size());
-    }
-
     public interface ProductItemClickCallbacks{
         void onProductItemDetailsClicked(int position);
-        void onProductItemDeleteClicked(int position);
+        void onProductItemCartClicked(int position);
     }
 }

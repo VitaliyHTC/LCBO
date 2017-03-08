@@ -1,6 +1,5 @@
 package com.vitaliyhtc.lcbo;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -19,20 +18,22 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
-import com.vitaliyhtc.lcbo.data.DatabaseHelper;
-import com.vitaliyhtc.lcbo.data.StoresDataManager;
-import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
-import com.vitaliyhtc.lcbo.model.Store;
+import com.vitaliyhtc.lcbo.adapter.ProductsAdapter;
+import com.vitaliyhtc.lcbo.data.ProductsDataManager;
+import com.vitaliyhtc.lcbo.helpers.ProductsSearchParameters;
+import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
-import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
-import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
+import com.vitaliyhtc.lcbo.util.ProductDetailsDialog;
+import com.vitaliyhtc.lcbo.util.SetProductsSearchParametersDialog;
+import com.vitaliyhtc.lcbo.util.ShoppingCartDialog;
 
 import java.util.List;
 
-public class MainActivity extends CoreActivity
-        implements StoresDataManager.DataManagerCallbacks, SearchView.OnQueryTextListener {
+public class ProductsSearchActivity extends CoreActivity
+        implements ProductsDataManager.DataManagerCallbacks,
+        ProductsAdapter.ProductItemClickCallbacks,
+        SearchView.OnQueryTextListener {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -44,41 +45,36 @@ public class MainActivity extends CoreActivity
 
     private boolean mIsInSearchState = false;
 
-    private StoresSearchParameters mStoresSearchParameters;
+    private ProductsSearchParameters mProductsSearchParameters;
 
-    private StoresAdapter mStoresAdapter = new StoresAdapter(this);
+    private ProductsAdapter mProductsAdapter = new ProductsAdapter(this);
 
-    private StoresDataManager mStoresDataManager;
+    private ProductsDataManager mProductsDataManager;
 
     private EndlessRecyclerViewScrollListener mScrollListener;
 
     private ProgressBar mProgressBar;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.products_search_activity);
         initiateUserInterface();
-        this.setTitle(R.string.main_activity_stores_title);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
-        clearDbTables();
+        mProductsDataManager = getProductsDataManager();
+        initProductsSearchParameters();
 
-        mStoresDataManager = getStoresDataManager();
-        initStoresSearchParameters();
-
-        initStoresList();
+        initProductsList();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        setNavigationViewCheckedItem(R.id.nav_stores);
+        setNavigationViewCheckedItem(R.id.nav_products_search);
     }
 
     @Override
@@ -86,42 +82,20 @@ public class MainActivity extends CoreActivity
         super.onDestroy();
 
         // Call to release resources
-        mStoresDataManager.onDestroy();
+        mProductsDataManager.onDestroy();
     }
 
-    private void clearDbTables(){
-        SharedPreferences sharedPreferences = this.getSharedPreferences("LCBO_DB_Clear_Time_Setting", 0);
-        long lastClearTimeInMillis = sharedPreferences.getLong("dbLastClearTimeInMillis", 0);
-        long currentTimeInMillis = System.currentTimeMillis();
-        long delta = 24*60*60*1000;
-        if(currentTimeInMillis - lastClearTimeInMillis >= delta){
-            DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+    private void initProductsSearchParameters(){
+        mProductsSearchParameters = new ProductsSearchParameters();
 
-            databaseHelper.clearStoresTable();
-            databaseHelper.clearProductsTable();
-
-            OpenHelperManager.releaseHelper();
-            lastClearTimeInMillis = System.currentTimeMillis();
-        }
-
-        SharedPreferences.Editor editor = this.getSharedPreferences("LCBO_DB_Clear_Time_Setting", 0).edit();
-        editor.putLong("dbLastClearTimeInMillis", lastClearTimeInMillis);
-        editor.commit();
-    }
-
-    private void initStoresSearchParameters(){
-        mStoresSearchParameters = new StoresSearchParameters();
-
-        SharedPreferences sharedPreferences = this.getSharedPreferences("StoresSearchParameters_Setting", 0);
-        mStoresSearchParameters.setHasWheelchairAccessability(sharedPreferences.getBoolean("hasWheelchairAccessability", false));
-        mStoresSearchParameters.setHasBilingualServices(sharedPreferences.getBoolean("hasBilingualServices", false));
-        mStoresSearchParameters.setHasProductConsultant(sharedPreferences.getBoolean("hasProductConsultant", false));
-        mStoresSearchParameters.setHasTastingBar(sharedPreferences.getBoolean("hasTastingBar", false));
-        mStoresSearchParameters.setHasBeerColdRoom(sharedPreferences.getBoolean("hasBeerColdRoom", false));
-        mStoresSearchParameters.setHasSpecialOccasionPermits(sharedPreferences.getBoolean("hasSpecialOccasionPermits", false));
-        mStoresSearchParameters.setHasVintagesCorner(sharedPreferences.getBoolean("hasVintagesCorner", false));
-        mStoresSearchParameters.setHasParking(sharedPreferences.getBoolean("hasParking", false));
-        mStoresSearchParameters.setHasTransitAccess(sharedPreferences.getBoolean("hasTransitAccess", false));
+        SharedPreferences sharedPreferences = this.getSharedPreferences("ProductsSearchParameters_Setting", 0);
+        mProductsSearchParameters.setHasValueAddedPromotion(sharedPreferences.getBoolean("hasValueAddedPromotion", false));
+        mProductsSearchParameters.setHasLimitedTimeOffer(sharedPreferences.getBoolean("hasLimitedTimeOffer", false));
+        mProductsSearchParameters.setHasBonusRewardMiles(sharedPreferences.getBoolean("hasBonusRewardMiles", false));
+        mProductsSearchParameters.setSeasonal(sharedPreferences.getBoolean("isSeasonal", false));
+        mProductsSearchParameters.setVqa(sharedPreferences.getBoolean("isVqa", false));
+        mProductsSearchParameters.setOcb(sharedPreferences.getBoolean("isOcb", false));
+        mProductsSearchParameters.setKosher(sharedPreferences.getBoolean("isKosher", false));
     }
 
 
@@ -178,9 +152,9 @@ public class MainActivity extends CoreActivity
 
     private void onSearchOptionsButtonClicked(View view){
         FragmentManager fragmentManager = getSupportFragmentManager();
-        SetStoresSearchParametersDialog setStoresSearchParametersDialog = new SetStoresSearchParametersDialog();
-        setStoresSearchParametersDialog.setStoresSearchParameters(this, mStoresSearchParameters);
-        setStoresSearchParametersDialog.show(fragmentManager, "SetStoresSearchParametersDialog");
+        SetProductsSearchParametersDialog setProductsSearchParametersDialog = new SetProductsSearchParametersDialog();
+        setProductsSearchParametersDialog.setProductsSearchParameters(this, mProductsSearchParameters);
+        setProductsSearchParametersDialog.show(fragmentManager, "SetProductsSearchParametersDialog");
     }
 
     /**
@@ -198,11 +172,11 @@ public class MainActivity extends CoreActivity
     public boolean onQueryTextSubmit(String query) {
         // TODO: problem that SearchView don't submit empty query!
         if(".".equals(query)){
-            mStoresSearchParameters.setSearchStringQuery("");
+            mProductsSearchParameters.setSearchStringQuery("");
         }else{
-            mStoresSearchParameters.setSearchStringQuery(query);
+            mProductsSearchParameters.setSearchStringQuery(query);
         }
-        performStoresSearch(mStoresSearchParameters);
+        performProductsSearch(mProductsSearchParameters);
         return true;
     }
 
@@ -218,24 +192,24 @@ public class MainActivity extends CoreActivity
         return false;
     }
 
-    private void performStoresSearch(StoresSearchParameters storesSearchParameters){
+    private void performProductsSearch(ProductsSearchParameters productsSearchParameters){
         mProgressBar.setVisibility(View.VISIBLE);
-        mStoresDataManager.performStoresSearch(storesSearchParameters);
+        mProductsDataManager.performProductsSearch(productsSearchParameters);
     }
 
     @Override
-    public void onStoresSearchListLoaded(final List<Store> stores, final int offset){
+    public void onProductsSearchListLoaded(final List<Product> products, final int offset){
         mProgressBar.setVisibility(View.GONE);
         if(offset==1){
-            mStoresAdapter.clearStoresList();
+            mProductsAdapter.clearProductsList();
             mIsInSearchState=true;
             mScrollListener.resetState();
         }
-        mStoresAdapter.appendToStores(stores);
+        mProductsAdapter.appendToProducts(products);
         Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
-                mStoresAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, stores.size());
+                mProductsAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, products.size());
             }
         };
         handler.post(r);
@@ -244,74 +218,57 @@ public class MainActivity extends CoreActivity
     private void onSearchViewCollapsed(){
         if(mIsInSearchState){
             mProgressBar.setVisibility(View.VISIBLE);
-            mStoresDataManager.getStoresPage(1, false);
+            mProductsDataManager.getProductsPage(1, false);
         }
     }
 
 
 
-    /**
-     * When creating {@code new StoresDataManager()} - we need to pass context in it.
-     *
-     * @return instance of StoresDataManager
-     */
-    private StoresDataManager getStoresDataManager(){
-        StoresDataManager storesDataManager = new StoresDataManager(this);
-        storesDataManager.init();
-        return storesDataManager;
+    private ProductsDataManager getProductsDataManager(){
+        ProductsDataManager productsDataManager = new ProductsDataManager(this);
+        productsDataManager.init();
+        return productsDataManager;
     }
 
 
 
-    /**
-     * Execution flow:
-     * onCreate()
-     * initStoresList() - retrieve first page of Stores.
-     * mStoresDataManager.getStoresPage(1, true) - load page and pass it to callback
-     * onInitStoresListLoaded() - callback, call
-     * loadStores(initialStoresList) - which initialize adapter and RecyclerView.
-     *          Here is EndlessRecyclerViewScrollListener, which fire onLoadMore(),
-     *          where we need to load more data for adapter.
-     * loadNextDataFromApi() ==> mStoresDataManager.getStoresPage(offset, false) ==>
-     * onStoresListLoaded() - add stores to adapter and notify them.
-     */
-    private void initStoresList(){
+    private void initProductsList(){
         mProgressBar.setVisibility(View.VISIBLE);
-        mStoresDataManager.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
+        mProductsDataManager.getProductsPage(1, true);
     }
 
     @Override
-    public void onInitStoresListLoaded(List<Store> stores, int offset){
+    public void onInitProductsListLoaded(List<Product> products, int offset){
         mProgressBar.setVisibility(View.GONE);
-        loadStores(stores);
+        loadProducts(products);
     }
 
     @Override
-    public void onStoresListLoaded(final List<Store> stores, final int offset){
+    public void onProductsListLoaded(final List<Product> products, final int offset){
         mProgressBar.setVisibility(View.GONE);
 
         if(offset==1 || mIsInSearchState){
-            mStoresAdapter.clearStoresList();
+            mProductsAdapter.clearProductsList();
             mIsInSearchState=false;
             mScrollListener.resetState();
         }
 
-        mStoresAdapter.appendToStores(stores);
+        mProductsAdapter.appendToProducts(products);
 
         Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
-                mStoresAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, stores.size());
+                mProductsAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, products.size());
             }
         };
         handler.post(r);
     }
 
-    private void loadStores(List<Store> initialStoresList){
+    private void loadProducts(List<Product> initialProductsList){
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        //mStoresAdapter = new StoresAdapter(this); initiated at variables block
-        mStoresAdapter.appendToStores(initialStoresList);
-        recyclerView.setAdapter(mStoresAdapter);
+        //mProductsAdapter = new ProductsAdapter(this); initiated at variables block
+        mProductsAdapter.appendToProducts(initialProductsList);
+        recyclerView.setAdapter(mProductsAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -340,24 +297,32 @@ public class MainActivity extends CoreActivity
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         mProgressBar.setVisibility(View.VISIBLE);
         if(!mIsInSearchState){
-            mStoresDataManager.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
+            mProductsDataManager.getProductsPage(offset, false);// >>> onProductsListLoaded Callback
         }else{
-            mStoresDataManager.getSearchStoresPage(offset);// >>> onStoresSearchListLoaded Callback
+            mProductsDataManager.getSearchProductsPage(offset);// >>> onProductsSearchListLoaded Callback
         }
     }
 
     @Override
-    public int getCountOfStoresInAdapter(){
-        return mStoresAdapter.getItemCount();
+    public int getCountOfProductsInAdapter(){
+        return mProductsAdapter.getItemCount();
     }
 
-    public void startStoreDetailActivity(int positionInAdapter){
-        Store store = mStoresAdapter.getStoreAtPosition(positionInAdapter);
-        int storeId = store.getId();
 
-        Intent intent = new Intent(this, StoreDetailActivity.class);
-        intent.putExtra("targetStoreId", storeId);
-        startActivity(intent);
+
+    @Override
+    public void onProductItemDetailsClicked(int position) {
+        FragmentManager manager = getSupportFragmentManager();
+        ProductDetailsDialog productDetailsDialog = new ProductDetailsDialog();
+        productDetailsDialog.setContextAndProduct(this, mProductsAdapter.getProductAtPosition(position));
+        productDetailsDialog.show(manager, "ProductDetailsDialog");
     }
 
+    @Override
+    public void onProductItemCartClicked(int position) {
+        FragmentManager manager = getSupportFragmentManager();
+        ShoppingCartDialog shoppingCartDialog = new ShoppingCartDialog();
+        shoppingCartDialog.setContextAndProduct(this, mProductsAdapter.getProductAtPosition(position));
+        shoppingCartDialog.show(manager, "ShoppingCartDialog");
+    }
 }

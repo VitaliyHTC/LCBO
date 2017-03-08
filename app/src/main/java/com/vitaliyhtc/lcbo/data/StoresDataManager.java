@@ -77,32 +77,31 @@ public class StoresDataManager {
     }
 
     private long getCountOfStoresInDatabase(){
-        long mStoredInDatabaseCounter = 0;
+        long storedInDatabaseCounter = 0;
         try {
-            mStoredInDatabaseCounter = getDatabaseHelper().getStoreDao().countOf();
+            storedInDatabaseCounter = getDatabaseHelper().getStoreDao().countOf();
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in getCountOfStoresInDatabase", e);
+            Log.e(LOG_TAG, "Database exception in getCountOfStoresInDatabase()", e);
             e.printStackTrace();
         }
-        return mStoredInDatabaseCounter;
+        return storedInDatabaseCounter;
     }
 
 
 
-
-
-
-
-
-
-
-
+    /**
+     * Called when MainActivity in search state.
+     *
+     * @param storesSearchParameters    set string query and boolean flags for search.
+     */
     public void performStoresSearch(StoresSearchParameters storesSearchParameters){
         mStoresSearchParameters = storesSearchParameters;
 
         if (getNetworkAvailability()) {
-            long mStoredInDatabaseCounter = getCountOfStoresInDatabase();
-            int pagesLoaded = (int) mStoredInDatabaseCounter/Config.STORES_PER_PAGE;
+            long storedInDatabaseCounter = getCountOfStoresInDatabase();
+            int pagesLoaded = (int) storedInDatabaseCounter/Config.STORES_PER_PAGE;
+
+            Toast.makeText(mContext, "loadAndSaveStores() :: from page: "+pagesLoaded, Toast.LENGTH_SHORT).show();
 
             loadAndSaveStores(pagesLoaded+1);
         } else {
@@ -135,7 +134,7 @@ public class StoresDataManager {
 
                         int i = 0;
                         int incrementalCounter;
-                        int storeId = 0;
+                        int storeId;
                         for (Store store : mStoresResult) {
                             storeId = store.getId();
                             if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
@@ -152,17 +151,18 @@ public class StoresDataManager {
                         e.printStackTrace();
                     }
 
-                    Toast.makeText(mContext, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e(LOG_TAG, "loadAndSaveStores() - response problem.");
                 }
 
-                // if mStoresResult containt stores perform new request for more stores.
+                // if mStoresResult contains stores perform new request for more stores.
                 // if mStoresResult isEmpty - perform search in DB.
                 if(!mStoresResult.isEmpty()){
                     int newOffset = offset+1;
                     loadAndSaveStores(newOffset);
                 } else {
+                    Toast.makeText(mContext, "loadAndSaveStores() :: loading finished.", Toast.LENGTH_SHORT).show();
                     getSearchStoresPage(1);
                 }
 
@@ -179,7 +179,6 @@ public class StoresDataManager {
         });
 
     }
-
 
 
 
@@ -263,14 +262,6 @@ public class StoresDataManager {
 
 
 
-
-
-
-
-
-
-
-
     /**
      * Consumer must implement StoresDataManager.DataManagerCallbacks interface
      * for accepting of result. Method call one of two callback methods depending on
@@ -286,14 +277,14 @@ public class StoresDataManager {
      */
     public void getStoresPage(final int offset, final boolean isInitialLoading){
         mStoresResult.clear();
-        long mStoredInDatabaseCounter = 0;
+        long storedInDatabaseCounter = 0;
         long storesPerPage = Config.STORES_PER_PAGE;
 
         try{
             Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
-            mStoredInDatabaseCounter = getCountOfStoresInDatabase();
+            storedInDatabaseCounter = storeDao.countOf();
 
-            if(mContext.getCountOfStoresInAdapter() < mStoredInDatabaseCounter){
+            if(mContext.getCountOfStoresInAdapter() < storedInDatabaseCounter){
                 // See: http://ormlite.com/javadoc/ormlite-core/com/j256/ormlite/stmt/QueryBuilder.html
                 long startRow = (offset - 1) * storesPerPage;
                 QueryBuilder<Store, Integer> queryBuilder = storeDao.queryBuilder();
@@ -318,11 +309,11 @@ public class StoresDataManager {
         }
     }
 
-    private void onStoresPageLoaded(final int offset, final boolean isInitialLoading, List<Store> storesPage){
+    private void onStoresPageLoaded(int offset, boolean isInitialLoading, List<Store> stores){
         if(isInitialLoading){
-            mContext.onInitStoresListLoaded(storesPage, offset);
+            mContext.onInitStoresListLoaded(stores, offset);
         }else{
-            mContext.onStoresListLoaded(storesPage, offset);
+            mContext.onStoresListLoaded(stores, offset);
         }
     }
 
@@ -396,7 +387,7 @@ public class StoresDataManager {
     public interface DataManagerCallbacks {
         void onInitStoresListLoaded(List<Store> stores, int offset);
         void onStoresListLoaded(List<Store> stores, int offset);
-        void onStoresSearchListLoaded(final List<Store> stores, final int offset);
+        void onStoresSearchListLoaded(List<Store> stores, int offset);
         int getCountOfStoresInAdapter();
     }
 }

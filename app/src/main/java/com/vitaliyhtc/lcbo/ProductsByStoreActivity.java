@@ -15,13 +15,13 @@ import com.vitaliyhtc.lcbo.data.ProductsByStoreDataManager;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
 import com.vitaliyhtc.lcbo.util.ProductDetailsDialog;
+import com.vitaliyhtc.lcbo.util.ShoppingCartDialog;
 
 import java.util.List;
 
 public class ProductsByStoreActivity extends AppCompatActivity
         implements ProductsByStoreDataManager.DataManagerCallbacks,
         ProductsByStoreAdapter.ProductItemClickCallbacks {
-    private static final String LOG_TAG = ProductsByStoreActivity.class.getSimpleName();
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -155,6 +155,9 @@ public class ProductsByStoreActivity extends AppCompatActivity
 
     @Override
     public void onProductItemCartClicked(int position) {
-
+        FragmentManager manager = getSupportFragmentManager();
+        ShoppingCartDialog shoppingCartDialog = new ShoppingCartDialog();
+        shoppingCartDialog.setContextAndProduct(this, mProductsAdapter.getProductAtPosition(position));
+        shoppingCartDialog.show(manager, "ShoppingCartDialog");
     }
 }

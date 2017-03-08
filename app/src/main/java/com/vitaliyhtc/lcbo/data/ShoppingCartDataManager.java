@@ -7,11 +7,22 @@ import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.vitaliyhtc.lcbo.Config;
+import com.vitaliyhtc.lcbo.ShoppingCartActivity;
+import com.vitaliyhtc.lcbo.model.Product;
+import com.vitaliyhtc.lcbo.model.ProductResult;
 import com.vitaliyhtc.lcbo.model.ShoppingCart;
+import com.vitaliyhtc.lcbo.rest.ApiInterface;
+import com.vitaliyhtc.lcbo.rest.RetrofitApiClient;
+import com.vitaliyhtc.lcbo.util.Utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ShoppingCartDataManager {
 
@@ -21,6 +32,10 @@ public class ShoppingCartDataManager {
 
     // You'll need this in your class to cache the helper in the class.
     private DatabaseHelper mDatabaseHelper = null;
+
+    private List<Product> mProducts = new ArrayList<>();
+    private int productsNumberToLoad;
+
 
 
     public ShoppingCartDataManager(Context context) {
@@ -91,7 +106,7 @@ public class ShoppingCartDataManager {
         }
     }
 
-    public List<ShoppingCart> getAllShopingCartsFromDb(){
+    public List<ShoppingCart> getAllShoppingCartsFromDb(){
         List<ShoppingCart> shoppingCarts = new ArrayList<>();
         try {
             Dao<ShoppingCart, Integer> shoppingCartDao = getDatabaseHelper().getShoppingCartDao();
@@ -106,6 +121,76 @@ public class ShoppingCartDataManager {
 
 
 
+    public void LoadProductsByIds(List<Integer> idsList){
+        productsNumberToLoad = idsList.size();
+        for (Integer productId : idsList) {
+            getProductById(productId);
+        }
+    }
+
+    private void getProductById(int productId) {
+        Product product;
+        try {
+            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+
+            // @return The object that has the ID field which equals id or null if no matches.
+            product = productDao.queryForId(productId);
+            if (product != null) {
+                onGetProductByIdResult(product);
+            }
+
+            // try to load from server
+            if (product == null) {
+                if (getNetworkAvailability()) {
+                    getProductByIdFromServer(productId);
+                }
+            }
+
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Database exception in getProductById()", e);
+            e.printStackTrace();
+        }
+    }
+
+    private void getProductByIdFromServer(int productId) {
+        ApiInterface apiService = RetrofitApiClient.getClient().create(ApiInterface.class);
+
+        Call<ProductResult> call = apiService.getOneProduct(productId, Config.LCBO_API_ACCESS_KEY);
+        call.enqueue(new Callback<ProductResult>() {
+            @Override
+            public void onResponse(Call<ProductResult> call, Response<ProductResult> response) {
+                Product product=null;
+
+                if (response.isSuccessful()) {
+                    ProductResult productResult = response.body();
+                    product = productResult.getResult();
+                } else {
+                    Log.e(LOG_TAG, "getProductByIdFromServer() - response problem.");
+                }
+
+                onGetProductByIdResult(product);
+            }
+
+            @Override
+            public void onFailure(Call<ProductResult> call, Throwable t) {
+                // Log error here since request failed
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
+    }
+
+    private void onGetProductByIdResult(Product product) {
+        mProducts.add(product);
+        if(mProducts.size() == productsNumberToLoad){
+            if(mContext instanceof ShoppingCartActivity){
+                ((ShoppingCartActivity) mContext).onProductsListLoaded(mProducts);
+            }
+        }
+    }
 
 
+
+    private boolean getNetworkAvailability() {
+        return Utils.isNetworkAvailable(mContext);
+    }
 }

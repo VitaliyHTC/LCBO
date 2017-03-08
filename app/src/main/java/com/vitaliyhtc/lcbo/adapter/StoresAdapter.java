@@ -15,10 +15,7 @@ import com.vitaliyhtc.lcbo.model.Store;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Provide views to RecyclerView with data from mStores.
- */
-public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder>  {
+public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder> {
     private static final String LOG_TAG = "StoresAdapter";
 
     private MainActivity mContext;
@@ -47,11 +44,6 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         }
     }
 
-    /* *
-     * Initialize the dataset of the Adapter.
-     *
-     * @param stores List<Store> containing the data to populate views to be used by RecyclerView.
-     */
     public StoresAdapter(MainActivity context) {
         mContext = context;
         mStores = new ArrayList<>();

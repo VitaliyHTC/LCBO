@@ -56,11 +56,6 @@ public class ProductsByCategoriesAdapter extends RecyclerView.Adapter<ProductsBy
         }
     }
 
-    /* *
-     * Initialize the dataset of the Adapter.
-     *
-     * @param stores List<Store> containing the data to populate views to be used by RecyclerView.
-     */
     public ProductsByCategoriesAdapter(ProductsTab context){
         mContext = context;
         mProducts = new ArrayList<>();

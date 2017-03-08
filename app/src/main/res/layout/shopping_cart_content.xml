@@ -1,15 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/main_activity_margin"
-    android:paddingLeft="@dimen/main_activity_margin"
-    android:paddingRight="@dimen/main_activity_margin"
-    android:paddingTop="@dimen/main_activity_margin"
-    android:scrollbars="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:layout_marginTop="?attr/actionBarSize">
 
-</android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.LinearLayoutCompat
+        android:id="@+id/recycler_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/main_activity_margin"
+            android:paddingLeft="@dimen/main_activity_margin"
+            android:paddingRight="@dimen/main_activity_margin"
+            android:paddingTop="@dimen/main_activity_margin"
+            android:scrollbars="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textSize="@dimen/detail_activity_key_text_size"
+            android:textColor="@color/detail_activity_key_text_color"
+            android:text="@string/shopping_cart_activity_key_total_price_of_products"/>
+        <TextView
+            android:id="@+id/value_total_price_of_products"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/detail_activity_value_text_size"
+            android:textColor="@color/detail_activity_value_text_color"
+            android:layout_margin="8dp"
+            />
+    </LinearLayout>
+</RelativeLayout>

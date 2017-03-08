@@ -114,10 +114,7 @@ public class ProductDetailsDialog extends DialogFragment {
         ((TextView)v.findViewById(R.id.product_value_style)).setText(mProduct.getStyle());
         ((TextView)v.findViewById(R.id.product_value_tertiary_category)).setText(mProduct.getTertiaryCategory());
         ((TextView)v.findViewById(R.id.product_value_sugar_in_grams_per_liter)).setText(mProduct.getSugarInGramsPerLiter());
-        String clearanceSaleSavingsInCents = ""+mProduct.getClearanceSaleSavingsInCents();
-        ((TextView)v.findViewById(R.id.product_value_clearance_sale_savings_in_cents)).setText(clearanceSaleSavingsInCents);
-        String hasClearanceSale = ""+mProduct.isHasClearanceSale();
-        ((TextView)v.findViewById(R.id.product_value_has_clearance_sale)).setText(hasClearanceSale);
+
     }
 
 }

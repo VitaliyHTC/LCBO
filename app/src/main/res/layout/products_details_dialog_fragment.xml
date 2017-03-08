@@ -1072,59 +1072,5 @@
             android:textSize="@dimen/detail_activity_value_text_size"
             android:textColor="@color/detail_activity_value_text_color"/>
 
-        <TextView
-            android:id="@+id/product_key_clearance_sale_savings_in_cents"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="0dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/product_key_clearance_sale_savings_in_cents"
-            android:textSize="@dimen/detail_activity_key_text_size"
-            android:textColor="@color/detail_activity_key_text_color"/>
-        <TextView
-            android:id="@+id/product_value_clearance_sale_savings_in_cents"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/product_value_def"
-            android:textSize="@dimen/detail_activity_value_text_size"
-            android:textColor="@color/detail_activity_value_text_color"/>
-
-        <TextView
-            android:id="@+id/product_key_has_clearance_sale"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="0dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/product_key_has_clearance_sale"
-            android:textSize="@dimen/detail_activity_key_text_size"
-            android:textColor="@color/detail_activity_key_text_color"/>
-        <TextView
-            android:id="@+id/product_value_has_clearance_sale"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/product_value_def"
-            android:textSize="@dimen/detail_activity_value_text_size"
-            android:textColor="@color/detail_activity_value_text_color"/>
-
     </LinearLayout>
 </ScrollView>

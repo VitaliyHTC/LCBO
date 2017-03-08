@@ -40,6 +40,7 @@ public class ProductsByStoreDataManager {
     private int incrementalCounter = 0;
 
 
+
     /**
      * @param context MainActivity context
      */
