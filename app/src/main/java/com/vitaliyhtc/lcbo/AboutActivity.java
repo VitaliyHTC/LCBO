@@ -1,6 +1,5 @@
 package com.vitaliyhtc.lcbo;
 
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -45,7 +44,7 @@ public class AboutActivity extends CoreActivity {
             String versionName = pInfo.versionName;
             int versionCode = pInfo.versionCode;
             String version = "v" + versionName + ", Build " + versionCode + ";";
-            TextView versionTextView = (TextView)findViewById(R.id.textViewAppVersion);
+            TextView versionTextView = (TextView)findViewById(R.id.text_view_app_version);
             versionTextView.setText(version);
         } catch (PackageManager.NameNotFoundException exception){
             /*log it???*/
@@ -63,8 +62,8 @@ public class AboutActivity extends CoreActivity {
 
 
     private void setButtonsListeners(){
-        final Button clearStoresTableButton = (Button) findViewById(R.id.clearStoresTableButton);
-        final Button clearProductsTableButton = (Button) findViewById(R.id.clearProductsTableButton);
+        final Button clearStoresTableButton = (Button) findViewById(R.id.button_clear_stores_table);
+        final Button clearProductsTableButton = (Button) findViewById(R.id.button_clear_products_table);
 
         clearStoresTableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

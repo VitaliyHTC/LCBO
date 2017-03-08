@@ -31,7 +31,7 @@ public class ProductsDataManager {
 
     private ProductsSearchActivity mContext;
 
-    private HashSet<Integer> productIds = new HashSet<>();
+    private HashSet<Integer> mProductIds = new HashSet<>();
 
     private List<Product> mProductsResult = new ArrayList<>();
     private List<Product> mUniqueProducts = new ArrayList<>();
@@ -75,22 +75,11 @@ public class ProductsDataManager {
         return mDatabaseHelper;
     }
 
-    private long getCountOfProductsInDatabase(){
-        long storedInDatabaseCounter = 0;
-        try {
-            storedInDatabaseCounter = getDatabaseHelper().getProductDao().countOf();
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in getCountOfProductsInDatabase()", e);
-            e.printStackTrace();
-        }
-        return storedInDatabaseCounter;
-    }
-
 
 
     public void performProductsSearch(ProductsSearchParameters productsSearchParameters){
         mProductsSearchParameters = productsSearchParameters;
-        productIds.clear();
+        mProductIds.clear();
         getSearchProductsPage(1);
     }
 
@@ -132,17 +121,16 @@ public class ProductsDataManager {
                     ProductsResult productsResult = response.body();
                     mListToAdd.clear();
                     mProductsResult = productsResult.getResult();
-                    int productsPage = productsResult.getPager().getCurrentPage();
 
                     try{
                         Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
 
                         int incrementalCounter = (int) productDao.countOf();
-                        int productId = 0;
+                        int productId;
                         for (Product product : mProductsResult) {
                             productId = product.getId();
-                            if(!productIds.contains(productId)){
-                                productIds.add(productId);
+                            if(!mProductIds.contains(productId)){
+                                mProductIds.add(productId);
                                 mUniqueProducts.add(product);
                             }
                             if(productDao.queryBuilder().where().eq("id", productId).countOf() == 0){
@@ -237,11 +225,11 @@ public class ProductsDataManager {
 
             Toast.makeText(mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
 
-            int productId = 0;
+            int productId;
             for (Product product : mProductsResult) {
                 productId = product.getId();
-                if(!productIds.contains(productId)){
-                    productIds.add(productId);
+                if(!mProductIds.contains(productId)){
+                    mProductIds.add(productId);
                     mUniqueProducts.add(product);
                 }
             }
@@ -261,26 +249,14 @@ public class ProductsDataManager {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     public void getProductsPage(int offset, boolean isInitialLoading){
         if(isInitialLoading){
-            productIds.clear();
+            mProductIds.clear();
         }
         mProductsResult.clear();
         mUniqueProducts.clear();
 
-        long storedInDatabaseCounter = 0;
+        long storedInDatabaseCounter;
         long productsPerPage = Config.PRODUCTS_PER_PAGE;
 
         try{
@@ -298,8 +274,8 @@ public class ProductsDataManager {
                 int productId;
                 for (Product product : mProductsResult) {
                     productId = product.getId();
-                    if(!productIds.contains(productId)){
-                        productIds.add(productId);
+                    if(!mProductIds.contains(productId)){
+                        mProductIds.add(productId);
                         mUniqueProducts.add(product);
                     }
                 }
@@ -345,16 +321,15 @@ public class ProductsDataManager {
                     ProductsResult productsResult = response.body();
                     mListToAdd.clear();
                     mProductsResult = productsResult.getResult();
-                    int productsPage = productsResult.getPager().getCurrentPage();
 
                     try{
                         Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
                         int incrementalCounter = (int) productDao.countOf();
-                        int productId = 0;
+                        int productId;
                         for (Product product : mProductsResult) {
                             productId = product.getId();
-                            if(!productIds.contains(productId)){
-                                productIds.add(productId);
+                            if(!mProductIds.contains(productId)){
+                                mProductIds.add(productId);
                                 mUniqueProducts.add(product);
                             }
                             if(productDao.queryBuilder().where().eq("id", productId).countOf() == 0){

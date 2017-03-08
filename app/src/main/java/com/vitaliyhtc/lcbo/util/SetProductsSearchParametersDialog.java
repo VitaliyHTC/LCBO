@@ -68,7 +68,6 @@ public class SetProductsSearchParametersDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-
                         mProductsSearchParameters.setHasValueAddedPromotion(checkedItemsArray[0]);
                         mProductsSearchParameters.setHasLimitedTimeOffer(checkedItemsArray[1]);
                         mProductsSearchParameters.setHasBonusRewardMiles(checkedItemsArray[2]);

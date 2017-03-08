@@ -306,7 +306,6 @@ public class StoreDetailActivity extends AppCompatActivity {
     }
 
     private void openMapWithMarkerOfStore(){
-
         String latitude = Double.toString(mStore.getLatitude());
         String longitude = Double.toString(mStore.getLongitude());
         String encodedLabel = Uri.encode(mStore.getName());

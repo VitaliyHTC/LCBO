@@ -82,8 +82,6 @@ public class ProductsSearchParameters {
         if(isKosher){
             if(!isFirstInWhereQuery){
                 whereQuery.append(",");
-            }else{
-                isFirstInWhereQuery = false;
             }
             whereQuery.append("is_kosher");
         }

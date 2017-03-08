@@ -13,35 +13,30 @@ import android.view.ViewGroup;
 
 public class ProductsTabFragment extends Fragment {
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private static int int_items = 3 ;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private static final int INT_ITEMS = 3 ;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /**
-         *Inflate tab_layout and setup Views.
-         */
-        View view =  inflater.inflate(R.layout.products_by_categories_content, null);
-        tabLayout = (TabLayout) view.findViewById(R.id.tabs);
-        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        viewPager.setOffscreenPageLimit(int_items-1);
 
-        /**
-         *Set an Apater for the View Pager
-         */
+        View view =  inflater.inflate(R.layout.products_by_categories_content, null);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        mViewPager.setOffscreenPageLimit(INT_ITEMS -1);
+
         ProductsTabAdapter productsTabAdapter = new ProductsTabAdapter(getChildFragmentManager());
-        viewPager.setAdapter(productsTabAdapter);
-        /**
+        mViewPager.setAdapter(productsTabAdapter);
+        /*
          * Now , this is a workaround ,
          * The setupWithViewPager dose't works without the runnable .
          * Maybe a Support Library Bug .
          */
-        tabLayout.post(new Runnable() {
+        mTabLayout.post(new Runnable() {
             @Override
             public void run() {
-                tabLayout.setupWithViewPager(viewPager);
+                mTabLayout.setupWithViewPager(mViewPager);
             }
         });
 
@@ -73,7 +68,7 @@ public class ProductsTabFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return int_items;
+            return INT_ITEMS;
         }
 
         /**

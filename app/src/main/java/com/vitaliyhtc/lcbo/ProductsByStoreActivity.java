@@ -33,7 +33,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
 
     private ProductsByStoreAdapter mProductsAdapter = new ProductsByStoreAdapter(this);
 
-    private ProductsByStoreDataManager productsDataManager;
+    private ProductsByStoreDataManager mProductsDataManager;
 
     private EndlessRecyclerViewScrollListener mScrollListener;
 
@@ -47,7 +47,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
         String storeName = getIntent().getExtras().getString("targetStoreName");
         this.setTitle(storeName+" products");
 
-        productsDataManager = getProductsDataManager(targetStoreId);
+        mProductsDataManager = getProductsDataManager(targetStoreId);
         initProductsList();
     }
 
@@ -56,7 +56,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
         super.onDestroy();
 
         // Release DatabaseHelper by calling DataManager onDestroy.
-        productsDataManager.onDestroy();
+        mProductsDataManager.onDestroy();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
 
 
     private void initProductsList(){
-        productsDataManager.getProductsPage(1, true);
+        mProductsDataManager.getProductsPage(1, true);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
     // Append the next page of data into the adapter
     // This method probably sends out a network request and appends new data items to your adapter.
     public void loadNextDataFromApi(int offset) {
-        productsDataManager.getProductsPage(offset, false);
+        mProductsDataManager.getProductsPage(offset, false);
     }
 
     @Override

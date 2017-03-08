@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ public class ShoppingCartDialog extends DialogFragment {
         this.mProduct = product;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -93,9 +95,9 @@ public class ShoppingCartDialog extends DialogFragment {
                 .load(mProduct.getImageUrl())
                 .placeholder(R.drawable.list_item_bg)
                 .error(R.drawable.ic_broken_image)
-                .into((ImageView) v.findViewById(R.id.big_image_view));
+                .into((ImageView) v.findViewById(R.id.image_view_product_big));
 
-        ((TextView)v.findViewById(R.id.title_text_view)).setText(mProduct.getName());
+        ((TextView)v.findViewById(R.id.text_view_title)).setText(mProduct.getName());
         float price = mProduct.getPriceInCents()/100f;
         String priceString = ""+price;
         ((TextView)v.findViewById(R.id.product_value_price)).setText(priceString);
@@ -105,18 +107,18 @@ public class ShoppingCartDialog extends DialogFragment {
         ((TextView)view.findViewById(R.id.product_value_price_total)).setText(totalPriceString);
 
 
-        quantityEditText = (EditText)v.findViewById(R.id.editQuantity);
+        quantityEditText = (EditText)v.findViewById(R.id.edit_quantity);
         String shoppingCartCount = ""+shoppingCart.getCount();
         quantityEditText.setText(shoppingCartCount);
 
 
-        final Button minusButton = (Button) v.findViewById(R.id.qty_minus_button);
+        final Button minusButton = (Button) v.findViewById(R.id.button_qty_minus);
         minusButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onMinusClick();
             }
         });
-        final Button plusButton = (Button) v.findViewById(R.id.qty_plus_button);
+        final Button plusButton = (Button) v.findViewById(R.id.button_qty_plus);
         plusButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onPlusClick();

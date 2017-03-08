@@ -84,7 +84,6 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
 
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        // TODO: change item design.
         Store currentStore = mStores.get(position);
         viewHolder.getTextView().setText(currentStore.getIncrementalCounter() + " " + currentStore.getName());
     }

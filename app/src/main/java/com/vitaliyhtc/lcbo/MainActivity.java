@@ -63,7 +63,7 @@ public class MainActivity extends CoreActivity
         initiateUserInterface();
         this.setTitle(R.string.main_activity_stores_title);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 

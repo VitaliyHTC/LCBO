@@ -61,7 +61,7 @@ public class ProductsSearchActivity extends CoreActivity
         setContentView(R.layout.products_search_activity);
         initiateUserInterface();
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 

@@ -39,14 +39,14 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
                     mContext.onProductItemDetailsClicked(getAdapterPosition());
                 }
             });
-            v.findViewById(R.id.delete_image_view).setOnClickListener(new View.OnClickListener() {
+            v.findViewById(R.id.image_view_delete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mContext.onProductItemDeleteClicked(getAdapterPosition());
                 }
             });
             titleTextView = (TextView) v.findViewById(R.id.item_title);
-            imageView = (ImageView) v.findViewById(R.id.image_view);
+            imageView = (ImageView) v.findViewById(R.id.image_view_product_small);
             countTextView = (TextView) v.findViewById(R.id.item_count);
         }
 

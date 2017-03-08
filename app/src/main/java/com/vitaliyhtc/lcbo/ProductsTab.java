@@ -37,7 +37,7 @@ public class ProductsTab extends Fragment
 
     private int mCategory;
 
-    private ProductsByCategoriesActivity parentActivity;
+    private ProductsByCategoriesActivity mParentActivity;
 
     private ProductsByCategoriesAdapter mProductsAdapter = new ProductsByCategoriesAdapter(this);
 
@@ -60,9 +60,9 @@ public class ProductsTab extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        if(parentActivity==null){
-            parentActivity = (ProductsByCategoriesActivity) getActivity();
-            parentActivity.setProductsTab(this);
+        if(mParentActivity==null){
+            mParentActivity = (ProductsByCategoriesActivity) getActivity();
+            mParentActivity.setProductsTab(this);
             initProductsList();
         }
     }
@@ -104,13 +104,13 @@ public class ProductsTab extends Fragment
     }
 
     private void loadProducts(List<Product> initialProductsList){
-        RecyclerView mRecycleView = (RecyclerView) getView().findViewById(R.id.recycler_view);
+        RecyclerView recycleView = (RecyclerView) getView().findViewById(R.id.recycler_view);
         //mStoresAdapter = new StoresAdapter(this); initiated at variables block
         mProductsAdapter.appendToProducts(initialProductsList);
-        mRecycleView.setAdapter(mProductsAdapter);
+        recycleView.setAdapter(mProductsAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        mRecycleView.setLayoutManager(linearLayoutManager);
+        recycleView.setLayoutManager(linearLayoutManager);
 
         // Retain an instance so that you can call `resetState()` for fresh searches
         mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -123,7 +123,7 @@ public class ProductsTab extends Fragment
         };
         mScrollListener.setCounters(INITIAL_CURRENT_PAGE, INITIAL_PREVIOUS_TOTAL_ITEM_COUNT, INITIAL_STARTING_PAGE_INDEX);
         // Adds the scroll listener to RecyclerView
-        mRecycleView.addOnScrollListener(mScrollListener);
+        recycleView.addOnScrollListener(mScrollListener);
     }
 
     // Append the next page of data into the adapter
@@ -134,15 +134,8 @@ public class ProductsTab extends Fragment
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        parentActivity.getNItemsOf(Config.PRODUCTS_PER_PAGE, mCategory);// >>> onProductsListLoaded Callback
+        mParentActivity.getNItemsOf(Config.PRODUCTS_PER_PAGE, mCategory);// >>> onProductsListLoaded Callback
     }
-
-
-
-
-
-
-
 
 
 
@@ -164,12 +157,6 @@ public class ProductsTab extends Fragment
 
 
 
-
-
-
-
-
-
     public int getCategory() {
         return mCategory;
     }
@@ -187,7 +174,6 @@ public class ProductsTab extends Fragment
         }
         return category;
     }
-
 
     public interface RequestForProductsByCategory{
         void getNItemsOf(int numberOfItems, int category);

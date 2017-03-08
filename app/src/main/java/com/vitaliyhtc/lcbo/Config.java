@@ -12,7 +12,6 @@ public class Config {
     public static final boolean IS_24_HOURS_FORMAT = true;
     public static final int INITIAL_MAP_ZOOM = 15;
 
-
     public static final String PRODUCT_CATEGORY_BEER = "Beer";
     public static final String PRODUCT_CATEGORY_WINE = "Wine";
     public static final String PRODUCT_CATEGORY_SPIRITS = "Spirits";

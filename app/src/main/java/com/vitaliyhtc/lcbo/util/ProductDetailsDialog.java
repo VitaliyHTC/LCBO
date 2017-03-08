@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class ProductDetailsDialog extends DialogFragment {
         this.mProduct = mProduct;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -54,7 +56,7 @@ public class ProductDetailsDialog extends DialogFragment {
                 .load(mProduct.getImageUrl())
                 .placeholder(R.drawable.list_item_bg)
                 .error(R.drawable.ic_broken_image)
-                .into((ImageView) v.findViewById(R.id.big_image_view));
+                .into((ImageView) v.findViewById(R.id.image_view_product_big));
 
 
         ((TextView)v.findViewById(R.id.product_value_name)).setText(mProduct.getName());

@@ -33,7 +33,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/containerView"
+            android:id="@+id/container_view"
             android:layout_below="@+id/app_bar_layout">
         </FrameLayout>
 

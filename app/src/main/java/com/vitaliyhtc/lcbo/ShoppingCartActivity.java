@@ -113,7 +113,7 @@ public class ShoppingCartActivity extends CoreActivity
         }
         Float totalPrice = totalPriceInCents/100f;
         String totalPriceString = ""+totalPrice;
-        ((TextView)findViewById(R.id.value_total_price_of_products)).setText(totalPriceString);
+        ((TextView)findViewById(R.id.text_value_total_price_of_products)).setText(totalPriceString);
     }
 
 }

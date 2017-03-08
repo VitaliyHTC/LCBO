@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageView
-                android:id="@+id/store_detail_activity_error_image"
+                android:id="@+id/image_store_detail_activity_error"
                 android:src="@drawable/error_meme_face_whyyy"
                 android:layout_width="84dp"
                 android:layout_height="76dp"
@@ -25,7 +25,7 @@
                 android:id="@+id/store_detail_activity_error_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/store_detail_activity_error_image"
+                android:layout_below="@+id/image_store_detail_activity_error"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginRight="16dp"

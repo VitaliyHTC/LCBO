@@ -7,7 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
-        android:id="@+id/image_view"
+        android:id="@+id/image_view_product_small"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="8dp"
@@ -23,8 +23,8 @@
         android:layout_marginEnd="8dp"
         android:textSize="@dimen/detail_activity_value_text_size"
         android:maxLines="1"
-        android:layout_toRightOf="@+id/image_view"
-        android:layout_toEndOf="@+id/image_view"/>
+        android:layout_toRightOf="@+id/image_view_product_small"
+        android:layout_toEndOf="@+id/image_view_product_small"/>
 
     <TextView
         android:id="@+id/item_count"
@@ -34,17 +34,17 @@
         android:textSize="@dimen/main_list_item_store_textsize"
         android:textColor="@color/detail_activity_key_text_color"
         android:layout_below="@+id/item_title"
-        android:layout_toRightOf="@+id/image_view"
-        android:layout_toEndOf="@+id/image_view"
-        android:layout_toLeftOf="@+id/delete_image_view"
-        android:layout_toStartOf="@+id/delete_image_view"/>
+        android:layout_toRightOf="@+id/image_view_product_small"
+        android:layout_toEndOf="@+id/image_view_product_small"
+        android:layout_toLeftOf="@+id/image_view_delete"
+        android:layout_toStartOf="@+id/image_view_delete"/>
 
     <ImageView
-        android:id="@+id/delete_image_view"
+        android:id="@+id/image_view_delete"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_delete_black_36dp"
+        android:src="@drawable/ic_remove_shopping_cart_black_36dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

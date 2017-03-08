@@ -101,7 +101,7 @@ public class StoresDataManager {
             long storedInDatabaseCounter = getCountOfStoresInDatabase();
             int pagesLoaded = (int) storedInDatabaseCounter/Config.STORES_PER_PAGE;
 
-            Toast.makeText(mContext, "loadAndSaveStores() :: from page: "+pagesLoaded, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
 
             loadAndSaveStores(pagesLoaded+1);
         } else {
@@ -110,8 +110,6 @@ public class StoresDataManager {
     }
 
     /**
-     * TODO: write javadoc for loadAndSaveStores().
-     *
      * @param offset    from which page start load data, including provided number.
      */
     private void loadAndSaveStores(final int offset){
@@ -162,7 +160,7 @@ public class StoresDataManager {
                     int newOffset = offset+1;
                     loadAndSaveStores(newOffset);
                 } else {
-                    Toast.makeText(mContext, "loadAndSaveStores() :: loading finished.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "loadAndSaveStores() :: Loading finished.", Toast.LENGTH_SHORT).show();
                     getSearchStoresPage(1);
                 }
 
@@ -277,7 +275,7 @@ public class StoresDataManager {
      */
     public void getStoresPage(final int offset, final boolean isInitialLoading){
         mStoresResult.clear();
-        long storedInDatabaseCounter = 0;
+        long storedInDatabaseCounter;
         long storesPerPage = Config.STORES_PER_PAGE;
 
         try{
@@ -337,7 +335,7 @@ public class StoresDataManager {
 
                         int i = 0;
                         int incrementalCounter;
-                        int storeId = 0;
+                        int storeId;
                         for (Store store : mStoresResult) {
                             storeId = store.getId();
                             if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){

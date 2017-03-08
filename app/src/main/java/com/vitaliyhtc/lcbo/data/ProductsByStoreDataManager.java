@@ -1,6 +1,5 @@
 package com.vitaliyhtc.lcbo.data;
 
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,7 +15,6 @@ import com.vitaliyhtc.lcbo.util.Utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,8 +34,7 @@ public class ProductsByStoreDataManager {
     // You'll need this in your class to cache the helper in the class.
     private DatabaseHelper mDatabaseHelper = null;
 
-    private HashSet<Integer> productIds = new HashSet<>();
-    private int incrementalCounter = 0;
+    private int mIncrementalCounter = 0;
 
 
 
@@ -72,7 +69,7 @@ public class ProductsByStoreDataManager {
         if (mDatabaseHelper == null) {
             mDatabaseHelper = OpenHelperManager.getHelper(mContext, DatabaseHelper.class);
             try {
-                incrementalCounter = (int) mDatabaseHelper.getProductDao().countOf();
+                mIncrementalCounter = (int) mDatabaseHelper.getProductDao().countOf();
             } catch (SQLException e) {
                 Log.e(LOG_TAG, "Database exception in getDatabaseHelper()", e);
                 e.printStackTrace();
@@ -80,25 +77,6 @@ public class ProductsByStoreDataManager {
         }
         return mDatabaseHelper;
     }
-
-    private long getCountOfProductsInDatabase(){
-        long counter = 0;
-        try {
-            counter = getDatabaseHelper().getProductDao().countOf();
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in getCountOfProductsInDatabase()", e);
-            e.printStackTrace();
-        }
-        return counter;
-    }
-
-
-
-
-
-
-
-
 
 
 
@@ -136,8 +114,8 @@ public class ProductsByStoreDataManager {
                         for (Product product : mProductsResult){
                             productId = product.getId();
                             if(productDao.queryBuilder().where().eq("id", productId).countOf()==0){
-                                incrementalCounter++;
-                                product.setIncrementalCounter(incrementalCounter);
+                                mIncrementalCounter++;
+                                product.setIncrementalCounter(mIncrementalCounter);
                                 mListToAdd.add(product);
                             }
                         }
@@ -177,14 +155,6 @@ public class ProductsByStoreDataManager {
             mContext.onProductsListLoaded(productsPage, offset);
         }
     }
-
-
-
-
-
-
-
-
 
 
 

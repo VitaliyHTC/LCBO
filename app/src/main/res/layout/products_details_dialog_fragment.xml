@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageView
-                android:id="@+id/big_image_view"
+                android:id="@+id/image_view_product_big"
                 android:layout_width="192dp"
                 android:layout_height="192dp"
                 android:layout_centerHorizontal="true"

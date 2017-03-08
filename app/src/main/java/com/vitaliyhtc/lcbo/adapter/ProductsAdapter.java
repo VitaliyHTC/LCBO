@@ -39,14 +39,14 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
                     mContext.onProductItemDetailsClicked(getAdapterPosition());
                 }
             });
-            v.findViewById(R.id.cart_image_view).setOnClickListener(new View.OnClickListener() {
+            v.findViewById(R.id.image_view_cart).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mContext.onProductItemCartClicked(getAdapterPosition());
                 }
             });
             titleTextView = (TextView) v.findViewById(R.id.item_title);
-            imageView = (ImageView) v.findViewById(R.id.image_view);
+            imageView = (ImageView) v.findViewById(R.id.image_view_product_small);
         }
 
         TextView getTitleTextView() {

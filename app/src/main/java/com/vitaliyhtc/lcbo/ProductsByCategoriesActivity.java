@@ -15,16 +15,16 @@ public class ProductsByCategoriesActivity extends CoreActivity
         implements ProductsByCategoriesDataManager.ProductsByCategoriesDataManagerCallbacks,
         ProductsTab.RequestForProductsByCategory {
 
-    private ProductsTab beerFragment;
-    private ProductsTab wineFragment;
-    private ProductsTab spiritsFragment;
+    private ProductsTab mBeerFragment;
+    private ProductsTab mWineFragment;
+    private ProductsTab mSpiritsFragment;
 
-    private ProductsByCategoriesDataManager productsByCategoriesDataManager;
-    private ArrayList<Product> beerList;
-    private ArrayList<Product> wineList;
-    private ArrayList<Product> spiritsList;
+    private ProductsByCategoriesDataManager mProductsByCategoriesDataManager;
+    private ArrayList<Product> mBeerList;
+    private ArrayList<Product> mWineList;
+    private ArrayList<Product> mSpiritsList;
 
-    private int productsLoaded = 0;
+    private int mProductsLoaded = 0;
 
 
 
@@ -35,9 +35,9 @@ public class ProductsByCategoriesActivity extends CoreActivity
         initiateTabFragment();
         initiateUserInterface();
 
-        productsByCategoriesDataManager = getProductsByCategoriesDataManager();
+        mProductsByCategoriesDataManager = getProductsByCategoriesDataManager();
         initProductsByCategoriesQueues();
-        productsByCategoriesDataManager.performInitialLoading();
+        mProductsByCategoriesDataManager.performInitialLoading();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ProductsByCategoriesActivity extends CoreActivity
         super.onDestroy();
 
         // Call to release resources
-        productsByCategoriesDataManager.onDestroy();
+        mProductsByCategoriesDataManager.onDestroy();
     }
 
 
@@ -61,21 +61,21 @@ public class ProductsByCategoriesActivity extends CoreActivity
      * Here , we are inflating the ProductsTabFragment as the first Fragment
      */
     private void initiateTabFragment(){
-        FragmentManager mFragmentManager = getSupportFragmentManager();
-        FragmentTransaction mFragmentTransaction = mFragmentManager.beginTransaction();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction mFragmentTransaction = fragmentManager.beginTransaction();
         ProductsTabFragment productsTabFragment = new ProductsTabFragment();
-        mFragmentTransaction.replace(R.id.containerView, productsTabFragment).commit();
+        mFragmentTransaction.replace(R.id.container_view, productsTabFragment).commit();
     }
 
     public void setProductsTab(ProductsTab productsTab){
         if(productsTab.getCategory() == ProductsTab.TAB_CATEGORY_BEER){
-            beerFragment = productsTab;
+            mBeerFragment = productsTab;
         }
         if(productsTab.getCategory() == ProductsTab.TAB_CATEGORY_WINE){
-            wineFragment = productsTab;
+            mWineFragment = productsTab;
         }
         if(productsTab.getCategory() == ProductsTab.TAB_CATEGORY_SPIRITS){
-            spiritsFragment = productsTab;
+            mSpiritsFragment = productsTab;
         }
 
     }
@@ -87,9 +87,9 @@ public class ProductsByCategoriesActivity extends CoreActivity
     }
 
     private void initProductsByCategoriesQueues(){
-        beerList = new ArrayList<>();
-        wineList = new ArrayList<>();
-        spiritsList = new ArrayList<>();
+        mBeerList = new ArrayList<>();
+        mWineList = new ArrayList<>();
+        mSpiritsList = new ArrayList<>();
     }
 
 
@@ -98,13 +98,13 @@ public class ProductsByCategoriesActivity extends CoreActivity
     public void onDataManagerInitialResultLoaded(List<Product> products){
         appendResultToLists(products);
 
-        if(beerFragment!=null){
+        if(mBeerFragment !=null){
             fireBeerCallback();
         }
-        if(wineFragment!=null){
+        if(mWineFragment !=null){
             fireWineCallback();
         }
-        if(spiritsFragment!=null){
+        if(mSpiritsFragment !=null){
             fireSpiritsCallback();
         }
     }
@@ -126,17 +126,17 @@ public class ProductsByCategoriesActivity extends CoreActivity
     }
 
     private void appendResultToLists(List<Product> products){
-        productsLoaded += products.size();
+        mProductsLoaded += products.size();
         for (Product product : products) {
             String categoryString = product.getPrimaryCategory();
             if(Config.PRODUCT_CATEGORY_BEER.equals(categoryString)){
-                beerList.add(product);
+                mBeerList.add(product);
             }
             if(Config.PRODUCT_CATEGORY_WINE.equals(categoryString)){
-                wineList.add(product);
+                mWineList.add(product);
             }
             if(Config.PRODUCT_CATEGORY_SPIRITS.equals(categoryString)){
-                spiritsList.add(product);
+                mSpiritsList.add(product);
             }
         }
     }
@@ -148,27 +148,27 @@ public class ProductsByCategoriesActivity extends CoreActivity
         int itemsLack;
 
         if(ProductsTab.TAB_CATEGORY_BEER==category){
-            if(beerList.size()>=Config.PRODUCTS_PER_PAGE){
+            if(mBeerList.size()>=Config.PRODUCTS_PER_PAGE){
                 fireBeerCallback();
             }else{
-                itemsLack = Config.PRODUCTS_PER_PAGE - beerList.size();
-                productsByCategoriesDataManager.getNItemsOf(itemsLack, category);
+                itemsLack = Config.PRODUCTS_PER_PAGE - mBeerList.size();
+                mProductsByCategoriesDataManager.getNItemsOf(itemsLack, category);
             }
         }
         if(ProductsTab.TAB_CATEGORY_WINE==category){
-            if(wineList.size()>=Config.PRODUCTS_PER_PAGE){
+            if(mWineList.size()>=Config.PRODUCTS_PER_PAGE){
                 fireWineCallback();
             }else{
-                itemsLack = Config.PRODUCTS_PER_PAGE - wineList.size();
-                productsByCategoriesDataManager.getNItemsOf(itemsLack, category);
+                itemsLack = Config.PRODUCTS_PER_PAGE - mWineList.size();
+                mProductsByCategoriesDataManager.getNItemsOf(itemsLack, category);
             }
         }
         if(ProductsTab.TAB_CATEGORY_SPIRITS==category){
-            if(spiritsList.size()>=Config.PRODUCTS_PER_PAGE){
+            if(mSpiritsList.size()>=Config.PRODUCTS_PER_PAGE){
                 fireSpiritsCallback();
             }else{
-                itemsLack = Config.PRODUCTS_PER_PAGE - spiritsList.size();
-                productsByCategoriesDataManager.getNItemsOf(itemsLack, category);
+                itemsLack = Config.PRODUCTS_PER_PAGE - mSpiritsList.size();
+                mProductsByCategoriesDataManager.getNItemsOf(itemsLack, category);
             }
         }
 
@@ -178,57 +178,57 @@ public class ProductsByCategoriesActivity extends CoreActivity
 
     @Override
     public int getProductsLoaded() {
-        return productsLoaded;
+        return mProductsLoaded;
     }
 
 
 
     private void fireBeerCallback(){
-        int listSize = beerList.size();
+        int listSize = mBeerList.size();
         List<Product> products = new ArrayList<>();
         if(listSize > Config.PRODUCTS_PER_PAGE){
             for (int i = 0; i < Config.PRODUCTS_PER_PAGE; i++) {
-                products.add(beerList.get(i));
+                products.add(mBeerList.get(i));
             }
-            beerList.subList(0, Config.PRODUCTS_PER_PAGE).clear();
+            mBeerList.subList(0, Config.PRODUCTS_PER_PAGE).clear();
         }
         if(listSize <= Config.PRODUCTS_PER_PAGE){
-            products.addAll(beerList);
-            beerList.clear();
+            products.addAll(mBeerList);
+            mBeerList.clear();
         }
-        beerFragment.onProductsListLoaded(products);
+        mBeerFragment.onProductsListLoaded(products);
     }
 
     private void fireWineCallback(){
-        int listSize = wineList.size();
+        int listSize = mWineList.size();
         List<Product> products = new ArrayList<>();
         if(listSize > Config.PRODUCTS_PER_PAGE){
             for (int i = 0; i < Config.PRODUCTS_PER_PAGE; i++) {
-                products.add(wineList.get(i));
+                products.add(mWineList.get(i));
             }
-            wineList.subList(0, Config.PRODUCTS_PER_PAGE).clear();
+            mWineList.subList(0, Config.PRODUCTS_PER_PAGE).clear();
         }
         if(listSize <= Config.PRODUCTS_PER_PAGE){
-            products.addAll(wineList);
-            wineList.clear();
+            products.addAll(mWineList);
+            mWineList.clear();
         }
-        wineFragment.onProductsListLoaded(products);
+        mWineFragment.onProductsListLoaded(products);
     }
 
     private void fireSpiritsCallback(){
-        int listSize = spiritsList.size();
+        int listSize = mSpiritsList.size();
         List<Product> products = new ArrayList<>();
         if(listSize > Config.PRODUCTS_PER_PAGE){
             for (int i = 0; i < Config.PRODUCTS_PER_PAGE; i++) {
-                products.add(spiritsList.get(i));
+                products.add(mSpiritsList.get(i));
             }
-            spiritsList.subList(0, Config.PRODUCTS_PER_PAGE).clear();
+            mSpiritsList.subList(0, Config.PRODUCTS_PER_PAGE).clear();
         }
         if(listSize <= Config.PRODUCTS_PER_PAGE){
-            products.addAll(spiritsList);
-            spiritsList.clear();
+            products.addAll(mSpiritsList);
+            mSpiritsList.clear();
         }
-        spiritsFragment.onProductsListLoaded(products);
+        mSpiritsFragment.onProductsListLoaded(products);
     }
 
 }
