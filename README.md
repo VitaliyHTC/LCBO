@@ -66,6 +66,24 @@ Simple screen with data about the app purposes<br>
 
 
 <br><br><br>
+<b>LCBO_1.00_Build_3.apk _2017.03.08 17:51</b>:<br>
+CRC32: 0F282E36<br>
+MD5: 4A4582CD112770B0A2D66576CCCBE8B5<br>
+SHA-1: AFA51E632C92419820CBACBA1AE2BBEF99AB3630<br>
+<br>
+New added:<br>
+- Products search screen.
+<br>
+Fixes:<br>
+- In shopping cart display items qty.<br>
+- In shopping cart display items when loading product from server.<br>
+
+<br>
+Download links:<br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbcGJxLUhXOVVLYnc" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/ovp5oIm63FHczw" target="_blank">Yandex Disk</a><br>
+
+<br><br><br>
 <b>LCBO_1.00_Build_2.apk _2017.03.07 16:18</b>:<br>
 CRC32: E25E37D5<br>
 MD5: 4CA487425976D7C12ABFE9D991110C5C<br>
