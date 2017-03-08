@@ -65,6 +65,21 @@ Simple screen with data about the app purposes<br>
 
 
 <br><br><br>
+<b>LCBO_1.00_Build_4.apk _2017.03.08 22:33</b>:<br>
+CRC32: DA98926E<br>
+MD5: 5A2B7818D915B7F70042FB4F963C1D91<br>
+SHA-1: 03D4841E90F1F2BECC70FF81122102B7E364A94A<br>
+<br>
+Changes:<br>
+- Search. Work with all text fields for stores and products. Same result for server and DB search.<br>
+
+<br>
+Download links:<br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbYmJFaENwcmM4aEU" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/c4c4qG6q3FJTdK" target="_blank">Yandex Disk</a><br>
+
+
+<br><br><br>
 <b>LCBO_1.00_Build_3.apk _2017.03.08 17:51</b>:<br>
 CRC32: 0F282E36<br>
 MD5: 4A4582CD112770B0A2D66576CCCBE8B5<br>
