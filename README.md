@@ -2,8 +2,7 @@
 Android, Retrofit, ORMLite, Picasso, ... lcboapi.com ...<br><br><br>
 Well, most of tasks implemented.<br>
 Not implemented:<br>
-Product search screen and Favorite stores.<br>
-Product search screen partialy similar to stores search. So no problems to make it.<br>
+Favorite stores screen.<br>
 For favourite stores crated table in DB, so rest implementation is work with GUI design and little code.<br>
 <br>
 The rest work fine.
@@ -71,12 +70,10 @@ CRC32: 0F282E36<br>
 MD5: 4A4582CD112770B0A2D66576CCCBE8B5<br>
 SHA-1: AFA51E632C92419820CBACBA1AE2BBEF99AB3630<br>
 <br>
-New added:<br>
-- Products search screen.
-<br>
-Fixes:<br>
-- In shopping cart display items qty.<br>
-- In shopping cart display items when loading product from server.<br>
+Changes:<br>
+- Products search screen added.<br>
+- In shopping cart display items qty fixed.<br>
+- In shopping cart display items when loading product from server fixed.<br>
 
 <br>
 Download links:<br>
