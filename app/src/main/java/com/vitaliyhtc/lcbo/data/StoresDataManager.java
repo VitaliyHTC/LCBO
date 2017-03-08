@@ -199,6 +199,11 @@ public class StoresDataManager {
             }
             if(!searchQuery.isEmpty()){
                 where.like("name", "%"+searchQuery+"%");
+                where.like("tags", "%"+searchQuery+"%");
+                where.like("addressLine1", "%"+searchQuery+"%");
+                where.like("addressLine2", "%"+searchQuery+"%");
+                where.like("city", "%"+searchQuery+"%");
+                where.or(5);
                 if(containsTrueValues){
                     where.and();
                 }

@@ -184,6 +184,19 @@ public class ProductsDataManager {
             }
             if(!searchQuery.isEmpty()){
                 where.like("name", "%"+searchQuery+"%");
+                where.like("tags", "%"+searchQuery+"%");
+                where.like("stockType", "%"+searchQuery+"%");
+                where.like("primaryCategory", "%"+searchQuery+"%");
+                where.like("secondaryCategory", "%"+searchQuery+"%");
+                where.like("origin", "%"+searchQuery+"%");
+                where.like("producerName", "%"+searchQuery+"%");
+                where.like("varietal", "%"+searchQuery+"%");
+                where.like("style", "%"+searchQuery+"%");
+                where.like("tertiaryCategory", "%"+searchQuery+"%");
+                where.or(10);
+                if(containsTrueValues){
+                    where.and();
+                }
             }
 
             if(containsTrueValues){
