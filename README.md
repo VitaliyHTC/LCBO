@@ -1,11 +1,6 @@
 # LCBO
 Android, Retrofit, ORMLite, Picasso, ... lcboapi.com ...<br><br><br>
-Well, most of tasks implemented.<br>
-Not implemented:<br>
-Favorite stores screen.<br>
-For favourite stores crated table in DB, so rest implementation is work with GUI design and little code.<br>
-<br>
-The rest work fine.
+All tasks implemented.<br><br>
 
 
 
