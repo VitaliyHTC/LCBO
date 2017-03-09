@@ -64,6 +64,23 @@ Simple screen with data about the app purposes<br>
 <br><br><br>
 
 
+
+
+<br><br><br>
+<b>LCBO_1.00_Build_5.apk _2017.03.09 13:53</b>:<br>
+CRC32: 784A4A02<br>
+MD5: 4FEC79277D64B76C9E73465F5DD9CC2B<br>
+SHA-1: 2B11E8715C11151F555B5C7D7114F7DD6611DA45<br>
+<br>
+Changes:<br>
+- Favorite stores added.<br>
+
+<br>
+Download links:<br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbS2ZPU3UxTEl5NEU" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/fsg81Dqm3FM2AB" target="_blank">Yandex Disk</a><br>
+
+
 <br><br><br>
 <b>LCBO_1.00_Build_4.apk _2017.03.08 22:33</b>:<br>
 CRC32: DA98926E<br>
