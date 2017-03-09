@@ -84,9 +84,8 @@
 
 
 
-
     <Button
-        android:text="Disabled!"
+        android:text="@string/about_button_disabled"
         android:textAllCaps="false"
         android:textSize="13sp"
         android:layout_width="wrap_content"
@@ -96,9 +95,10 @@
         android:layout_marginTop="8dp"
         android:id="@+id/button_disabled"
         android:layout_below="@+id/text_view_app_description"
-        style="@style/Widget.AppCompat.Button.Small" />
+        style="@style/Widget.AppCompat.Button.Small"
+        android:visibility="gone" />
     <Button
-        android:text="clearStoresTable()"
+        android:text="@string/about_button_clearstorestable"
         android:textAllCaps="false"
         android:textSize="13sp"
         android:layout_width="wrap_content"
@@ -108,9 +108,10 @@
         android:layout_marginTop="8dp"
         android:id="@+id/button_clear_stores_table"
         android:layout_below="@+id/button_disabled"
-        style="@style/Widget.AppCompat.Button.Small" />
+        style="@style/Widget.AppCompat.Button.Small"
+        android:visibility="gone" />
     <Button
-        android:text="clearProductsTable()"
+        android:text="@string/about_button_clearproductstable"
         android:textAllCaps="false"
         android:textSize="13sp"
         android:layout_width="wrap_content"
@@ -120,6 +121,7 @@
         android:layout_marginTop="8dp"
         android:id="@+id/button_clear_products_table"
         android:layout_below="@+id/button_clear_stores_table"
-        style="@style/Widget.AppCompat.Button.Small" />
+        style="@style/Widget.AppCompat.Button.Small"
+        android:visibility="gone" />
 
 </RelativeLayout>

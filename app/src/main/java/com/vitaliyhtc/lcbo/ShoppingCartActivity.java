@@ -48,7 +48,7 @@ public class ShoppingCartActivity extends CoreActivity
         mShoppingCartDataManager.onDestroy();
     }
 
-    public void initProductsList(){
+    private void initProductsList(){
         List<ShoppingCart> shoppingCarts = mShoppingCartDataManager.getAllShoppingCartsFromDb();
         mShoppingCarts = shoppingCarts;
         List<Integer> idsList = new ArrayList<>();

@@ -42,32 +42,46 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/store_key_name"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="0dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/store_key_name"
-                android:textSize="@dimen/detail_activity_key_text_size"
-                android:textColor="@color/detail_activity_key_text_color"/>
-            <TextView
-                android:id="@+id/store_value_name"
-                android:layout_marginTop="0dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/store_value_def"
-                android:textSize="@dimen/detail_activity_value_text_size"
-                android:textColor="@color/detail_activity_value_text_color"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/store_key_name"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/store_favorite_star"
+                    android:layout_toStartOf="@+id/store_favorite_star"
+                    android:text="@string/store_key_name"
+                    android:textSize="@dimen/detail_activity_key_text_size"
+                    android:textColor="@color/detail_activity_key_text_color"/>
+                <TextView
+                    android:id="@+id/store_value_name"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_below="@id/store_key_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/store_favorite_star"
+                    android:layout_toStartOf="@+id/store_favorite_star"
+                    android:text="@string/store_value_def"
+                    android:textSize="@dimen/detail_activity_value_text_size"
+                    android:textColor="@color/detail_activity_value_text_color"/>
+                <ImageView
+                    android:id="@+id/store_favorite_star"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="8dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_star_border_black_36dp"
+                    android:contentDescription="@string/store_detail_activity_favorite_star"/>
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/store_key_tags"

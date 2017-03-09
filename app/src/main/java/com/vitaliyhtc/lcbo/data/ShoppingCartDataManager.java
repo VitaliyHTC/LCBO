@@ -33,7 +33,10 @@ public class ShoppingCartDataManager {
     private DatabaseHelper mDatabaseHelper = null;
 
     private List<Product> mProducts = new ArrayList<>();
-    private int productsNumberToLoad;
+    private int mProductsNumberToLoad;
+    private int mProductsNumberLoaded;
+    private int mTryCounter;
+
 
 
 
@@ -121,7 +124,7 @@ public class ShoppingCartDataManager {
 
 
     public void LoadProductsByIds(List<Integer> idsList){
-        productsNumberToLoad = idsList.size();
+        mProductsNumberToLoad = idsList.size();
         for (Integer productId : idsList) {
             getProductById(productId);
         }
@@ -143,6 +146,11 @@ public class ShoppingCartDataManager {
                 if (getNetworkAvailability()) {
                     getProductByIdFromServer(productId);
                 }
+            }
+
+            mTryCounter++;
+            if(mTryCounter == mProductsNumberToLoad && mProductsNumberLoaded < mProductsNumberToLoad){
+                ((ShoppingCartActivity) mContext).onProductsListLoaded(mProducts);
             }
 
         } catch (SQLException e) {
@@ -180,7 +188,8 @@ public class ShoppingCartDataManager {
 
     private void onGetProductByIdResult(Product product) {
         mProducts.add(product);
-        if(mProducts.size() == productsNumberToLoad){
+        mProductsNumberLoaded++;
+        if(mProducts.size() == mProductsNumberToLoad){
             if(mContext instanceof ShoppingCartActivity){
                 ((ShoppingCartActivity) mContext).onProductsListLoaded(mProducts);
             }

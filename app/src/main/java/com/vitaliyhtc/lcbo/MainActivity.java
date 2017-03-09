@@ -357,6 +357,7 @@ public class MainActivity extends CoreActivity
 
         Intent intent = new Intent(this, StoreDetailActivity.class);
         intent.putExtra("targetStoreId", storeId);
+        intent.putExtra("activityFirst", StoreDetailActivity.ACTIVITY_MAIN);
         startActivity(intent);
     }
 

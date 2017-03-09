@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.vitaliyhtc.lcbo.data.DatabaseHelper;
+import com.vitaliyhtc.lcbo.data.FavoriteStoreDataManager;
+import com.vitaliyhtc.lcbo.model.FavoriteStore;
 import com.vitaliyhtc.lcbo.model.Store;
 import com.vitaliyhtc.lcbo.model.StoreResult;
 import com.vitaliyhtc.lcbo.rest.ApiInterface;
@@ -35,10 +38,15 @@ import retrofit2.Response;
 public class StoreDetailActivity extends AppCompatActivity {
     private static final String LOG_TAG = StoreDetailActivity.class.getSimpleName();
 
+    public static final int ACTIVITY_MAIN = 380;
+    public static final int ACTIVITY_FAVORITES = 381;
+
     private static final int REQUEST_PHONE_CALL = 0xB0B;
     private Intent makeCallIntent = null;
 
     private Store mStore;
+
+    private FavoriteStoreDataManager mFavoriteStoreDataManager = new FavoriteStoreDataManager(this);
 
     // You'll need this in your class to cache the helper in the class.
     private DatabaseHelper mDatabaseHelper = null;
@@ -63,13 +71,22 @@ public class StoreDetailActivity extends AppCompatActivity {
             OpenHelperManager.releaseHelper();
             mDatabaseHelper = null;
         }
+        mFavoriteStoreDataManager.onDestroy();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = NavUtils.getParentActivityIntent(this);
+                Intent intent;
+                int activityFirst = getIntent().getExtras().getInt("activityFirst");
+                if (activityFirst == ACTIVITY_MAIN){
+                    intent = new Intent(this, MainActivity.class);
+                } else if (activityFirst == ACTIVITY_FAVORITES){
+                    intent = new Intent(this, FavoritesStoresActivity.class);
+                } else {
+                    intent = NavUtils.getParentActivityIntent(this);
+                }
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
@@ -182,6 +199,9 @@ public class StoreDetailActivity extends AppCompatActivity {
         setMakeCallOnClickListener();
         setShowProductsOnClickListener();
         setOpenMapOnClickListener();
+
+        setFavoriteStarState();
+        setFavoriteStarOnClickListener();
 
         setActivityTitle(store.getName());
 
@@ -315,6 +335,41 @@ public class StoreDetailActivity extends AppCompatActivity {
 
         Intent geoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
         startActivity(geoIntent);
+    }
+
+
+
+    private void setFavoriteStarOnClickListener(){
+        final ImageView button = (ImageView) findViewById(R.id.store_favorite_star);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onFavoriteStarClick();
+            }
+        });
+    }
+
+    private void onFavoriteStarClick(){
+        final ImageView favoriteImageView = (ImageView) findViewById(R.id.store_favorite_star);
+        int storeId = mStore.getId();
+
+        if(mFavoriteStoreDataManager.isStoreFavoriteById(storeId)){
+            mFavoriteStoreDataManager.removeFavoriteStoreById(storeId);
+            favoriteImageView.setImageResource(R.drawable.ic_star_border_black_36dp);
+        } else {
+            mFavoriteStoreDataManager.saveFavoriteStoreToDb(new FavoriteStore(storeId));
+            favoriteImageView.setImageResource(R.drawable.ic_star_black_36dp);
+        }
+    }
+
+    private void setFavoriteStarState(){
+        final ImageView favoriteImageView = (ImageView) findViewById(R.id.store_favorite_star);
+        int storeId = mStore.getId();
+
+        if(mFavoriteStoreDataManager.isStoreFavoriteById(storeId)){
+            favoriteImageView.setImageResource(R.drawable.ic_star_black_36dp);
+        } else {
+            favoriteImageView.setImageResource(R.drawable.ic_star_border_black_36dp);
+        }
     }
 
 

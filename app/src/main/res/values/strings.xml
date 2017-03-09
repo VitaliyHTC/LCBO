@@ -75,7 +75,9 @@
     <string name="store_key_id">Store ID:</string>
 
     <string name="store_detail_activity_error_image">Error image. Meme face whyyy!</string>
+    <string name="store_detail_activity_favorite_star">Favorite Store Star</string>
     <string name="store_detail_activity_error_text">Well, this should not happen!\r\nBut you see this.\r\nThis could happen because of the inability to obtain Store by its id.</string>
+
     <string name="products_tab_beer">Beer</string>
     <string name="products_tab_wine">Wine</string>
     <string name="products_tab_spirits">Spirits</string>
@@ -126,6 +128,7 @@
     <string name="product_key_limited_time_offer_ends_on">Limited time offer ends on:</string>
     <string name="product_key_bonus_reward_miles">Bonus reward miles:</string>
     <string name="product_key_bonus_reward_miles_ends_on">Bonus reward miles ends on:</string>
+
     <string name="products_details_dialog_product_image">Product image</string>
     <string name="shopping_cart_dialog_quantity">QTY:</string>
     <string name="shopping_cart_dialog_minus">-</string>
@@ -133,6 +136,10 @@
     <string name="product_key_price_per_item">Price per item:</string>
     <string name="product_key_price_total">Total price:</string>
     <string name="shopping_cart_activity_key_total_price_of_products">Total price of products:</string>
+    <string name="about_button_disabled">Disabled!</string>
+    <string name="about_button_clearstorestable">clearStoresTable()</string>
+    <string name="about_button_clearproductstable">clearProductsTable()</string>
+    <string name="favorite_store_remove_from_favorites_button">Remove from favorites button</string>
 
 
 </resources>
