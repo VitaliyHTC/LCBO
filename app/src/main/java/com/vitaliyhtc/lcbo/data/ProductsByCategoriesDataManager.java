@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.data;
 
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -8,7 +9,6 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.ProductsByCategoriesActivity;
 import com.vitaliyhtc.lcbo.ProductsTab;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.model.ProductsResult;
@@ -29,7 +29,7 @@ public class ProductsByCategoriesDataManager {
 
     private static final String LOG_TAG = ProductsByCategoriesDataManager.class.getSimpleName();
 
-    private ProductsByCategoriesActivity mContext;
+    private DataManagerCallbacks mContext;
 
     // You'll need this in your class to cache the helper in the class.
     private DatabaseHelper mDatabaseHelper = null;
@@ -64,13 +64,13 @@ public class ProductsByCategoriesDataManager {
 
 
 
-    public ProductsByCategoriesDataManager(ProductsByCategoriesActivity mContext) {
+    public ProductsByCategoriesDataManager(DataManagerCallbacks mContext) {
         this.mContext = mContext;
     }
 
     public void init(){
         if (Config.LCBO_API_ACCESS_KEY.isEmpty()) {
-            Toast.makeText(mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -89,7 +89,7 @@ public class ProductsByCategoriesDataManager {
      */
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
-            mDatabaseHelper = OpenHelperManager.getHelper(mContext, DatabaseHelper.class);
+            mDatabaseHelper = OpenHelperManager.getHelper((Context)mContext, DatabaseHelper.class);
             try {
                 mIncrementalCounter = (int) mDatabaseHelper.getProductDao().countOf();
             } catch (SQLException e) {
@@ -127,7 +127,7 @@ public class ProductsByCategoriesDataManager {
         } else if(getNetworkAvailability()){
             initialLoadFromServerAndSaveToDb();
         } else {
-            Toast.makeText(mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
             uniqueProductsLoaded.clear();
             sendInitialResultToActivity(uniqueProductsLoaded);
         }
@@ -203,7 +203,7 @@ public class ProductsByCategoriesDataManager {
                         }
                     }
 
-                    Toast.makeText(mContext, "loadFromServerAndSaveToDb() :: Page: "+productsPage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText((Context)mContext, "loadFromServerAndSaveToDb() :: Page: "+productsPage, Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e(LOG_TAG, "loadFromServerAndSaveToDb() - response problem.");
                 }
@@ -284,7 +284,7 @@ public class ProductsByCategoriesDataManager {
     private void initialLoadFromDb(){
         long initialProductsInDbCount = getCountOfProductsInDatabase();
         if(initialProductsInDbCount == 0){
-            Toast.makeText(mContext, "No products in DB. No internet connection", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, "No products in DB. No internet connection", Toast.LENGTH_LONG).show();
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -337,7 +337,7 @@ public class ProductsByCategoriesDataManager {
             pageOffsetLoadedFromServer = mContext.getProductsLoaded()/Config.PRODUCTS_PER_PAGE - 1;
             loadFromServerAndSaveToDb(numberOfItems, category);
         } else {
-            Toast.makeText(mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
             uniqueProductsLoaded.clear();
             sendResultToActivity(uniqueProductsLoaded, category);
         }
@@ -559,7 +559,7 @@ public class ProductsByCategoriesDataManager {
     }
 
     private boolean getNetworkAvailability() {
-        return Utils.isNetworkAvailable(mContext);
+        return Utils.isNetworkAvailable((Context)mContext);
     }
 
     private int getMinOf(int a, int b, int c){
@@ -574,7 +574,7 @@ public class ProductsByCategoriesDataManager {
         return smallest;
     }
 
-    public interface ProductsByCategoriesDataManagerCallbacks{
+    public interface DataManagerCallbacks {
         void onDataManagerInitialResultLoaded(List<Product> products);
         void onDataManagerResultLoaded(List<Product> products, int category);
         int getProductsLoaded();

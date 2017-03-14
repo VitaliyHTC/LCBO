@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.vitaliyhtc.lcbo.MainActivity;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.model.Store;
 
@@ -18,7 +17,7 @@ import java.util.List;
 public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder> {
     private static final String LOG_TAG = "StoresAdapter";
 
-    private MainActivity mContext;
+    private StoreItemClickCallbacks mContext;
     private List<Store> mStores;
 
     /**
@@ -44,7 +43,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         }
     }
 
-    public StoresAdapter(MainActivity context) {
+    public StoresAdapter(StoreItemClickCallbacks context) {
         mContext = context;
         mStores = new ArrayList<>();
     }
@@ -94,4 +93,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         return mStores.size();
     }
 
+    public interface StoreItemClickCallbacks{
+        void startStoreDetailActivity(int positionInAdapter);
+    }
 }

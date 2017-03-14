@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.adapter;
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.vitaliyhtc.lcbo.ProductsSearchActivity;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.model.Product;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> {
     private static final String LOG_TAG = "ProductsAdapter";
 
-    private ProductsSearchActivity mContext;
+    private ProductItemClickCallbacks mContext;
     private List<Product> mProducts;
 
     /**
@@ -57,7 +57,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
         }
     }
 
-    public ProductsAdapter(ProductsSearchActivity context){
+    public ProductsAdapter(ProductItemClickCallbacks context){
         mContext = context;
         mProducts = new ArrayList<>();
     }
@@ -99,7 +99,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
         // with that element
         Product currentProduct = mProducts.get(position);
         viewHolder.getTitleTextView().setText(currentProduct.getName());
-        Picasso.with(mContext.getApplicationContext())
+        Picasso.with(((Context)mContext).getApplicationContext())
                 .load(currentProduct.getImageThumbUrl())
                 .placeholder(R.drawable.list_item_bg)
                 .error(R.drawable.ic_broken_image)

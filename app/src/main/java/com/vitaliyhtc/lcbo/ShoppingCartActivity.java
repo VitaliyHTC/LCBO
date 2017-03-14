@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCartActivity extends CoreActivity
-        implements ShoppingCartAdapter.ProductItemClickCallbacks, ShoppingCartDialogCloseListener {
+        implements ShoppingCartAdapter.ProductItemClickCallbacks, ShoppingCartDialogCloseListener,
+        ShoppingCartAdapter.ProductItemCount, ShoppingCartDataManager.DataManagerCallbacks{
     public static final String LOG_TAG = ShoppingCartActivity.class.getSimpleName();
 
     private ShoppingCartAdapter mShoppingCartAdapter = new ShoppingCartAdapter(this);
@@ -58,6 +59,7 @@ public class ShoppingCartActivity extends CoreActivity
         mShoppingCartDataManager.LoadProductsByIds(idsList);
     }
 
+    @Override
     public void onProductsListLoaded(List<Product> products){
         loadProducts(products);
     }
@@ -93,6 +95,7 @@ public class ShoppingCartActivity extends CoreActivity
         mShoppingCartAdapter.notifyDataSetChanged();
     }
 
+    @Override
     public int getProductItemCountForId(int id){
         int count = 0;
         for (ShoppingCart shoppingCart:mShoppingCarts){

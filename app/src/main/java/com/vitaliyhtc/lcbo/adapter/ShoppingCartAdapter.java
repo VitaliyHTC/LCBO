@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.vitaliyhtc.lcbo.R;
-import com.vitaliyhtc.lcbo.ShoppingCartActivity;
 import com.vitaliyhtc.lcbo.model.Product;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ViewHolder> {
     private static final String LOG_TAG = "ShoppingCartAdapter";
 
-    private ShoppingCartActivity mContext;
+    private ProductItemClickCallbacks mContext;
     private List<Product> mProducts;
 
     /**
@@ -61,7 +61,7 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         }
     }
 
-    public ShoppingCartAdapter(ShoppingCartActivity context){
+    public ShoppingCartAdapter(ProductItemClickCallbacks context){
         mContext = context;
         mProducts = new ArrayList<>();
     }
@@ -91,9 +91,9 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         // with that element
         Product currentProduct = mProducts.get(position);
         viewHolder.getTitleTextView().setText(currentProduct.getName());
-        String itemCount = "Qty: "+mContext.getProductItemCountForId(getProductAtPosition(position).getId());
+        String itemCount = "Qty: "+((ProductItemCount)mContext).getProductItemCountForId(getProductAtPosition(position).getId());
         viewHolder.getCountTextView().setText(itemCount);
-        Picasso.with(mContext.getApplicationContext())
+        Picasso.with(((Context)mContext).getApplicationContext())
                 .load(currentProduct.getImageThumbUrl())
                 .placeholder(R.drawable.list_item_bg)
                 .error(R.drawable.ic_broken_image)
@@ -115,5 +115,8 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
     public interface ProductItemClickCallbacks{
         void onProductItemDetailsClicked(int position);
         void onProductItemDeleteClicked(int position);
+    }
+    public interface ProductItemCount{
+        int getProductItemCountForId(int id);
     }
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductsByCategoriesActivity extends CoreActivity
-        implements ProductsByCategoriesDataManager.ProductsByCategoriesDataManagerCallbacks,
+        implements ProductsByCategoriesDataManager.DataManagerCallbacks,
         ProductsTab.RequestForProductsByCategory {
 
     private ProductsTab mBeerFragment;

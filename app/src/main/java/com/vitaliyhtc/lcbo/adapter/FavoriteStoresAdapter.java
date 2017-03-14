@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.vitaliyhtc.lcbo.FavoritesStoresActivity;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.model.Store;
 
@@ -17,7 +16,7 @@ import java.util.List;
 public class FavoriteStoresAdapter extends RecyclerView.Adapter<FavoriteStoresAdapter.ViewHolder> {
     private static final String LOG_TAG = "FavoriteStoresAdapter";
 
-    private FavoritesStoresActivity mContext;
+    private StoreItemClickCallbacks mContext;
     private List<Store> mStores;
 
     /**
@@ -49,7 +48,7 @@ public class FavoriteStoresAdapter extends RecyclerView.Adapter<FavoriteStoresAd
         }
     }
 
-    public FavoriteStoresAdapter(FavoritesStoresActivity context){
+    public FavoriteStoresAdapter(StoreItemClickCallbacks context){
         mContext = context;
         mStores = new ArrayList<>();
     }

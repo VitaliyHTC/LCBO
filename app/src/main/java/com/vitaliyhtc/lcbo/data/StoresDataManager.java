@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.data;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -8,7 +9,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.MainActivity;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
 import com.vitaliyhtc.lcbo.model.Store;
 import com.vitaliyhtc.lcbo.model.StoresResult;
@@ -33,7 +33,7 @@ public class StoresDataManager {
 
     private static final String LOG_TAG = StoresDataManager.class.getSimpleName();
 
-    private MainActivity mContext;
+    private DataManagerCallbacks mContext;
 
     private List<Store> mStoresResult = new ArrayList<>();
     private List<Store> mListToAdd = new ArrayList<>();
@@ -46,13 +46,13 @@ public class StoresDataManager {
     /**
      * @param context MainActivity context
      */
-    public StoresDataManager(MainActivity context) {
+    public StoresDataManager(DataManagerCallbacks context) {
         this.mContext = context;
     }
 
     public void init(){
         if (Config.LCBO_API_ACCESS_KEY.isEmpty()) {
-            Toast.makeText(mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -71,7 +71,7 @@ public class StoresDataManager {
      */
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
-            mDatabaseHelper = OpenHelperManager.getHelper(mContext, DatabaseHelper.class);
+            mDatabaseHelper = OpenHelperManager.getHelper((Context)mContext, DatabaseHelper.class);
         }
         return mDatabaseHelper;
     }
@@ -101,7 +101,7 @@ public class StoresDataManager {
             long storedInDatabaseCounter = getCountOfStoresInDatabase();
             int pagesLoaded = (int) storedInDatabaseCounter/Config.STORES_PER_PAGE;
 
-            Toast.makeText(mContext, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context)mContext, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
 
             loadAndSaveStores(pagesLoaded+1);
         } else {
@@ -160,7 +160,7 @@ public class StoresDataManager {
                     int newOffset = offset+1;
                     loadAndSaveStores(newOffset);
                 } else {
-                    Toast.makeText(mContext, "loadAndSaveStores() :: Loading finished.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText((Context)mContext, "loadAndSaveStores() :: Loading finished.", Toast.LENGTH_SHORT).show();
                     getSearchStoresPage(1);
                 }
 
@@ -254,7 +254,7 @@ public class StoresDataManager {
             queryBuilder.limit(storesPerPage);
             mStoresResult.addAll(storeDao.query(queryBuilder.prepare()));
 
-            Toast.makeText(mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context)mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
 
             mContext.onStoresSearchListLoaded(mStoresResult, offset);
         } catch (SQLException e) {
@@ -296,13 +296,13 @@ public class StoresDataManager {
                 queryBuilder.limit(storesPerPage);
                 mStoresResult.addAll(storeDao.query(queryBuilder.prepare()));
 
-                Toast.makeText(mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
+                Toast.makeText((Context)mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
                 onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
             } else if (getNetworkAvailability()) {
-                Toast.makeText(mContext, "Load from Network", Toast.LENGTH_SHORT).show();
+                Toast.makeText((Context)mContext, "Load from Network", Toast.LENGTH_SHORT).show();
                 getStoresPageFromNetwork(offset, isInitialLoading);
             } else {
-                Toast.makeText(mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+                Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
                 onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
             }
 
@@ -379,7 +379,7 @@ public class StoresDataManager {
 
 
     private boolean getNetworkAvailability() {
-        return Utils.isNetworkAvailable(mContext);
+        return Utils.isNetworkAvailable((Context)mContext);
     }
 
     /**

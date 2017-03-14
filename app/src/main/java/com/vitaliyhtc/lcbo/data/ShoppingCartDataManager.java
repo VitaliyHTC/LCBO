@@ -7,7 +7,6 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.ShoppingCartActivity;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.model.ProductResult;
 import com.vitaliyhtc.lcbo.model.ShoppingCart;
@@ -150,7 +149,7 @@ public class ShoppingCartDataManager {
 
             mTryCounter++;
             if(mTryCounter == mProductsNumberToLoad && mProductsNumberLoaded < mProductsNumberToLoad){
-                ((ShoppingCartActivity) mContext).onProductsListLoaded(mProducts);
+                ((DataManagerCallbacks) mContext).onProductsListLoaded(mProducts);
             }
 
         } catch (SQLException e) {
@@ -190,9 +189,7 @@ public class ShoppingCartDataManager {
         mProducts.add(product);
         mProductsNumberLoaded++;
         if(mProducts.size() == mProductsNumberToLoad){
-            if(mContext instanceof ShoppingCartActivity){
-                ((ShoppingCartActivity) mContext).onProductsListLoaded(mProducts);
-            }
+            ((DataManagerCallbacks) mContext).onProductsListLoaded(mProducts);
         }
     }
 
@@ -200,5 +197,9 @@ public class ShoppingCartDataManager {
 
     private boolean getNetworkAvailability() {
         return Utils.isNetworkAvailable(mContext);
+    }
+
+    public interface DataManagerCallbacks{
+        void onProductsListLoaded(List<Product> products);
     }
 }

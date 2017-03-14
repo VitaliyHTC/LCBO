@@ -1,12 +1,8 @@
 package com.vitaliyhtc.lcbo.util;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
-import java.io.ByteArrayOutputStream;
 
 public abstract class Utils {
 

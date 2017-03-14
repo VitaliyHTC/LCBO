@@ -1,12 +1,12 @@
 package com.vitaliyhtc.lcbo.data;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.ProductsByStoreActivity;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.model.ProductsByStoreResult;
 import com.vitaliyhtc.lcbo.rest.ApiInterface;
@@ -25,7 +25,7 @@ public class ProductsByStoreDataManager {
 
     private static final String LOG_TAG = ProductsByStoreDataManager.class.getSimpleName();
 
-    private ProductsByStoreActivity mContext;
+    private DataManagerCallbacks mContext;
     private int mTargetStoreId;
 
     private List<Product> mProductsResult = new ArrayList<>();
@@ -41,14 +41,14 @@ public class ProductsByStoreDataManager {
     /**
      * @param context MainActivity context
      */
-    public ProductsByStoreDataManager(ProductsByStoreActivity context, int targetStoreId) {
+    public ProductsByStoreDataManager(DataManagerCallbacks context, int targetStoreId) {
         this.mContext = context;
         this.mTargetStoreId = targetStoreId;
     }
 
     public void init(){
         if (Config.LCBO_API_ACCESS_KEY.isEmpty()) {
-            Toast.makeText(mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -67,7 +67,7 @@ public class ProductsByStoreDataManager {
      */
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
-            mDatabaseHelper = OpenHelperManager.getHelper(mContext, DatabaseHelper.class);
+            mDatabaseHelper = OpenHelperManager.getHelper((Context)mContext, DatabaseHelper.class);
             try {
                 mIncrementalCounter = (int) mDatabaseHelper.getProductDao().countOf();
             } catch (SQLException e) {
@@ -84,7 +84,7 @@ public class ProductsByStoreDataManager {
         if(getNetworkAvailability()){
             getProductsFromNetwork(offset, isInitialLoading);
         }else{
-            Toast.makeText(mContext, ":( We no have internet connection!", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, ":( We no have internet connection!", Toast.LENGTH_LONG).show();
             mProductsResult.clear();
             onProductsPageLoaded(offset, isInitialLoading, mProductsResult);
         }
@@ -159,7 +159,7 @@ public class ProductsByStoreDataManager {
 
 
     private boolean getNetworkAvailability() {
-        return Utils.isNetworkAvailable(mContext);
+        return Utils.isNetworkAvailable((Context)mContext);
     }
 
     public interface DataManagerCallbacks {

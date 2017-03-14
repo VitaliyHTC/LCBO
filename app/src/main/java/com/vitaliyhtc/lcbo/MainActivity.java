@@ -32,7 +32,8 @@ import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 import java.util.List;
 
 public class MainActivity extends CoreActivity
-        implements StoresDataManager.DataManagerCallbacks, SearchView.OnQueryTextListener {
+        implements StoresDataManager.DataManagerCallbacks, SearchView.OnQueryTextListener,
+        StoresAdapter.StoreItemClickCallbacks {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -351,6 +352,7 @@ public class MainActivity extends CoreActivity
         return mStoresAdapter.getItemCount();
     }
 
+    @Override
     public void startStoreDetailActivity(int positionInAdapter){
         Store store = mStoresAdapter.getStoreAtPosition(positionInAdapter);
         int storeId = store.getId();

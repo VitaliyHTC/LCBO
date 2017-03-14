@@ -6,7 +6,6 @@ import android.util.Log;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.FavoritesStoresActivity;
 import com.vitaliyhtc.lcbo.model.FavoriteStore;
 import com.vitaliyhtc.lcbo.model.Store;
 import com.vitaliyhtc.lcbo.model.StoreResult;
@@ -139,7 +138,7 @@ public class FavoriteStoreDataManager {
 
             mTryCounter++;
             if(mTryCounter == mStoresNumberToLoad && mStoresNumberLoaded < mStoresNumberToLoad){
-                ((FavoritesStoresActivity) mContext).onStoresListLoaded(mStores);
+                ((DataManagerCallbacks)mContext).onStoresListLoaded(mStores);
             }
 
         } catch (SQLException e) {
@@ -179,9 +178,7 @@ public class FavoriteStoreDataManager {
         mStores.add(store);
         mStoresNumberLoaded++;
         if(mStores.size() == mStoresNumberToLoad){
-            if(mContext instanceof FavoritesStoresActivity){
-                ((FavoritesStoresActivity) mContext).onStoresListLoaded(mStores);
-            }
+            ((DataManagerCallbacks)mContext).onStoresListLoaded(mStores);
         }
     }
 
@@ -189,5 +186,9 @@ public class FavoriteStoreDataManager {
 
     private boolean getNetworkAvailability() {
         return Utils.isNetworkAvailable(mContext);
+    }
+
+    public interface DataManagerCallbacks{
+        void onStoresListLoaded(List<Store> stores);
     }
 }

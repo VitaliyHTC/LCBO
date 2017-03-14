@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.data;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -8,7 +9,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.ProductsSearchActivity;
 import com.vitaliyhtc.lcbo.helpers.ProductsSearchParameters;
 import com.vitaliyhtc.lcbo.model.Product;
 import com.vitaliyhtc.lcbo.model.ProductsResult;
@@ -29,7 +29,7 @@ public class ProductsDataManager {
 
     private static final String LOG_TAG = ProductsDataManager.class.getSimpleName();
 
-    private ProductsSearchActivity mContext;
+    private DataManagerCallbacks mContext;
 
     private HashSet<Integer> mProductIds = new HashSet<>();
 
@@ -45,13 +45,13 @@ public class ProductsDataManager {
     /**
      * @param context ProductsSearchActivity context
      */
-    public ProductsDataManager(ProductsSearchActivity context) {
+    public ProductsDataManager(DataManagerCallbacks context) {
         this.mContext = context;
     }
 
     public void init(){
         if (Config.LCBO_API_ACCESS_KEY.isEmpty()) {
-            Toast.makeText(mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
+            Toast.makeText((Context)mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -70,7 +70,7 @@ public class ProductsDataManager {
      */
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
-            mDatabaseHelper = OpenHelperManager.getHelper(mContext, DatabaseHelper.class);
+            mDatabaseHelper = OpenHelperManager.getHelper((Context)mContext, DatabaseHelper.class);
         }
         return mDatabaseHelper;
     }
@@ -236,7 +236,7 @@ public class ProductsDataManager {
             queryBuilder.limit(productsPerPage);
             mProductsResult.addAll(productDao.query(queryBuilder.prepare()));
 
-            Toast.makeText(mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context)mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
 
             int productId;
             for (Product product : mProductsResult) {
@@ -293,12 +293,12 @@ public class ProductsDataManager {
                     }
                 }
 
-                Toast.makeText(mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
+                Toast.makeText((Context)mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
                 onProductsPageLoaded(offset, isInitialLoading, mUniqueProducts);
             } else if (getNetworkAvailability()) {
                 getProductsPageFromNetwork(offset, isInitialLoading);
             } else {
-                Toast.makeText(mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+                Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
                 mUniqueProducts.clear();
                 onProductsPageLoaded(offset, isInitialLoading, mUniqueProducts);
             }
@@ -380,7 +380,7 @@ public class ProductsDataManager {
 
 
     private boolean getNetworkAvailability() {
-        return Utils.isNetworkAvailable(mContext);
+        return Utils.isNetworkAvailable((Context)mContext);
     }
 
     /**

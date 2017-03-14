@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FavoritesStoresActivity extends CoreActivity
-        implements FavoriteStoresAdapter.StoreItemClickCallbacks {
+        implements FavoriteStoresAdapter.StoreItemClickCallbacks,
+        FavoriteStoreDataManager.DataManagerCallbacks {
     public static final String LOG_TAG = ShoppingCartActivity.class.getSimpleName();
 
     private FavoriteStoresAdapter mFavoritesStoresAdapter = new FavoriteStoresAdapter(this);
@@ -60,6 +61,7 @@ public class FavoritesStoresActivity extends CoreActivity
         mFavoriteStoreDataManager.LoadStoresByIds(idsList);
     }
 
+    @Override
     public void onStoresListLoaded(List<Store> stores) {
         loadStores(stores);
     }
