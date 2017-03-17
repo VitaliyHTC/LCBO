@@ -59,6 +59,19 @@ Simple screen with data about the app purposes<br>
 <br><br><br>
 
 
+<br><br><br>
+<b>LCBO_1.00_Build_6.apk _2017.03.18 00:28</b>:<br>
+CRC32: AC9B75F7<br>
+MD5: DFEC8B33FF12FEB38FFD6BCDF0CD583A<br>
+SHA-1: 2A6A6EF372A385B68A478A83EA3127482A001982<br>
+<br>
+Changes:<br>
+- All DB operations moved from main thread to AsyncTask.<br>
+
+<br>
+Download links:<br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbMTlJcGllYnNTRzg" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/SWVLSuiM3G7RfC" target="_blank">Yandex Disk</a><br>
 
 
 <br><br><br>
