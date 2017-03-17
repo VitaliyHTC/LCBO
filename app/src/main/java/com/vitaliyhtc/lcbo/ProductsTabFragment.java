@@ -44,12 +44,10 @@ public class ProductsTabFragment extends Fragment {
     }
 
 
-    class ProductsTabAdapter extends FragmentPagerAdapter {
-        private ProductsTab beerTab;
-        private ProductsTab wineTab;
-        private ProductsTab spiritsTab;
 
-        public ProductsTabAdapter(FragmentManager fm) {
+    class ProductsTabAdapter extends FragmentPagerAdapter {
+
+        ProductsTabAdapter(FragmentManager fm) {
             super(fm);
         }
 

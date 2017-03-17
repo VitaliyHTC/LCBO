@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.vitaliyhtc.lcbo.Config;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.model.Store;
 
@@ -79,8 +80,9 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(LOG_TAG, "Element " + position + " set.");
-
+        if(Config.IS_LOG_DEBUG){
+            Log.d(LOG_TAG, "Element " + position + " set.");
+        }
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         Store currentStore = mStores.get(position);

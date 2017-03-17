@@ -1,6 +1,7 @@
 package com.vitaliyhtc.lcbo.data;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -38,7 +39,6 @@ public class ShoppingCartDataManager {
 
 
 
-
     public ShoppingCartDataManager(Context context) {
         this.mContext = context;
     }
@@ -65,6 +65,16 @@ public class ShoppingCartDataManager {
 
 
 
+    /**
+     * Next 4 methods need to be wrapped in AsyncTask.
+     */
+    /**
+     * Need to be wrapped in AsyncTask.
+     * Looking for shopping cart in DB, and if cart not found in DB - return new empty cart.
+     *
+     * @param productId Product ID to find shopping cart
+     * @return          ShoppingCart
+     */
     public ShoppingCart getShoppingCartByProductId(int productId){
         ShoppingCart shoppingCart = null;
         try {
@@ -85,6 +95,12 @@ public class ShoppingCartDataManager {
         return shoppingCart;
     }
 
+    /**
+     * Need to be wrapped in AsyncTask.
+     * Save shopping cart to DB.
+     *
+     * @param shoppingCart  cart to save in DB.
+     */
     public void saveShoppingCartToDb(ShoppingCart shoppingCart){
         try {
             Dao<ShoppingCart, Integer> shoppingCartDao = getDatabaseHelper().getShoppingCartDao();
@@ -96,6 +112,12 @@ public class ShoppingCartDataManager {
         }
     }
 
+    /**
+     * Need to be wrapped in AsyncTask.
+     * Remove shopping cart by given ID.
+     *
+     * @param id    ID of cart, which you like to remove.
+     */
     public void removeShoppingCartById(int id){
         try {
             Dao<ShoppingCart, Integer> shoppingCartDao = getDatabaseHelper().getShoppingCartDao();
@@ -107,6 +129,12 @@ public class ShoppingCartDataManager {
         }
     }
 
+    /**
+     * Need to be wrapped in AsyncTask.
+     * Retrieve all shopping carts that presented in DB.
+     *
+     * @return  all shopping carts stored in DB.
+     */
     public List<ShoppingCart> getAllShoppingCartsFromDb(){
         List<ShoppingCart> shoppingCarts = new ArrayList<>();
         try {
@@ -129,33 +157,39 @@ public class ShoppingCartDataManager {
         }
     }
 
-    private void getProductById(int productId) {
-        Product product;
-        try {
-            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
-
-            // @return The object that has the ID field which equals id or null if no matches.
-            product = productDao.queryForId(productId);
-            if (product != null) {
-                onGetProductByIdResult(product);
+    private void getProductById(final int productId) {
+        AsyncTask<Void, Void, Product> getProductByIdAsyncTask = new AsyncTask<Void, Void, Product>() {
+            @Override
+            protected Product doInBackground(Void... params) {
+                Product product = null;
+                try {
+                    Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+                    // @return The object that has the ID field which equals id or null if no matches.
+                    product = productDao.queryForId(productId);
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in getProductById()", e);
+                    e.printStackTrace();
+                }
+                return product;
             }
-
-            // try to load from server
-            if (product == null) {
-                if (getNetworkAvailability()) {
-                    getProductByIdFromServer(productId);
+            @Override
+            protected void onPostExecute(Product product) {
+                if (product != null) {
+                    onGetProductByIdResult(product);
+                }
+                // try to load from server
+                if (product == null) {
+                    if (getNetworkAvailability()) {
+                        getProductByIdFromServer(productId);
+                    }
+                }
+                mTryCounter++;
+                if(mTryCounter == mProductsNumberToLoad && mProductsNumberLoaded < mProductsNumberToLoad){
+                    ((DataManagerCallbacks) mContext).onProductsListLoaded(mProducts);
                 }
             }
-
-            mTryCounter++;
-            if(mTryCounter == mProductsNumberToLoad && mProductsNumberLoaded < mProductsNumberToLoad){
-                ((DataManagerCallbacks) mContext).onProductsListLoaded(mProducts);
-            }
-
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in getProductById()", e);
-            e.printStackTrace();
-        }
+        };
+        getProductByIdAsyncTask.execute();
     }
 
     private void getProductByIdFromServer(int productId) {

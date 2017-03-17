@@ -16,4 +16,6 @@ public class Config {
     public static final String PRODUCT_CATEGORY_WINE = "Wine";
     public static final String PRODUCT_CATEGORY_SPIRITS = "Spirits";
 
+    public static final boolean IS_LOG_DEBUG = false;
+
 }

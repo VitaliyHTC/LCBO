@@ -1,6 +1,7 @@
 package com.vitaliyhtc.lcbo.data;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -98,16 +99,25 @@ public class StoresDataManager {
         mStoresSearchParameters = storesSearchParameters;
 
         if (getNetworkAvailability()) {
-            long storedInDatabaseCounter = getCountOfStoresInDatabase();
-            int pagesLoaded = (int) storedInDatabaseCounter/Config.STORES_PER_PAGE;
-
-            Toast.makeText((Context)mContext, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
-
-            loadAndSaveStores(pagesLoaded+1);
+            AsyncTask<Void, Void, Integer> nonameAsyncTask = new AsyncTask<Void, Void, Integer>() {
+                @Override
+                protected Integer doInBackground(Void... params) {
+                    long storedInDatabaseCounter = getCountOfStoresInDatabase();
+                    return (int) storedInDatabaseCounter/Config.STORES_PER_PAGE;
+                }
+                @Override
+                protected void onPostExecute(Integer pagesLoaded) {
+                    Toast.makeText((Context)mContext, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
+                    loadAndSaveStores(pagesLoaded+1);
+                }
+            };
+            nonameAsyncTask.execute();
         } else {
             getSearchStoresPage(1);
         }
     }
+
+
 
     /**
      * @param offset    from which page start load data, including provided number.
@@ -125,30 +135,37 @@ public class StoresDataManager {
                     StoresResult storesResult = response.body();
                     mListToAdd.clear();
                     mStoresResult = storesResult.getResult();
-                    int storesPage = storesResult.getPager().getCurrentPage();
+                    final int storesPage = storesResult.getPager().getCurrentPage();
 
-                    try{
-                        Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    final List<Store> storesToDb = new ArrayList<>();
+                    storesToDb.addAll(mStoresResult);
 
-                        int i = 0;
-                        int incrementalCounter;
-                        int storeId;
-                        for (Store store : mStoresResult) {
-                            storeId = store.getId();
-                            if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
-                                // Why storesPage-1 ? On first page elements numbers starts from 0!
-                                incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
-                                store.setIncrementalCounter(incrementalCounter);
-                                i++;
-                                mListToAdd.add(store);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+
+                                int i = 0;
+                                int incrementalCounter;
+                                int storeId;
+                                for (Store store : storesToDb) {
+                                    storeId = store.getId();
+                                    if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
+                                        // Why storesPage-1 ? On first page elements numbers starts from 0!
+                                        incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
+                                        store.setIncrementalCounter(incrementalCounter);
+                                        i++;
+                                        mListToAdd.add(store);
+                                    }
+                                }
+                                storeDao.create(mListToAdd);
+                            } catch (SQLException e) {
+                                Log.e(LOG_TAG, "Database exception", e);
+                                e.printStackTrace();
                             }
                         }
-                        storeDao.create(mListToAdd);
-                    } catch (SQLException e) {
-                        Log.e(LOG_TAG, "Database exception", e);
-                        e.printStackTrace();
-                    }
-
+                    });
                     //Toast.makeText(mContext, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e(LOG_TAG, "loadAndSaveStores() - response problem.");
@@ -180,91 +197,102 @@ public class StoresDataManager {
 
 
 
-    public void getSearchStoresPage(int offset){
+    public void getSearchStoresPage(final int offset){
         mStoresResult.clear();
-        try{
-            Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
-            long storesPerPage = Config.STORES_PER_PAGE;
 
-            // See: http://ormlite.com/javadoc/ormlite-core/com/j256/ormlite/stmt/QueryBuilder.html
-            long startRow = (offset - 1) * storesPerPage;
-            QueryBuilder<Store, Integer> queryBuilder = storeDao.queryBuilder();
+        AsyncTask<Void, Void, List<Store>> getSearchStoresPageAsyncTask = new AsyncTask<Void, Void, List<Store>>() {
+            @Override
+            protected List<Store> doInBackground(Void... params) {
+                try{
+                    Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    long storesPerPage = Config.STORES_PER_PAGE;
 
-            Where where = null;
-            boolean containsTrueValues = mStoresSearchParameters.containTrueValues();
-            String searchQuery = mStoresSearchParameters.getSearchStringQuery();
+                    // See: http://ormlite.com/javadoc/ormlite-core/com/j256/ormlite/stmt/QueryBuilder.html
+                    long startRow = (offset - 1) * storesPerPage;
+                    QueryBuilder<Store, Integer> queryBuilder = storeDao.queryBuilder();
 
-            if(containsTrueValues || (!searchQuery.isEmpty())){
-                where = queryBuilder.where();
+                    Where where = null;
+                    boolean containsTrueValues = mStoresSearchParameters.containTrueValues();
+                    String searchQuery = mStoresSearchParameters.getSearchStringQuery();
+
+                    if(containsTrueValues || (!searchQuery.isEmpty())){
+                        where = queryBuilder.where();
+                    }
+                    if(!searchQuery.isEmpty()){
+                        where.like("name", "%"+searchQuery+"%");
+                        where.like("tags", "%"+searchQuery+"%");
+                        where.like("addressLine1", "%"+searchQuery+"%");
+                        where.like("addressLine2", "%"+searchQuery+"%");
+                        where.like("city", "%"+searchQuery+"%");
+                        where.or(5);
+                        if(containsTrueValues){
+                            where.and();
+                        }
+                    }
+
+                    if(containsTrueValues){
+                        if(mStoresSearchParameters.isHasWheelchairAccessability()){
+                            where.eq("hasWheelchairAccessability", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasBilingualServices()){
+                            where.eq("hasBilingualServices", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasProductConsultant()){
+                            where.eq("hasProductConsultant", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasTastingBar()){
+                            where.eq("hasTastingBar", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasBeerColdRoom()){
+                            where.eq("hasBeerColdRoom", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasSpecialOccasionPermits()){
+                            where.eq("hasSpecialOccasionPermits", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasVintagesCorner()){
+                            where.eq("hasVintagesCorner", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasParking()){
+                            where.eq("hasParking", true);
+                            where.and();
+                        }
+                        if(mStoresSearchParameters.isHasTransitAccess()){
+                            where.eq("hasTransitAccess", true);
+                            where.and();
+                        }
+                        where.eq("isDead", false);
+                    }
+
+                    queryBuilder.orderBy("incrementalCounter", true);
+                    queryBuilder.offset(startRow);
+                    queryBuilder.limit(storesPerPage);
+                    mStoresResult.addAll(storeDao.query(queryBuilder.prepare()));
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in performStoresSearch()", e);
+                    e.printStackTrace();
+                }
+                return mStoresResult;
             }
-            if(!searchQuery.isEmpty()){
-                where.like("name", "%"+searchQuery+"%");
-                where.like("tags", "%"+searchQuery+"%");
-                where.like("addressLine1", "%"+searchQuery+"%");
-                where.like("addressLine2", "%"+searchQuery+"%");
-                where.like("city", "%"+searchQuery+"%");
-                where.or(5);
-                if(containsTrueValues){
-                    where.and();
-                }
+            @Override
+            protected void onPostExecute(List<Store> stores) {
+                Toast.makeText((Context)mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
+
+                mContext.onStoresSearchListLoaded(stores, offset);
             }
-
-            if(containsTrueValues){
-                if(mStoresSearchParameters.isHasWheelchairAccessability()){
-                    where.eq("hasWheelchairAccessability", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasBilingualServices()){
-                    where.eq("hasBilingualServices", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasProductConsultant()){
-                    where.eq("hasProductConsultant", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasTastingBar()){
-                    where.eq("hasTastingBar", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasBeerColdRoom()){
-                    where.eq("hasBeerColdRoom", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasSpecialOccasionPermits()){
-                    where.eq("hasSpecialOccasionPermits", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasVintagesCorner()){
-                    where.eq("hasVintagesCorner", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasParking()){
-                    where.eq("hasParking", true);
-                    where.and();
-                }
-                if(mStoresSearchParameters.isHasTransitAccess()){
-                    where.eq("hasTransitAccess", true);
-                    where.and();
-                }
-                where.eq("isDead", false);
-            }
-
-            queryBuilder.orderBy("incrementalCounter", true);
-            queryBuilder.offset(startRow);
-            queryBuilder.limit(storesPerPage);
-            mStoresResult.addAll(storeDao.query(queryBuilder.prepare()));
-
-            Toast.makeText((Context)mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
-
-            mContext.onStoresSearchListLoaded(mStoresResult, offset);
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in performStoresSearch()", e);
-            e.printStackTrace();
-        }
+        };
+        getSearchStoresPageAsyncTask.execute();
     }
 
 
 
+    // TODO: AsyncTask
     /**
      * Consumer must implement StoresDataManager.DataManagerCallbacks interface
      * for accepting of result. Method call one of two callback methods depending on
@@ -280,36 +308,63 @@ public class StoresDataManager {
      */
     public void getStoresPage(final int offset, final boolean isInitialLoading){
         mStoresResult.clear();
-        long storedInDatabaseCounter;
-        long storesPerPage = Config.STORES_PER_PAGE;
 
-        try{
-            Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
-            storedInDatabaseCounter = storeDao.countOf();
-
-            if(mContext.getCountOfStoresInAdapter() < storedInDatabaseCounter){
-                // See: http://ormlite.com/javadoc/ormlite-core/com/j256/ormlite/stmt/QueryBuilder.html
-                long startRow = (offset - 1) * storesPerPage;
-                QueryBuilder<Store, Integer> queryBuilder = storeDao.queryBuilder();
-                queryBuilder.orderBy("incrementalCounter", true);
-                queryBuilder.offset(startRow);
-                queryBuilder.limit(storesPerPage);
-                mStoresResult.addAll(storeDao.query(queryBuilder.prepare()));
-
-                Toast.makeText((Context)mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
-                onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
-            } else if (getNetworkAvailability()) {
-                Toast.makeText((Context)mContext, "Load from Network", Toast.LENGTH_SHORT).show();
-                getStoresPageFromNetwork(offset, isInitialLoading);
-            } else {
-                Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
-                onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
+        AsyncTask<Void, Void, Integer> getStoresPageAsyncTask = new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                int storedInDatabaseCounter = 0;
+                try {
+                    Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    storedInDatabaseCounter = (int)storeDao.countOf();
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in getStoresPageAsyncTask()", e);
+                    e.printStackTrace();
+                }
+                return storedInDatabaseCounter;
             }
+            @Override
+            protected void onPostExecute(Integer storedInDatabaseCounter) {
+                if(mContext.getCountOfStoresInAdapter() < storedInDatabaseCounter){
+                    getStoresPageFromDb(offset, isInitialLoading);
+                } else if (getNetworkAvailability()) {
+                    Toast.makeText((Context)mContext, "Load from Network", Toast.LENGTH_SHORT).show();
+                    getStoresPageFromNetwork(offset, isInitialLoading);
+                } else {
+                    Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+                    onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
+                }
+            }
+        };
+        getStoresPageAsyncTask.execute();
+    }
 
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in getStoresPage()", e);
-            e.printStackTrace();
-        }
+    private void getStoresPageFromDb(final int offset, final boolean isInitialLoading){
+        AsyncTask<Void, Void, List<Store>> getStoresPageFromDbAsyncTask = new AsyncTask<Void, Void, List<Store>>() {
+            @Override
+            protected List<Store> doInBackground(Void... params) {
+                List<Store> stores = new ArrayList<>();
+                try {
+                    Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    // See: http://ormlite.com/javadoc/ormlite-core/com/j256/ormlite/stmt/QueryBuilder.html
+                    long startRow = (offset - 1) * Config.STORES_PER_PAGE;
+                    QueryBuilder<Store, Integer> queryBuilder = storeDao.queryBuilder();
+                    queryBuilder.orderBy("incrementalCounter", true);
+                    queryBuilder.offset(startRow);
+                    queryBuilder.limit((long)Config.STORES_PER_PAGE);
+                    stores.addAll(storeDao.query(queryBuilder.prepare()));
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in getStoresPageFromDbAsyncTask()", e);
+                    e.printStackTrace();
+                }
+                return stores;
+            }
+            @Override
+            protected void onPostExecute(List<Store> stores) {
+                Toast.makeText((Context)mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
+                onStoresPageLoaded(offset, isInitialLoading, stores);
+            }
+        };
+        getStoresPageFromDbAsyncTask.execute();
     }
 
     private void onStoresPageLoaded(int offset, boolean isInitialLoading, List<Store> stores){
@@ -333,29 +388,37 @@ public class StoresDataManager {
                     StoresResult storesResult = response.body();
                     mListToAdd.clear();
                     mStoresResult = storesResult.getResult();
-                    int storesPage = storesResult.getPager().getCurrentPage();
+                    final int storesPage = storesResult.getPager().getCurrentPage();
 
-                    try{
-                        Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    final List<Store> storesToDb = new ArrayList<>();
+                    storesToDb.addAll(mStoresResult);
 
-                        int i = 0;
-                        int incrementalCounter;
-                        int storeId;
-                        for (Store store : mStoresResult) {
-                            storeId = store.getId();
-                            if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
-                                // Why storesPage-1 ? On first page elements numbers starts from 0!
-                                incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
-                                store.setIncrementalCounter(incrementalCounter);
-                                i++;
-                                mListToAdd.add(store);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+
+                                int i = 0;
+                                int incrementalCounter;
+                                int storeId;
+                                for (Store store : storesToDb) {
+                                    storeId = store.getId();
+                                    if(storeDao.queryBuilder().where().eq("id", storeId).countOf() == 0){
+                                        // Why storesPage-1 ? On first page elements numbers starts from 0!
+                                        incrementalCounter = (storesPage-1)*Config.STORES_PER_PAGE + i;
+                                        store.setIncrementalCounter(incrementalCounter);
+                                        i++;
+                                        mListToAdd.add(store);
+                                    }
+                                }
+                                storeDao.create(mListToAdd);
+                            } catch (SQLException e) {
+                                Log.e(LOG_TAG, "Database exception in getStoresPageFromNetwork()", e);
+                                e.printStackTrace();
                             }
                         }
-                        storeDao.create(mListToAdd);
-                    } catch (SQLException e) {
-                        Log.e(LOG_TAG, "Database exception in getStoresPageFromNetwork()", e);
-                        e.printStackTrace();
-                    }
+                    });
                 }else{
                     Log.e(LOG_TAG, "getStoresPageFromNetwork() - response problem.");
                 }

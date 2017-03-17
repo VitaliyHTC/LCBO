@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.vitaliyhtc.lcbo.Config;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.model.Product;
 
@@ -85,8 +86,9 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(LOG_TAG, "Element " + position + " set.");
-
+        if(Config.IS_LOG_DEBUG){
+            Log.d(LOG_TAG, "Element " + position + " set.");
+        }
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         Product currentProduct = mProducts.get(position);

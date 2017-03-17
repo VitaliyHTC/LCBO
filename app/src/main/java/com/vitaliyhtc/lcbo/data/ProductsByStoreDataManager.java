@@ -1,6 +1,7 @@
 package com.vitaliyhtc.lcbo.data;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -107,24 +108,30 @@ public class ProductsByStoreDataManager {
                     mListToAdd.clear();
                     mProductsResult = productsResult.getResult();
 
-                    try{
-                        Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+                    final List<Product> productsToDb = new ArrayList<>();
+                    productsToDb.addAll(mProductsResult);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
 
-                        int productId;
-                        for (Product product : mProductsResult){
-                            productId = product.getId();
-                            if(productDao.queryBuilder().where().eq("id", productId).countOf()==0){
-                                mIncrementalCounter++;
-                                product.setIncrementalCounter(mIncrementalCounter);
-                                mListToAdd.add(product);
+                                int productId;
+                                for (Product product : productsToDb){
+                                    productId = product.getId();
+                                    if(productDao.queryBuilder().where().eq("id", productId).countOf()==0){
+                                        mIncrementalCounter++;
+                                        product.setIncrementalCounter(mIncrementalCounter);
+                                        mListToAdd.add(product);
+                                    }
+                                }
+                                productDao.create(mListToAdd);
+                            } catch (SQLException e) {
+                                Log.e(LOG_TAG, "Database exception in getProductsFromNetwork()", e);
+                                e.printStackTrace();
                             }
                         }
-
-                        productDao.create(mListToAdd);
-                    } catch (SQLException e) {
-                        Log.e(LOG_TAG, "Database exception in getProductsFromNetwork()", e);
-                        e.printStackTrace();
-                    }
+                    });
                 }else{
                     Log.e(LOG_TAG, "getProductsFromNetwork() - response problem.");
                 }

@@ -1,8 +1,10 @@
 package com.vitaliyhtc.lcbo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -95,13 +97,21 @@ public class MainActivity extends CoreActivity
         long lastClearTimeInMillis = sharedPreferences.getLong("dbLastClearTimeInMillis", 0);
         long currentTimeInMillis = System.currentTimeMillis();
         long delta = 24*60*60*1000;
+        final Context context = this;
         if(currentTimeInMillis - lastClearTimeInMillis >= delta){
-            DatabaseHelper databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
 
-            databaseHelper.clearStoresTable();
-            databaseHelper.clearProductsTable();
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
 
-            OpenHelperManager.releaseHelper();
+                    databaseHelper.clearStoresTable();
+                    databaseHelper.clearProductsTable();
+
+                    OpenHelperManager.releaseHelper();
+                }
+            });
+
             lastClearTimeInMillis = System.currentTimeMillis();
         }
 

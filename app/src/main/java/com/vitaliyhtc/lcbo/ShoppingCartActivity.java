@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,13 +51,22 @@ public class ShoppingCartActivity extends CoreActivity
     }
 
     private void initProductsList(){
-        List<ShoppingCart> shoppingCarts = mShoppingCartDataManager.getAllShoppingCartsFromDb();
-        mShoppingCarts = shoppingCarts;
-        List<Integer> idsList = new ArrayList<>();
-        for (ShoppingCart shoppingCart : shoppingCarts) {
-            idsList.add(shoppingCart.getProductId());
-        }
-        mShoppingCartDataManager.LoadProductsByIds(idsList);
+        AsyncTask<Void, Void, List<ShoppingCart>> initProductsListAsyncTask = new AsyncTask<Void, Void, List<ShoppingCart>>() {
+            @Override
+            protected List<ShoppingCart> doInBackground(Void... params) {
+                return mShoppingCartDataManager.getAllShoppingCartsFromDb();
+            }
+            @Override
+            protected void onPostExecute(List<ShoppingCart> shoppingCarts) {
+                mShoppingCarts = shoppingCarts;
+                List<Integer> idsList = new ArrayList<>();
+                for (ShoppingCart shoppingCart : shoppingCarts) {
+                    idsList.add(shoppingCart.getProductId());
+                }
+                mShoppingCartDataManager.LoadProductsByIds(idsList);
+            }
+        };
+        initProductsListAsyncTask.execute();
     }
 
     @Override
@@ -84,8 +94,13 @@ public class ShoppingCartActivity extends CoreActivity
     }
     @Override
     public void onProductItemDeleteClicked(int position){
-        int productId = mShoppingCartAdapter.getProductAtPosition(position).getId();
-        mShoppingCartDataManager.removeShoppingCartById(productId);
+        final int productId = mShoppingCartAdapter.getProductAtPosition(position).getId();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                mShoppingCartDataManager.removeShoppingCartById(productId);
+            }
+        });
         mShoppingCartAdapter.removeAt(position);
         calculateTotalPrice();
     }
@@ -107,16 +122,24 @@ public class ShoppingCartActivity extends CoreActivity
     }
 
     private void calculateTotalPrice(){
-        List<ShoppingCart> shoppingCarts = mShoppingCartDataManager.getAllShoppingCartsFromDb();
-        mShoppingCarts = shoppingCarts;
-        int totalPriceInCents = 0;
-        for (ShoppingCart shoppingCart : shoppingCarts) {
-            totalPriceInCents += shoppingCart.getCount()*shoppingCart.getPriceInCents();
-
-        }
-        Float totalPrice = totalPriceInCents/100f;
-        String totalPriceString = ""+totalPrice;
-        ((TextView)findViewById(R.id.text_value_total_price_of_products)).setText(totalPriceString);
+        AsyncTask<Void, Void, List<ShoppingCart>> calculateTotalPriceAsyncTask = new AsyncTask<Void, Void, List<ShoppingCart>>() {
+            @Override
+            protected List<ShoppingCart> doInBackground(Void... params) {
+                return mShoppingCartDataManager.getAllShoppingCartsFromDb();
+            }
+            @Override
+            protected void onPostExecute(List<ShoppingCart> shoppingCarts) {
+                mShoppingCarts = shoppingCarts;
+                int totalPriceInCents = 0;
+                for (ShoppingCart shoppingCart : shoppingCarts) {
+                    totalPriceInCents += shoppingCart.getCount()*shoppingCart.getPriceInCents();
+                }
+                Float totalPrice = totalPriceInCents/100f;
+                String totalPriceString = ""+totalPrice;
+                ((TextView)findViewById(R.id.text_value_total_price_of_products)).setText(totalPriceString);
+            }
+        };
+        calculateTotalPriceAsyncTask.execute();
     }
 
 }

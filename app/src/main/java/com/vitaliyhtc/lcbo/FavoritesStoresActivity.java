@@ -1,6 +1,7 @@
 package com.vitaliyhtc.lcbo;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +23,6 @@ public class FavoritesStoresActivity extends CoreActivity
     private FavoriteStoresAdapter mFavoritesStoresAdapter = new FavoriteStoresAdapter(this);
 
     private FavoriteStoreDataManager mFavoriteStoreDataManager = new FavoriteStoreDataManager(this);
-
-    private List<FavoriteStore> mFavoriteStores;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +52,6 @@ public class FavoritesStoresActivity extends CoreActivity
 
     private void initStoresList(){
         List<FavoriteStore> favoriteStores = mFavoriteStoreDataManager.getAllFavoriteStoresFromDb();
-        mFavoriteStores = favoriteStores;
         List<Integer> idsList = new ArrayList<>();
         for(FavoriteStore favoriteStore : favoriteStores){
             idsList.add(favoriteStore.getId());
@@ -90,22 +88,37 @@ public class FavoritesStoresActivity extends CoreActivity
 
     @Override
     public void onStoreItemRemoveClicked(int position){
-        int storeId = mFavoritesStoresAdapter.getStoreAtPosition(position).getId();
-        mFavoriteStoreDataManager.removeFavoriteStoreById(storeId);
+        final int storeId = mFavoritesStoresAdapter.getStoreAtPosition(position).getId();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                mFavoriteStoreDataManager.removeFavoriteStoreById(storeId);
+            }
+        });
         mFavoritesStoresAdapter.removeAt(position);
     }
 
     private void revalidateFavorites(){
-        int storeToRemoveFromList = -1;
-        Store store;
-        for (int i = 0; i < mFavoritesStoresAdapter.getItemCount(); i++) {
-            store = mFavoritesStoresAdapter.getStoreAtPosition(i);
-            if(!mFavoriteStoreDataManager.isStoreFavoriteById(store.getId())){
-                storeToRemoveFromList = i;
+        AsyncTask<Void, Void, Integer> revalidateFavoritesAsyncTask = new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                int storeToRemoveFromList = -1;
+                Store store;
+                for (int i = 0; i < mFavoritesStoresAdapter.getItemCount(); i++) {
+                    store = mFavoritesStoresAdapter.getStoreAtPosition(i);
+                    if(!mFavoriteStoreDataManager.isStoreFavoriteById(store.getId())){
+                        storeToRemoveFromList = i;
+                    }
+                }
+                return storeToRemoveFromList;
             }
-        }
-        if(storeToRemoveFromList != -1){
-            mFavoritesStoresAdapter.removeAt(storeToRemoveFromList);
-        }
+            @Override
+            protected void onPostExecute(Integer storeToRemoveFromList) {
+                if(storeToRemoveFromList != -1){
+                    mFavoritesStoresAdapter.removeAt(storeToRemoveFromList);
+                }
+            }
+        };
+        revalidateFavoritesAsyncTask.execute();
     }
 }

@@ -3,6 +3,7 @@ package com.vitaliyhtc.lcbo.util;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -48,12 +49,23 @@ public class ShoppingCartDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 int qty = Integer.parseInt(quantityEditText.getText().toString());
                 if(qty>0){
+                    shoppingCart = new ShoppingCart();
                     shoppingCart.setProductId(mProduct.getId());
                     shoppingCart.setCount(qty);
                     shoppingCart.setPriceInCents(mProduct.getPriceInCents());
-                    shoppingDataManager.saveShoppingCartToDb(shoppingCart);
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            shoppingDataManager.saveShoppingCartToDb(shoppingCart);
+                        }
+                    });
                 }else{
-                    shoppingDataManager.removeShoppingCartById(mProduct.getId());
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            shoppingDataManager.removeShoppingCartById(mProduct.getId());
+                        }
+                    });
                 }
                 if(mContext instanceof ShoppingCartDialogCloseListener){
                     ((ShoppingCartDialogCloseListener)mContext).handleShoppingCartDialogClose();
@@ -86,45 +98,49 @@ public class ShoppingCartDialog extends DialogFragment {
     }
 
     private void fillProductData(){
-
-        View v = view;
-
-        shoppingCart = shoppingDataManager.getShoppingCartByProductId(mProduct.getId());
-
-        Picasso.with(mContext.getApplicationContext())
-                .load(mProduct.getImageUrl())
-                .placeholder(R.drawable.list_item_bg)
-                .error(R.drawable.ic_broken_image)
-                .into((ImageView) v.findViewById(R.id.image_view_product_big));
-
-        ((TextView)v.findViewById(R.id.text_view_title)).setText(mProduct.getName());
-        float price = mProduct.getPriceInCents()/100f;
-        String priceString = ""+price;
-        ((TextView)v.findViewById(R.id.product_value_price)).setText(priceString);
-
-        Float totalPrice = mProduct.getPriceInCents()*shoppingCart.getCount()/100f;
-        String totalPriceString = ""+totalPrice;
-        ((TextView)view.findViewById(R.id.product_value_price_total)).setText(totalPriceString);
-
-
-        quantityEditText = (EditText)v.findViewById(R.id.edit_quantity);
-        String shoppingCartCount = ""+shoppingCart.getCount();
-        quantityEditText.setText(shoppingCartCount);
-
-
-        final Button minusButton = (Button) v.findViewById(R.id.button_qty_minus);
-        minusButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onMinusClick();
+        AsyncTask<Void, Void, ShoppingCart> fillProductDataAsyncTask = new AsyncTask<Void, Void, ShoppingCart>() {
+            @Override
+            protected ShoppingCart doInBackground(Void... params) {
+                return shoppingDataManager.getShoppingCartByProductId(mProduct.getId());
             }
-        });
-        final Button plusButton = (Button) v.findViewById(R.id.button_qty_plus);
-        plusButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onPlusClick();
-            }
-        });
+            @Override
+            protected void onPostExecute(ShoppingCart shoppingCart) {
+                View v = view;
 
+                Picasso.with(mContext.getApplicationContext())
+                        .load(mProduct.getImageUrl())
+                        .placeholder(R.drawable.list_item_bg)
+                        .error(R.drawable.ic_broken_image)
+                        .into((ImageView) v.findViewById(R.id.image_view_product_big));
+
+                ((TextView)v.findViewById(R.id.text_view_title)).setText(mProduct.getName());
+                float price = mProduct.getPriceInCents()/100f;
+                String priceString = ""+price;
+                ((TextView)v.findViewById(R.id.product_value_price)).setText(priceString);
+
+                Float totalPrice = mProduct.getPriceInCents()*shoppingCart.getCount()/100f;
+                String totalPriceString = ""+totalPrice;
+                ((TextView)view.findViewById(R.id.product_value_price_total)).setText(totalPriceString);
+
+                quantityEditText = (EditText)v.findViewById(R.id.edit_quantity);
+                String shoppingCartCount = ""+shoppingCart.getCount();
+                quantityEditText.setText(shoppingCartCount);
+
+                final Button minusButton = (Button) v.findViewById(R.id.button_qty_minus);
+                minusButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        onMinusClick();
+                    }
+                });
+                final Button plusButton = (Button) v.findViewById(R.id.button_qty_plus);
+                plusButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        onPlusClick();
+                    }
+                });
+            }
+        };
+        fillProductDataAsyncTask.execute();
     }
 
     private void onMinusClick(){

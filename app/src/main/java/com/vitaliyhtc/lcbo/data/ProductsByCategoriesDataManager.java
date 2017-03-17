@@ -1,6 +1,7 @@
 package com.vitaliyhtc.lcbo.data;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -51,6 +52,8 @@ public class ProductsByCategoriesDataManager {
 
     private int currentPageRecordCount = 0;
 
+    private int initialCounter = 0;
+
     private List<Product> uniqueProductsLoaded = new ArrayList<>();
     private List<Product> uniqueProductsByCategoryLoaded = new ArrayList<>();
 
@@ -59,8 +62,6 @@ public class ProductsByCategoriesDataManager {
     private List<Product> uniqueProductsList = new ArrayList<>();
     private List<Product> listToAddToDb = new ArrayList<>();
     private List<Product> productsLoadedFromDb = new ArrayList<>();
-
-
 
 
 
@@ -120,18 +121,31 @@ public class ProductsByCategoriesDataManager {
 
 
     public void performInitialLoading(){
-        long productsInDbCounter = getCountOfProductsInDatabase();
-
-        if(productsInDbCounter >= 3*Config.PRODUCTS_PER_PAGE){
-            initialLoadFromDb();
-        } else if(getNetworkAvailability()){
-            initialLoadFromServerAndSaveToDb();
-        } else {
-            Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
-            uniqueProductsLoaded.clear();
-            sendInitialResultToActivity(uniqueProductsLoaded);
-        }
-
+        AsyncTask<Void, Void, Integer> performInitialLoadingAsyncTask = new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                return (int) getCountOfProductsInDatabase();
+            }
+            @Override
+            protected void onPostExecute(Integer productsInDbCounter) {
+                if(productsInDbCounter >= 3*Config.PRODUCTS_PER_PAGE){
+                    if(Config.IS_LOG_DEBUG){
+                        Log.d(LOG_TAG, "try initialLoadFromDb()");
+                    }
+                    initialLoadFromDb();
+                } else if(getNetworkAvailability()){
+                    if(Config.IS_LOG_DEBUG){
+                        Log.d(LOG_TAG, "try initialLoadFromServerAndSaveToDb()");
+                    }
+                    initialLoadFromServerAndSaveToDb();
+                } else {
+                    Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+                    uniqueProductsLoaded.clear();
+                    sendInitialResultToActivity(uniqueProductsLoaded);
+                }
+            }
+        };
+        performInitialLoadingAsyncTask.execute();
     }
 
 
@@ -170,39 +184,47 @@ public class ProductsByCategoriesDataManager {
 
                         pageOffsetLoadedFromServer = productsPage;
 
-                        try{
-                            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
-
-                            int productId;
-                            for (Product product : productsLoadedFromServer) {
-                                productId = product.getId();
-                                if(!mProductIds.contains(productId)){
-                                    mProductIds.add(productId);
-                                    if(Config.PRODUCT_CATEGORY_BEER.equals(product.getPrimaryCategory())){
-                                        beerUniqueItems++;
-                                    }
-                                    if(Config.PRODUCT_CATEGORY_WINE.equals(product.getPrimaryCategory())){
-                                        wineUniqueItems++;
-                                    }
-                                    if(Config.PRODUCT_CATEGORY_SPIRITS.equals(product.getPrimaryCategory())){
-                                        spiritsUniqueItems++;
-                                    }
-                                    uniqueProductsList.add(product);
+                        int productId;
+                        for (Product product : productsLoadedFromServer) {
+                            productId = product.getId();
+                            if(!mProductIds.contains(productId)){
+                                mProductIds.add(productId);
+                                if(Config.PRODUCT_CATEGORY_BEER.equals(product.getPrimaryCategory())){
+                                    beerUniqueItems++;
                                 }
-                                if(productDao.queryBuilder().where().eq("id", productId).countOf() == 0){
-                                    mIncrementalCounter++;
-                                    product.setIncrementalCounter(mIncrementalCounter);
-                                    listToAddToDb.add(product);
+                                if(Config.PRODUCT_CATEGORY_WINE.equals(product.getPrimaryCategory())){
+                                    wineUniqueItems++;
+                                }
+                                if(Config.PRODUCT_CATEGORY_SPIRITS.equals(product.getPrimaryCategory())){
+                                    spiritsUniqueItems++;
+                                }
+                                uniqueProductsList.add(product);
+                            }
+                        }
+                        final List<Product> productsToDb = new ArrayList<>();
+                        productsToDb.addAll(productsLoadedFromServer);
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+                                    int productId1;
+                                    for (Product product : productsToDb) {
+                                        productId1 = product.getId();
+                                        if(productDao.queryBuilder().where().eq("id", productId1).countOf() == 0){
+                                            mIncrementalCounter++;
+                                            product.setIncrementalCounter(mIncrementalCounter);
+                                            listToAddToDb.add(product);
+                                        }
+                                    }
+                                    productDao.create(listToAddToDb);
+                                } catch (SQLException e) {
+                                    Log.e(LOG_TAG, "Database exception", e);
+                                    e.printStackTrace();
                                 }
                             }
-
-                            productDao.create(listToAddToDb);
-                        } catch (SQLException e) {
-                            Log.e(LOG_TAG, "Database exception", e);
-                            e.printStackTrace();
-                        }
+                        });
                     }
-
                     Toast.makeText((Context)mContext, "loadFromServerAndSaveToDb() :: Page: "+productsPage, Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e(LOG_TAG, "loadFromServerAndSaveToDb() - response problem.");
@@ -240,74 +262,103 @@ public class ProductsByCategoriesDataManager {
 
 
 
-    private void initialLoadFromDb(int numberOfItems, int category){
+    private void initialLoadFromDb(final int numberOfItems, final int category){
         productsLoadedFromDb.clear();
         uniqueProductsList.clear();
-        try{
-            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
-            String categoryString = intCategoryToStringCategory(category);
-            long startOffset = getDbOffsetByCategory(category);
 
-            QueryBuilder<Product, Integer> queryBuilder = productDao.queryBuilder();
-            queryBuilder.orderBy("incrementalCounter", true);
-            queryBuilder.where().eq("primaryCategory", categoryString);
-            queryBuilder.offset(startOffset);
-            queryBuilder.limit((long)Config.PRODUCTS_PER_PAGE);
-            productsLoadedFromDb.addAll(productDao.query(queryBuilder.prepare()));
+        AsyncTask<Void, Void, List<Product>> initialLoadFromDbAsyncTask = new AsyncTask<Void, Void, List<Product>>() {
+            @Override
+            protected List<Product> doInBackground(Void... params) {
+                List<Product> products = new ArrayList<>();
+                try{
+                    Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+                    String categoryString = intCategoryToStringCategory(category);
+                    long startOffset = getDbOffsetByCategory(category);
 
-            int productId;
-            int uniqueCounter=0;
-            for (Product product : productsLoadedFromDb) {
-                productId = product.getId();
-                if(!mProductIds.contains(productId)){
-                    mProductIds.add(productId);
-                    uniqueCounter++;
-                    productByCategoryUniqueItemsLoaded++;
-                    uniqueProductsList.add(product);
+                    QueryBuilder<Product, Integer> queryBuilder = productDao.queryBuilder();
+                    queryBuilder.orderBy("incrementalCounter", true);
+                    queryBuilder.where().eq("primaryCategory", categoryString);
+                    queryBuilder.offset(startOffset);
+                    queryBuilder.limit((long)Config.PRODUCTS_PER_PAGE);
+                    productsLoadedFromDb.addAll(productDao.query(queryBuilder.prepare()));
+
+                    int productId;
+                    int uniqueCounter=0;
+                    for (Product product : productsLoadedFromDb) {
+                        productId = product.getId();
+                        if(!mProductIds.contains(productId)){
+                            mProductIds.add(productId);
+                            uniqueCounter++;
+                            productByCategoryUniqueItemsLoaded++;
+                            products.add(product);
+                        }
+                    }
+                    appendDbOffsetByCategory(uniqueCounter, category);
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in initialLoadFromDb()", e);
+                    e.printStackTrace();
                 }
+                return products;
             }
-
-            appendDbOffsetByCategory(uniqueCounter, category);
-
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in loadFromDB()", e);
-            e.printStackTrace();
-        }
-        if(!uniqueProductsList.isEmpty()){
-            uniqueProductsByCategoryLoaded.addAll(uniqueProductsList);
-            if(productByCategoryUniqueItemsLoaded < numberOfItems){
-                initialLoadFromDb(numberOfItems, category);
+            @Override
+            protected void onPostExecute(List<Product> products) {
+                //Toast.makeText((Context)mContext, "products: "+products.size(), Toast.LENGTH_SHORT).show();
+                //uniqueProductsList.addAll(products);
+                if(!products.isEmpty()){
+                    uniqueProductsByCategoryLoaded.addAll(products);
+                    if(productByCategoryUniqueItemsLoaded < numberOfItems){
+                        initialLoadFromDb(numberOfItems, category);
+                    }
+                }
+                postInitialResultToActivity();
             }
+        };
+        initialLoadFromDbAsyncTask.execute();
+    }
+
+    private void postInitialResultToActivity(){
+        initialCounter++;
+        if(initialCounter==3){
+            //Toast.makeText((Context)mContext, "products: "+uniqueProductsByCategoryLoaded.size(), Toast.LENGTH_SHORT).show();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    sendInitialResultToActivity(uniqueProductsByCategoryLoaded);
+                }
+            }, 100);
         }
     }
 
     private void initialLoadFromDb(){
-        long initialProductsInDbCount = getCountOfProductsInDatabase();
-        if(initialProductsInDbCount == 0){
-            Toast.makeText((Context)mContext, "No products in DB. No internet connection", Toast.LENGTH_LONG).show();
+        AsyncTask<Void, Void, Integer> initialLoadFromDbAsyncTask = new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                return (int) getCountOfProductsInDatabase();
+            }
+            @Override
+            protected void onPostExecute(Integer initialProductsInDbCount) {
+                if(initialProductsInDbCount == 0){
+                    Toast.makeText((Context)mContext, "No products in DB. No internet connection", Toast.LENGTH_LONG).show();
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    sendInitialResultToActivity(uniqueProductsByCategoryLoaded);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            sendInitialResultToActivity(uniqueProductsByCategoryLoaded);
+                        }
+                    }, 100);
+                }else{
+                    //Toast.makeText((Context)mContext, "Products in DB: "+initialProductsInDbCount, Toast.LENGTH_LONG).show();
+                    initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_BEER);
+                    productByCategoryUniqueItemsLoaded = 0;
+                    initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_WINE);
+                    productByCategoryUniqueItemsLoaded = 0;
+                    initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_SPIRITS);
+                    productByCategoryUniqueItemsLoaded = 0;
+                    // See postInitialResultToActivity()
                 }
-            }, 100);
-        }else{
-            //Toast.makeText(mContext, "Products in DB: "+initialProductsInDbCount, Toast.LENGTH_LONG).show();
-            initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_BEER);
-            productByCategoryUniqueItemsLoaded = 0;
-            initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_WINE);
-            productByCategoryUniqueItemsLoaded = 0;
-            initialLoadFromDb(Config.PRODUCTS_PER_PAGE, ProductsTab.TAB_CATEGORY_SPIRITS);
-            productByCategoryUniqueItemsLoaded = 0;
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    sendInitialResultToActivity(uniqueProductsByCategoryLoaded);
-                }
-            }, 100);
-        }
+            }
+        };
+        initialLoadFromDbAsyncTask.execute();
     }
 
 
@@ -328,73 +379,91 @@ public class ProductsByCategoriesDataManager {
 
 
 
-    public void getNItemsOf(int numberOfItems, int category){
-        long productsInDbCounter = getCountOfProductsInDatabase();
-
-        if(mContext.getProductsLoaded() < productsInDbCounter){
-            loadFromDb(numberOfItems, category);
-        } else if(getNetworkAvailability()){
-            pageOffsetLoadedFromServer = mContext.getProductsLoaded()/Config.PRODUCTS_PER_PAGE - 1;
-            loadFromServerAndSaveToDb(numberOfItems, category);
-        } else {
-            Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
-            uniqueProductsLoaded.clear();
-            sendResultToActivity(uniqueProductsLoaded, category);
-        }
-
+    public void getNItemsOf(final int numberOfItems, final int category){
+        AsyncTask<Void, Void, Integer> getNItemsOfAsyncTask = new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                return (int) getCountOfProductsInDatabase();
+            }
+            @Override
+            protected void onPostExecute(Integer productsInDbCounter) {
+                if(mContext.getProductsLoaded() < productsInDbCounter){
+                    loadFromDb(numberOfItems, category);
+                } else if(getNetworkAvailability()){
+                    pageOffsetLoadedFromServer = mContext.getProductsLoaded()/Config.PRODUCTS_PER_PAGE - 1;
+                    loadFromServerAndSaveToDb(numberOfItems, category);
+                } else {
+                    Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+                    uniqueProductsLoaded.clear();
+                    sendResultToActivity(uniqueProductsLoaded, category);
+                }
+            }
+        };
+        getNItemsOfAsyncTask.execute();
     }
 
 
 
-    private void loadFromDb(int numberOfItems, int category){
+    private void loadFromDb(final int numberOfItems, final int category){
         productsLoadedFromDb.clear();
         uniqueProductsList.clear();
-        try{
-            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
-            String categoryString = intCategoryToStringCategory(category);
-            long startOffset = getDbOffsetByCategory(category);
 
-            QueryBuilder<Product, Integer> queryBuilder = productDao.queryBuilder();
-            queryBuilder.orderBy("incrementalCounter", true);
-            queryBuilder.where().eq("primaryCategory", categoryString);
-            queryBuilder.offset(startOffset);
-            queryBuilder.limit((long)Config.PRODUCTS_PER_PAGE);
-            productsLoadedFromDb.addAll(productDao.query(queryBuilder.prepare()));
+        AsyncTask<Void, Void, List<Product>> loadFromDbAsyncTask = new AsyncTask<Void, Void, List<Product>>() {
+            @Override
+            protected List<Product> doInBackground(Void... params) {
+                List<Product> products = new ArrayList<>();
+                try{
+                    Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+                    String categoryString = intCategoryToStringCategory(category);
+                    long startOffset = getDbOffsetByCategory(category);
 
-            int productId;
-            int uniqueCounter=0;
-            for (Product product : productsLoadedFromDb) {
-                productId = product.getId();
-                if(!mProductIds.contains(productId)){
-                    uniqueCounter++;
-                    mProductIds.add(productId);
-                    productByCategoryUniqueItemsLoaded++;
-                    uniqueProductsList.add(product);
+                    QueryBuilder<Product, Integer> queryBuilder = productDao.queryBuilder();
+                    queryBuilder.orderBy("incrementalCounter", true);
+                    queryBuilder.where().eq("primaryCategory", categoryString);
+                    queryBuilder.offset(startOffset);
+                    queryBuilder.limit((long)Config.PRODUCTS_PER_PAGE);
+                    productsLoadedFromDb.addAll(productDao.query(queryBuilder.prepare()));
+
+                    int productId;
+                    int uniqueCounter=0;
+                    for (Product product : productsLoadedFromDb) {
+                        productId = product.getId();
+                        if(!mProductIds.contains(productId)){
+                            uniqueCounter++;
+                            mProductIds.add(productId);
+                            productByCategoryUniqueItemsLoaded++;
+                            products.add(product);
+                        }
+                    }
+                    appendDbOffsetByCategory(uniqueCounter, category);
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in loadFromDB()", e);
+                    e.printStackTrace();
+                }
+                return products;
+            }
+            @Override
+            protected void onPostExecute(List<Product> products) {
+                uniqueProductsList.addAll(products);
+                if(!uniqueProductsList.isEmpty()){
+                    uniqueProductsByCategoryLoaded.addAll(uniqueProductsList);
+                    if(productByCategoryUniqueItemsLoaded < numberOfItems){
+                        loadFromDb(numberOfItems, category);
+                    }else{
+                        sendResultToActivity(uniqueProductsByCategoryLoaded, category);
+                    }
+                }else{
+                    if(getNetworkAvailability()) {
+                        pageOffsetLoadedFromServer = mContext.getProductsLoaded() / Config.PRODUCTS_PER_PAGE - 1;
+                        uniqueProductsLoaded.addAll(uniqueProductsByCategoryLoaded);
+                        loadFromServerAndSaveToDb(numberOfItems, category);
+                    }else{
+                        sendResultToActivity(uniqueProductsByCategoryLoaded, category);
+                    }
                 }
             }
-
-            appendDbOffsetByCategory(uniqueCounter, category);
-
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in loadFromDB()", e);
-            e.printStackTrace();
-        }
-        if(!uniqueProductsList.isEmpty()){
-            uniqueProductsByCategoryLoaded.addAll(uniqueProductsList);
-            if(productByCategoryUniqueItemsLoaded < numberOfItems){
-                loadFromDb(numberOfItems, category);
-            }else{
-                sendResultToActivity(uniqueProductsByCategoryLoaded, category);
-            }
-        }else{
-            if(getNetworkAvailability()) {
-                pageOffsetLoadedFromServer = mContext.getProductsLoaded() / Config.PRODUCTS_PER_PAGE - 1;
-                uniqueProductsLoaded.addAll(uniqueProductsByCategoryLoaded);
-                loadFromServerAndSaveToDb(numberOfItems, category);
-            }else{
-                sendResultToActivity(uniqueProductsByCategoryLoaded, category);
-            }
-        }
+        };
+        loadFromDbAsyncTask.execute();
     }
 
 
@@ -433,38 +502,45 @@ public class ProductsByCategoriesDataManager {
                     if(currentPageRecordCount > 0){
                         productsLoadedFromServer = productsResult.getResult();
 
-
                         pageOffsetLoadedFromServer = productsPage;
-                        String stringCategory = intCategoryToStringCategory(category);
+                        final String stringCategory = intCategoryToStringCategory(category);
 
-                        try{
-                            Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
-
-                            int productId;
-                            for (Product product : productsLoadedFromServer) {
-                                productId = product.getId();
-                                if(!mProductIds.contains(productId)){
-                                    mProductIds.add(productId);
-                                    if(stringCategory.equals(product.getPrimaryCategory())){
-                                        productByCategoryUniqueItemsLoaded1++;
-                                    }
-                                    uniqueProductsList.add(product);
+                        int productId;
+                        for (Product product : productsLoadedFromServer) {
+                            productId = product.getId();
+                            if(!mProductIds.contains(productId)){
+                                mProductIds.add(productId);
+                                if(stringCategory.equals(product.getPrimaryCategory())){
+                                    productByCategoryUniqueItemsLoaded1++;
                                 }
-                                if(productDao.queryBuilder().where().eq("id", productId).countOf() == 0){
-                                    mIncrementalCounter++;
-                                    product.setIncrementalCounter(mIncrementalCounter);
-                                    listToAddToDb.add(product);
+                                uniqueProductsList.add(product);
+                            }
+                        }
+                        final List<Product> productsToDb = new ArrayList<>();
+                        productsToDb.addAll(productsLoadedFromServer);
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    Dao<Product, Integer> productDao = getDatabaseHelper().getProductDao();
+                                    int productId1;
+                                    for (Product product : productsToDb) {
+                                        productId1 = product.getId();
+                                        if(productDao.queryBuilder().where().eq("id", productId1).countOf() == 0){
+                                            mIncrementalCounter++;
+                                            product.setIncrementalCounter(mIncrementalCounter);
+                                            listToAddToDb.add(product);
+                                        }
+                                    }
+                                    productDao.create(listToAddToDb);
+                                } catch (SQLException e) {
+                                    Log.e(LOG_TAG, "Database exception", e);
+                                    e.printStackTrace();
                                 }
                             }
-
-                            productDao.create(listToAddToDb);
-                        } catch (SQLException e) {
-                            Log.e(LOG_TAG, "Database exception", e);
-                            e.printStackTrace();
-                        }
+                        });
                     }
-
-                    //Toast.makeText(mContext, "loadFromServerAndSaveToDb() :: Page: "+productsPage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText((Context)mContext, "loadFromServerAndSaveToDb() :: Page: "+productsPage, Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e(LOG_TAG, "loadFromServerAndSaveToDb() - response problem.");
                 }

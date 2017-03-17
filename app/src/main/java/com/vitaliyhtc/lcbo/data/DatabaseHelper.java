@@ -2,6 +2,7 @@ package com.vitaliyhtc.lcbo.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -46,17 +47,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * the tables that will store your data.
      */
     @Override
-    public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
-        try {
-            Log.i(LOG_TAG, "onCreate");
-            TableUtils.createTable(connectionSource, Store.class);
-            TableUtils.createTable(connectionSource, Product.class);
-            TableUtils.createTable(connectionSource, FavoriteStore.class);
-            TableUtils.createTable(connectionSource, ShoppingCart.class);
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Can't create database", e);
-            e.printStackTrace();
-        }
+    public void onCreate(SQLiteDatabase database, final ConnectionSource connectionSource) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.i(LOG_TAG, "onCreate");
+                    TableUtils.createTable(connectionSource, Store.class);
+                    TableUtils.createTable(connectionSource, Product.class);
+                    TableUtils.createTable(connectionSource, FavoriteStore.class);
+                    TableUtils.createTable(connectionSource, ShoppingCart.class);
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Can't create database", e);
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -64,18 +70,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      * the various data to match the new version number.
      */
     @Override
-    public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-        try {
-            Log.i(LOG_TAG, "onUpgrade");
-            TableUtils.dropTable(connectionSource, Store.class, true);
-            TableUtils.dropTable(connectionSource, Product.class, true);
-            TableUtils.dropTable(connectionSource, FavoriteStore.class, true);
-            TableUtils.dropTable(connectionSource, ShoppingCart.class, true);
-            onCreate(database, connectionSource);
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Can't drop databases", e);
-            e.printStackTrace();
-        }
+    public void onUpgrade(final SQLiteDatabase database, final ConnectionSource connectionSource, int oldVersion, int newVersion) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.i(LOG_TAG, "onUpgrade");
+                    TableUtils.dropTable(connectionSource, Store.class, true);
+                    TableUtils.dropTable(connectionSource, Product.class, true);
+                    TableUtils.dropTable(connectionSource, FavoriteStore.class, true);
+                    TableUtils.dropTable(connectionSource, ShoppingCart.class, true);
+                    onCreate(database, connectionSource);
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Can't drop databases", e);
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**

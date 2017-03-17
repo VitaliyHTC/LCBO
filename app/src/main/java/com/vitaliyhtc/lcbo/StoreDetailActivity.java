@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -114,28 +115,35 @@ public class StoreDetailActivity extends AppCompatActivity {
      *
      * @param storeId   target store ID, for store which we need to retrieve
      */
-    private void getStoreById(int storeId) {
-        Store store = null;
-        try {
-            Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
-
-            // @return The object that has the ID field which equals id or null if no matches.
-            store = storeDao.queryForId(storeId);
-            if (store != null) {
-                onGetStoreByIdResult(store);
+    private void getStoreById(final int storeId) {
+        AsyncTask<Integer, Void, Store> getStoreByIdAsyncTask = new AsyncTask<Integer, Void, Store>() {
+            @Override
+            protected Store doInBackground(Integer... params) {
+                Store store = null;
+                try {
+                    Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                    // @return The object that has the ID field which equals id or null if no matches.
+                    store = storeDao.queryForId(params[0]);
+                } catch (SQLException e) {
+                    Log.e(LOG_TAG, "Database exception in getStoreByIdAsyncTask()", e);
+                    e.printStackTrace();
+                }
+                return store;
             }
-
-            // try to load from server
-            if (store == null) {
-                if (getNetworkAvailability()) {
-                    getStoreByIdFromServer(storeId);
+            @Override
+            protected void onPostExecute(Store store) {
+                if (store != null) {
+                    onGetStoreByIdResult(store);
+                }
+                // try to load from server
+                if (store == null) {
+                    if (getNetworkAvailability()) {
+                        getStoreByIdFromServer(storeId);
+                    }
                 }
             }
-
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in getStoresPage()", e);
-            e.printStackTrace();
-        }
+        };
+        getStoreByIdAsyncTask.execute(storeId);
     }
 
     private void getStoreByIdFromServer(int storeId) {
@@ -150,17 +158,26 @@ public class StoreDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     StoreResult storeResult = response.body();
                     store = storeResult.getResult();
-                    int storesInDatabaseCount = (int) getCountOfStoresInDatabase();
-                    try {
-                        Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
-                        if (storeDao.queryBuilder().where().eq("id", store.getId()).countOf() == 0) {
-                            store.setIncrementalCounter(storesInDatabaseCount);
-                            storeDao.create(store);
+
+                    final Store storeSaveToDb = store;
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                int storesInDatabaseCount =
+                                        (int) getDatabaseHelper().getStoreDao().countOf();
+                                Dao<Store, Integer> storeDao = getDatabaseHelper().getStoreDao();
+                                if (storeDao.queryBuilder().where().eq("id", storeSaveToDb.getId()).countOf() == 0) {
+                                    storeSaveToDb.setIncrementalCounter(storesInDatabaseCount+1);
+                                    storeDao.create(storeSaveToDb);
+                                }
+                            } catch (SQLException e) {
+                                Log.e(LOG_TAG, "Database exception in getStoreByIdFromServer", e);
+                                e.printStackTrace();
+                            }
                         }
-                    } catch (SQLException e) {
-                        Log.e(LOG_TAG, "Database exception in getStoreByIdFromServer", e);
-                        e.printStackTrace();
-                    }
+                    });
+
                 } else {
                     Log.e(LOG_TAG, "getStoreByIdFromServer() - response problem.");
                 }
@@ -340,7 +357,7 @@ public class StoreDetailActivity extends AppCompatActivity {
 
 
     private void setFavoriteStarOnClickListener(){
-        final ImageView button = (ImageView) findViewById(R.id.store_favorite_star);
+        final CheckBox button = (CheckBox) findViewById(R.id.store_favorite_star);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onFavoriteStarClick();
@@ -349,33 +366,54 @@ public class StoreDetailActivity extends AppCompatActivity {
     }
 
     private void onFavoriteStarClick(){
-        final ImageView favoriteImageView = (ImageView) findViewById(R.id.store_favorite_star);
-        int storeId = mStore.getId();
-
-        if(mFavoriteStoreDataManager.isStoreFavoriteById(storeId)){
-            mFavoriteStoreDataManager.removeFavoriteStoreById(storeId);
-            favoriteImageView.setImageResource(R.drawable.ic_star_border_black_36dp);
-        } else {
-            mFavoriteStoreDataManager.saveFavoriteStoreToDb(new FavoriteStore(storeId));
-            favoriteImageView.setImageResource(R.drawable.ic_star_black_36dp);
-        }
+        AsyncTask<Void, Void, Boolean> onFavoriteStarClickAsyncTask = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                int storeId = mStore.getId();
+                Boolean isStoreFavorite = mFavoriteStoreDataManager.isStoreFavoriteById(storeId);
+                if(isStoreFavorite){
+                    mFavoriteStoreDataManager.removeFavoriteStoreById(storeId);
+                } else {
+                    mFavoriteStoreDataManager.saveFavoriteStoreToDb(new FavoriteStore(storeId));
+                }
+                return isStoreFavorite;
+            }
+            @Override
+            protected void onPostExecute(Boolean isStoreFavorite) {
+                CheckBox favoriteCheckBox = (CheckBox) findViewById(R.id.store_favorite_star);
+                if(isStoreFavorite){
+                    favoriteCheckBox.setChecked(false);
+                } else {
+                    favoriteCheckBox.setChecked(true);
+                }
+            }
+        };
+        onFavoriteStarClickAsyncTask.execute();
     }
 
     private void setFavoriteStarState(){
-        final ImageView favoriteImageView = (ImageView) findViewById(R.id.store_favorite_star);
-        int storeId = mStore.getId();
-
-        if(mFavoriteStoreDataManager.isStoreFavoriteById(storeId)){
-            favoriteImageView.setImageResource(R.drawable.ic_star_black_36dp);
-        } else {
-            favoriteImageView.setImageResource(R.drawable.ic_star_border_black_36dp);
-        }
+        AsyncTask<Void, Void, Boolean> setFavoriteStarStateAsyncTask = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return mFavoriteStoreDataManager.isStoreFavoriteById(mStore.getId());
+            }
+            @Override
+            protected void onPostExecute(Boolean isStoreFavorite) {
+                CheckBox favoriteCheckBox = (CheckBox) findViewById(R.id.store_favorite_star);
+                if(isStoreFavorite){
+                    favoriteCheckBox.setChecked(true);
+                } else {
+                    favoriteCheckBox.setChecked(false);
+                }
+            }
+        };
+        setFavoriteStarStateAsyncTask.execute();
     }
 
 
 
     private String getTimeStringFromRawNumbers(int openTimeRaw, int closeTimeRaw){
-        String result="";
+        String result;
         if(Config.IS_24_HOURS_FORMAT){
             result = Utils.rawTimeTo24String(openTimeRaw)+" - "+Utils.rawTimeTo24String(closeTimeRaw);
         }else{
@@ -386,17 +424,6 @@ public class StoreDetailActivity extends AppCompatActivity {
 
     private void setActivityTitle(String title){
         this.setTitle(title);
-    }
-
-    private long getCountOfStoresInDatabase(){
-        long mStoredInDatabaseCounter = 0;
-        try {
-            mStoredInDatabaseCounter = getDatabaseHelper().getStoreDao().countOf();
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Database exception in performStoresSearch()", e);
-            e.printStackTrace();
-        }
-        return mStoredInDatabaseCounter;
     }
 
     private boolean getNetworkAvailability() {

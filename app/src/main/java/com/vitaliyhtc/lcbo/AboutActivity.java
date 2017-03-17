@@ -2,6 +2,7 @@ package com.vitaliyhtc.lcbo;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -94,12 +95,22 @@ public class AboutActivity extends CoreActivity {
     }
 
     private void clearStoresTable(){
-        getDatabaseHelper().clearStoresTable();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                getDatabaseHelper().clearStoresTable();
+            }
+        });
         Toast.makeText(this, "clearStoresTable()", Toast.LENGTH_LONG).show();
     }
 
     private void clearProductsTable(){
-        getDatabaseHelper().clearProductsTable();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                getDatabaseHelper().clearProductsTable();
+            }
+        });
         Toast.makeText(this, "clearProductsTable()", Toast.LENGTH_LONG).show();
     }
 }
