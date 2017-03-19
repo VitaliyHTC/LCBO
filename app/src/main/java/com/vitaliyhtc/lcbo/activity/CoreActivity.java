@@ -60,6 +60,7 @@ public class CoreActivity extends AppCompatActivity
         }
 
         if(intent!=null){
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             if(!this.getClass().getCanonicalName().equals(intent.getClass().getCanonicalName())){
                 startActivity(intent);
             }

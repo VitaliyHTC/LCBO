@@ -88,7 +88,7 @@ public class StoreDetailActivity extends AppCompatActivity {
                 } else {
                     intent = NavUtils.getParentActivityIntent(this);
                 }
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
         }

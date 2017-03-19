@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.squareup.leakcanary.LeakCanary;
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
 import com.vitaliyhtc.lcbo.data.DatabaseHelper;
 import com.vitaliyhtc.lcbo.data.StoresDataManager;
@@ -62,6 +63,15 @@ public class MainActivity extends CoreActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (LeakCanary.isInAnalyzerProcess(this.getApplication())) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this.getApplication());
+        // Normal app init code...
+
         setContentView(R.layout.main_activity);
         initiateUserInterface();
         this.setTitle(R.string.main_activity_stores_title);
