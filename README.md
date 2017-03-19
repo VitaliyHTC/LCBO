@@ -1,5 +1,5 @@
 # LCBO
-Android, Retrofit, ORMLite, Picasso, ... lcboapi.com ...<br><br><br>
+Android, Retrofit, ORMLite, Picasso, LeakCanary, ... lcboapi.com ...<br><br><br>
 All tasks implemented.<br><br>
 
 
@@ -60,15 +60,28 @@ Simple screen with data about the app purposes<br>
 
 
 <br><br><br>
+<b>LCBO_1.00_Build_8.apk _2017.03.19 22:29</b>:<br>
+CRC32: C30A7FF0<br>
+MD5: DA246E17EB9B55F912F9CE7044818747<br>
+SHA-1: 8B8F2FDC9D3CBE5B82842E530B5E9E6B1257E217<br>
+<br>
+Changes:<br>
+- Bugfix in DatabaseHelper<br>
+- Now when you submit search - hiding soft keyboard<br>
+<br>
+Download links:<br>
+<a href="" target="_blank">Google Drive</a><br>
+<a href="" target="_blank">Yandex Disk</a><br>
+
+
+<br><br><br>
 <b>LCBO_1.00_Build_7.apk _2017.03.19 15:03</b>:<br>
 CRC32: B2BFD4A5<br>
 MD5: 2323EA1A5F9657D01704DE9D74B34DE8<br>
 SHA-1: 5FF887744B04892ED0BDF4C15EE32C3FD28E082E<br>
 <br>
 Changes:<br>
-- Bugfix in DatabaseHelper<br>
-- Now when you submit search - hiding soft keyboard<br>
-
+- Intent.FLAG_ACTIVITY_REORDER_TO_FRONT - Gives huge improvement in memory usage. New activities not created if it already exists in back stack.<br>
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbNjZ2YWk0dm8tbG8" target="_blank">Google Drive</a><br>
@@ -83,7 +96,6 @@ SHA-1: 2A6A6EF372A385B68A478A83EA3127482A001982<br>
 <br>
 Changes:<br>
 - All DB operations moved from main thread to AsyncTask.<br>
-
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbMTlJcGllYnNTRzg" target="_blank">Google Drive</a><br>
@@ -98,7 +110,6 @@ SHA-1: 2B11E8715C11151F555B5C7D7114F7DD6611DA45<br>
 <br>
 Changes:<br>
 - Favorite stores added.<br>
-
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbS2ZPU3UxTEl5NEU" target="_blank">Google Drive</a><br>
@@ -113,7 +124,6 @@ SHA-1: 03D4841E90F1F2BECC70FF81122102B7E364A94A<br>
 <br>
 Changes:<br>
 - Search. Work with all text fields for stores and products. Same result for server and DB search.<br>
-
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbYmJFaENwcmM4aEU" target="_blank">Google Drive</a><br>
@@ -130,7 +140,6 @@ Changes:<br>
 - Products search screen added.<br>
 - In shopping cart display items qty fixed.<br>
 - In shopping cart display items when loading product from server fixed.<br>
-
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbcGJxLUhXOVVLYnc" target="_blank">Google Drive</a><br>
@@ -145,7 +154,6 @@ SHA-1: 321E8D23172779A4ACE15B7F8E9CB18E5111AE01<br>
 Fixes:<br>
 - In products by store fixed add to cart button.<br>
 - In shopping cart added total products price calculation.<br>
-
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbbFRCX0NnQ18zLXM" target="_blank">Google Drive</a><br>
