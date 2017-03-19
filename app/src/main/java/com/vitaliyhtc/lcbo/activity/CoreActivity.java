@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -9,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 
 import com.vitaliyhtc.lcbo.AboutActivity;
 import com.vitaliyhtc.lcbo.FavoritesStoresActivity;
@@ -88,6 +90,11 @@ public class CoreActivity extends AppCompatActivity
     protected void setNavigationViewCheckedItem(int id){
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(id);
+    }
+
+    protected void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
 }

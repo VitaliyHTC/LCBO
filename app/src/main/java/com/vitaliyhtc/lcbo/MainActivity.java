@@ -208,6 +208,7 @@ public class MainActivity extends CoreActivity
     @Override
     public boolean onQueryTextSubmit(String query) {
         // TODO: problem that SearchView don't submit empty query!
+        hideSoftKeyboard(this);
         if(".".equals(query)){
             mStoresSearchParameters.setSearchStringQuery("");
         }else{

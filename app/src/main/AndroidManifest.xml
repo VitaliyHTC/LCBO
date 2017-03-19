@@ -52,6 +52,7 @@
         <activity
             android:name=".ProductsSearchActivity"
             android:label="@string/nav_products_search"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ShoppingCartActivity"
