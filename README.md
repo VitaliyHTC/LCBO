@@ -66,12 +66,11 @@ MD5: DA246E17EB9B55F912F9CE7044818747<br>
 SHA-1: 8B8F2FDC9D3CBE5B82842E530B5E9E6B1257E217<br>
 <br>
 Changes:<br>
-- Bugfix in DatabaseHelper<br>
-- Now when you submit search - hiding soft keyboard<br>
+- Intent.FLAG_ACTIVITY_REORDER_TO_FRONT - Gives huge improvement in memory usage. New activities not created if it already exists in back stack.<br>
 <br>
 Download links:<br>
-<a href="" target="_blank">Google Drive</a><br>
-<a href="" target="_blank">Yandex Disk</a><br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbNzVXTFcydnY1ZUk" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/0rHr0U7t3G9kBf" target="_blank">Yandex Disk</a><br>
 
 
 <br><br><br>
@@ -81,7 +80,8 @@ MD5: 2323EA1A5F9657D01704DE9D74B34DE8<br>
 SHA-1: 5FF887744B04892ED0BDF4C15EE32C3FD28E082E<br>
 <br>
 Changes:<br>
-- Intent.FLAG_ACTIVITY_REORDER_TO_FRONT - Gives huge improvement in memory usage. New activities not created if it already exists in back stack.<br>
+- Bugfix in DatabaseHelper<br>
+- Now when you submit search - hiding soft keyboard<br>
 <br>
 Download links:<br>
 <a href="https://drive.google.com/open?id=0BzoKZrHsxcSbNjZ2YWk0dm8tbG8" target="_blank">Google Drive</a><br>
