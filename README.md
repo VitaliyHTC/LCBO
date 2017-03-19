@@ -60,7 +60,23 @@ Simple screen with data about the app purposes<br>
 
 
 <br><br><br>
-<b>LCBO_1.00_Build_6.apk _2017.03.18 00:28</b>:<br>
+<b>LCBO_1.00_Build_7.apk _2017.03.19 15:03</b>:<br>
+CRC32: B2BFD4A5<br>
+MD5: 2323EA1A5F9657D01704DE9D74B34DE8<br>
+SHA-1: 5FF887744B04892ED0BDF4C15EE32C3FD28E082E<br>
+<br>
+Changes:<br>
+- Bugfix in DatabaseHelper<br>
+- Now when you submit search - hiding soft keyboard<br>
+
+<br>
+Download links:<br>
+<a href="https://drive.google.com/open?id=0BzoKZrHsxcSbNjZ2YWk0dm8tbG8" target="_blank">Google Drive</a><br>
+<a href="https://yadi.sk/d/zNiwh0dX3G9DUJ" target="_blank">Yandex Disk</a><br>
+
+
+<br><br><br>
+<s><b>LCBO_1.00_Build_6.apk _2017.03.18 00:28</b>:</s> - Don't use this build.<br>
 CRC32: AC9B75F7<br>
 MD5: DFEC8B33FF12FEB38FFD6BCDF0CD583A<br>
 SHA-1: 2A6A6EF372A385B68A478A83EA3127482A001982<br>
