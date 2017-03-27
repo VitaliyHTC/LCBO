@@ -34,6 +34,9 @@ import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 
 import java.util.List;
 
+/**
+ * TODO: Rewrite to MVP.
+ */
 public class MainActivity extends CoreActivity
         implements StoresDataManager.DataManagerCallbacks, SearchView.OnQueryTextListener,
         StoresAdapter.StoreItemClickCallbacks {
