@@ -38,7 +38,8 @@
             android:layout_margin="8dp"
             android:textSize="@dimen/detail_activity_key_text_size"
             android:textColor="@color/detail_activity_key_text_color"
-            android:text="@string/shopping_cart_activity_key_total_price_of_products"/>
+            android:text="@string/shopping_cart_activity_key_total_price_of_products"
+            />
         <TextView
             android:id="@+id/text_value_total_price_of_products"
             android:layout_width="wrap_content"

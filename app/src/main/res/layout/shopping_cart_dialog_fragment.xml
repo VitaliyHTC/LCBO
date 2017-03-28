@@ -31,7 +31,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/detail_activity_title_text_size"
                 android:textColor="@color/detail_activity_key_text_color"
-                android:layout_margin="8dp"/>
+                android:layout_margin="8dp"
+                />
 
             <TextView
                 android:id="@+id/product_key_price_per_item"
@@ -45,7 +46,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/product_key_price_per_item"
                 android:textSize="@dimen/detail_activity_key_text_size"
-                android:textColor="@color/detail_activity_key_text_color"/>
+                android:textColor="@color/detail_activity_key_text_color"
+                />
             <TextView
                 android:id="@+id/product_value_price"
                 android:layout_marginTop="0dp"
@@ -58,7 +60,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/product_value_def"
                 android:textSize="@dimen/detail_activity_value_text_size"
-                android:textColor="@color/detail_activity_value_text_color"/>
+                android:textColor="@color/detail_activity_value_text_color"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -71,14 +74,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:text="@string/shopping_cart_dialog_quantity" />
+                    android:text="@string/shopping_cart_dialog_quantity"
+                    />
                 <Button
                     android:id="@+id/button_qty_minus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
-                    android:text="@string/shopping_cart_dialog_minus"/>
+                    android:text="@string/shopping_cart_dialog_minus"
+                    />
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -87,7 +92,8 @@
                     android:inputType="numberDecimal"
                     android:ems="6"
                     android:id="@+id/edit_quantity"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    />
                 <Button
                     android:id="@+id/button_qty_plus"
                     android:layout_width="wrap_content"
@@ -96,10 +102,10 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginEnd="8dp"
-                    android:text="@string/shopping_cart_dialog_plus"/>
+                    android:text="@string/shopping_cart_dialog_plus"
+                    />
 
             </LinearLayout>
-
 
             <TextView
                 android:id="@+id/product_key_price_total"
@@ -113,7 +119,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/product_key_price_total"
                 android:textSize="@dimen/detail_activity_key_text_size"
-                android:textColor="@color/detail_activity_key_text_color"/>
+                android:textColor="@color/detail_activity_key_text_color"
+                />
             <TextView
                 android:id="@+id/product_value_price_total"
                 android:layout_marginTop="0dp"
@@ -126,9 +133,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/product_value_def"
                 android:textSize="@dimen/detail_activity_value_text_size"
-                android:textColor="@color/detail_activity_value_text_color"/>
-
-
+                android:textColor="@color/detail_activity_value_text_color"
+                />
 
         </LinearLayout>
 

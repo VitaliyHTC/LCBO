@@ -14,114 +14,123 @@
     >
 
     <ImageView
+        android:id="@+id/imageViewAppIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:id="@+id/imageViewAppIcon"
         android:src="@mipmap/ic_launcher"
-        android:contentDescription="@string/nav_header_icon_content_description"/>
+        android:contentDescription="@string/nav_header_icon_content_description"
+        />
     <TextView
+        android:id="@+id/text_view_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:id="@+id/text_view_app_name"
         android:layout_alignTop="@+id/imageViewAppIcon"
         android:layout_toRightOf="@+id/imageViewAppIcon"
         android:layout_toEndOf="@+id/imageViewAppIcon"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:text="@string/app_name"
         android:textColor="@color/black"
-        android:textSize="24sp"/>
+        android:textSize="24sp"
+        />
     <TextView
+        android:id="@+id/text_view_app_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_app_version"
-        android:id="@+id/text_view_app_version"
         android:layout_below="@+id/text_view_app_name"
         android:layout_toRightOf="@+id/imageViewAppIcon"
         android:layout_toEndOf="@+id/imageViewAppIcon"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:textColor="@color/black" />
+        android:text="@string/about_app_version"
+        android:textColor="@color/black"
+        />
     <TextView
+        android:id="@+id/text_view_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_copyright"
-        android:id="@+id/text_view_author"
         android:layout_below="@+id/text_view_app_version"
         android:layout_toRightOf="@+id/imageViewAppIcon"
         android:layout_toEndOf="@+id/imageViewAppIcon"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:textColor="@color/black" />
+        android:text="@string/about_copyright"
+        android:textColor="@color/black"
+        />
     <TextView
+        android:id="@+id/text_view_app_version_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_app_version_description"
-        android:id="@+id/text_view_app_version_description"
         android:layout_below="@+id/text_view_author"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:text="@string/about_app_version_description"
+        />
     <TextView
+        android:id="@+id/text_view_app_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_app_description"
-        android:id="@+id/text_view_app_description"
         android:layout_below="@+id/text_view_app_version_description"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:text="@string/about_app_description"
+        />
 
 
 
     <Button
+        android:id="@+id/button_disabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/text_view_app_description"
         android:text="@string/about_button_disabled"
         android:textAllCaps="false"
         android:textSize="13sp"
+        android:visibility="gone"
+        style="@style/Widget.AppCompat.Button.Small"
+        />
+    <Button
+        android:id="@+id/button_clear_stores_table"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:id="@+id/button_disabled"
-        android:layout_below="@+id/text_view_app_description"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:visibility="gone" />
-    <Button
+        android:layout_below="@+id/button_disabled"
         android:text="@string/about_button_clearstorestable"
         android:textAllCaps="false"
         android:textSize="13sp"
+        android:visibility="gone"
+        style="@style/Widget.AppCompat.Button.Small"
+        />
+    <Button
+        android:id="@+id/button_clear_products_table"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:id="@+id/button_clear_stores_table"
-        android:layout_below="@+id/button_disabled"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:visibility="gone" />
-    <Button
+        android:layout_below="@+id/button_clear_stores_table"
         android:text="@string/about_button_clearproductstable"
         android:textAllCaps="false"
         android:textSize="13sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:id="@+id/button_clear_products_table"
-        android:layout_below="@+id/button_clear_stores_table"
+        android:visibility="gone"
         style="@style/Widget.AppCompat.Button.Small"
-        android:visibility="gone" />
+        />
 
 </RelativeLayout>

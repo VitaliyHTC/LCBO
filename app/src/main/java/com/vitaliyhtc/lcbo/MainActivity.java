@@ -85,7 +85,6 @@ public class MainActivity extends CoreActivity
 
         clearDbTables();
 
-        // moved to presenter
         mMainActivityPresenter.onCreate();
 
         initStoresSearchParameters();
@@ -103,7 +102,6 @@ public class MainActivity extends CoreActivity
     protected void onDestroy(){
         super.onDestroy();
 
-        // Call to release resources
         mMainActivityPresenter.onDestroy();
     }
 
@@ -323,13 +321,11 @@ public class MainActivity extends CoreActivity
         mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
                 loadNextDataFromApi(page);
             }
         };
         mScrollListener.setCounters(INITIAL_CURRENT_PAGE, INITIAL_PREVIOUS_TOTAL_ITEM_COUNT, INITIAL_STARTING_PAGE_INDEX);
-        // Adds the scroll listener to RecyclerView
+
         recyclerView.addOnScrollListener(mScrollListener);
     }
 

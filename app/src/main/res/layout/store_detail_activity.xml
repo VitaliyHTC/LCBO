@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/main_store_detail_linear_layout_container"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/main_error_relative_layout"
@@ -15,12 +16,13 @@
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/image_store_detail_activity_error"
-                android:src="@drawable/error_meme_face_whyyy"
                 android:layout_width="84dp"
                 android:layout_height="76dp"
                 android:layout_margin="16dp"
                 android:layout_centerHorizontal="true"
-                android:contentDescription="@string/store_detail_activity_error_image"/>
+                android:src="@drawable/error_meme_face_whyyy"
+                android:contentDescription="@string/store_detail_activity_error_image"
+                />
             <TextView
                 android:id="@+id/store_detail_activity_error_text"
                 android:layout_width="match_parent"
@@ -38,9 +40,9 @@
 
         <LinearLayout
             android:id="@+id/main_store_detail_linear_layout"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -57,7 +59,8 @@
                     android:layout_toStartOf="@+id/store_favorite_star"
                     android:text="@string/store_key_name"
                     android:textSize="@dimen/detail_activity_key_text_size"
-                    android:textColor="@color/detail_activity_key_text_color"/>
+                    android:textColor="@color/detail_activity_key_text_color"
+                    />
                 <TextView
                     android:id="@+id/store_value_name"
                     android:layout_marginTop="0dp"
@@ -71,8 +74,8 @@
                     android:layout_toStartOf="@+id/store_favorite_star"
                     android:text="@string/store_value_def"
                     android:textSize="@dimen/detail_activity_value_text_size"
-                    android:textColor="@color/detail_activity_value_text_color"/>
-
+                    android:textColor="@color/detail_activity_value_text_color"
+                    />
                 <CheckBox
                     android:id="@+id/store_favorite_star"
                     android:layout_width="36dp"
@@ -80,7 +83,8 @@
                     android:layout_margin="8dp"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:button="@drawable/favorite_star_selector"/>
+                    android:button="@drawable/favorite_star_selector"
+                    />
 
             </RelativeLayout>
 
@@ -838,7 +842,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/store_open_map_button"
                 android:textAllCaps="false"
-                style="@style/Widget.AppCompat.Button.Small" />
+                style="@style/Widget.AppCompat.Button.Small"/>
 
         </LinearLayout>
 

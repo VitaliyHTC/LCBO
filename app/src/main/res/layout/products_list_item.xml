@@ -1,52 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:padding="0dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="80dp"
     android:minWidth="196.0dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:padding="0dp">
 
     <ImageView
         android:id="@+id/image_view_product_small"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="8dp"
-        android:contentDescription="@string/product_list_item_image_preview"/>
+        android:contentDescription="@string/product_list_item_image_preview"
+        />
 
     <TextView
         android:id="@+id/item_title"
-        android:textAppearance="?textAppearanceLargePopupMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
-        android:textSize="@dimen/detail_activity_value_text_size"
-        android:maxLines="1"
         android:layout_toRightOf="@+id/image_view_product_small"
-        android:layout_toEndOf="@+id/image_view_product_small"/>
+        android:layout_toEndOf="@+id/image_view_product_small"
+        android:textSize="@dimen/detail_activity_value_text_size"
+        android:textAppearance="?textAppearanceLargePopupMenu"
+        android:maxLines="1"
+        />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textSize="@dimen/main_list_item_store_textsize"
-        android:textColor="@color/detail_activity_key_text_color"
         android:layout_below="@+id/item_title"
         android:layout_toRightOf="@+id/image_view_product_small"
         android:layout_toEndOf="@+id/image_view_product_small"
         android:layout_toLeftOf="@+id/image_view_cart"
-        android:layout_toStartOf="@+id/image_view_cart"/>
+        android:layout_toStartOf="@+id/image_view_cart"
+        android:textSize="@dimen/main_list_item_store_textsize"
+        android:textColor="@color/detail_activity_key_text_color"
+        />
 
     <ImageView
         android:id="@+id/image_view_cart"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_add_shopping_cart_black_36dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:contentDescription="@string/product_list_item_add_to_cart_button"/>
+        android:src="@drawable/ic_add_shopping_cart_black_36dp"
+        android:contentDescription="@string/product_list_item_add_to_cart_button"
+        />
 
 </RelativeLayout>
