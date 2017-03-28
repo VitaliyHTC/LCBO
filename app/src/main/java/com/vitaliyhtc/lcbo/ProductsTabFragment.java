@@ -21,7 +21,7 @@ public class ProductsTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view =  inflater.inflate(R.layout.products_by_categories_content, null);
+        View view =  inflater.inflate(R.layout.content_products_by_categories, null);
         mTabLayout = (TabLayout) view.findViewById(R.id.tabs);
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setOffscreenPageLimit(INT_ITEMS -1);

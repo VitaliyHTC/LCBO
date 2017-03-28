@@ -55,7 +55,7 @@ public class StoreDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.store_detail_activity);
+        this.setContentView(R.layout.activity_store_detail);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         int targetStoreId = getIntent().getExtras().getInt("targetStoreId");

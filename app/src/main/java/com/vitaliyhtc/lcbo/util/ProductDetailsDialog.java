@@ -31,7 +31,7 @@ public class ProductDetailsDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate(R.layout.products_details_dialog_fragment, null);
+        view = inflater.inflate(R.layout.fragment_products_details_dialog, null);
         builder.setView(view);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

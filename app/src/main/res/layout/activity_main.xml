@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.vitaliyhtc.lcbo.FavoritesStoresActivity">
+        tools:context="com.vitaliyhtc.lcbo.MainActivity">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -30,7 +30,17 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/favorites_stores_content" />
+        <include layout="@layout/content_main" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:indeterminate="true"
+            android:visibility="gone"
+            style="?android:attr/progressBarStyleHorizontal"
+            />
 
     </android.support.design.widget.CoordinatorLayout>
 

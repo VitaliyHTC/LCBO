@@ -79,7 +79,7 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
     @Override
     public ShoppingCartAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.shopping_cart_item, viewGroup, false);
+                .inflate(R.layout.list_item_shopping_cart, viewGroup, false);
         return new ShoppingCartAdapter.ViewHolder(v);
     }
 

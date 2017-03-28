@@ -51,7 +51,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.main_list_item_store, viewGroup, false);
+                .inflate(R.layout.list_item_main_store, viewGroup, false);
         return new ViewHolder(v);
     }
 

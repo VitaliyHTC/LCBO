@@ -76,7 +76,7 @@ public class MainActivity extends CoreActivity
         LeakCanary.install(this.getApplication());
         // Normal app init code...
 
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.activity_main);
         initiateUserInterface();
         this.setTitle(R.string.main_activity_stores_title);
 

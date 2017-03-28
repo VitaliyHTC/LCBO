@@ -40,7 +40,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.products_by_store_activity);
+        this.setContentView(R.layout.activity_products_by_store);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         int targetStoreId = getIntent().getExtras().getInt("targetStoreId");

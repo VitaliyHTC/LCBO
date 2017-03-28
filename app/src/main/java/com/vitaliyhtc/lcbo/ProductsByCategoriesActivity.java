@@ -31,7 +31,7 @@ public class ProductsByCategoriesActivity extends CoreActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.products_by_categories_activity);
+        setContentView(R.layout.activity_products_by_categories);
         initiateTabFragment();
         initiateUserInterface();
 

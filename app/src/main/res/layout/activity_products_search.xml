@@ -30,7 +30,7 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/products_search_content" />
+        <include layout="@layout/content_products_search" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

@@ -32,7 +32,7 @@ public class ShoppingCartActivity extends CoreActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.shopping_cart_activity);
+        setContentView(R.layout.activity_shopping_cart);
         initiateUserInterface();
         initProductsList();
         calculateTotalPrice();

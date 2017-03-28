@@ -27,7 +27,7 @@ public class FavoritesStoresActivity extends CoreActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.favorites_stores_activity);
+        setContentView(R.layout.activity_favorites_stores);
         initiateUserInterface();
         initStoresList();
     }

@@ -58,7 +58,7 @@ public class ProductsSearchActivity extends CoreActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.products_search_activity);
+        setContentView(R.layout.activity_products_search);
         initiateUserInterface();
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);

@@ -43,7 +43,7 @@ public class ShoppingCartDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate(R.layout.shopping_cart_dialog_fragment, null);
+        view = inflater.inflate(R.layout.fragment_shopping_cart_dialog, null);
         builder.setView(view);
         builder.setPositiveButton("Add to cart", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
