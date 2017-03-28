@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo.presenter;
 
+// TODO: 28/03/17 try to avoid android SDK usage in presenter, this let you to write test's for business logic
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -13,6 +14,7 @@ import com.vitaliyhtc.lcbo.model.Store;
 
 import java.util.List;
 
+// TODO: 28/03/17 use meaningful names (StorePresenter, StorePresenterImpl, etc)
 public class MainActivityPresenter
         implements StoresDataManager.DataManagerCallbacks,
         MainActivityPresenterInterface {
@@ -31,6 +33,7 @@ public class MainActivityPresenter
         mStoresDataManager = getStoresDataManager();
     }
 
+    // TODO: 28/03/17 you don't need all lifecycle methods in presenter, use only needed
     @Override
     public void onPause() {
 

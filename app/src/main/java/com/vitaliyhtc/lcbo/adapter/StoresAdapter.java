@@ -21,29 +21,8 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
     private StoreItemClickCallbacks mContext;
     private List<Store> mStores;
 
-    /**
-     * Provide a reference to the type of views that you are using (custom ViewHolder)
-     */
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
 
-        ViewHolder(View v) {
-            super(v);
-            // Define click listener for the ViewHolder's View.
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mContext.startStoreDetailActivity(getAdapterPosition());
-                }
-            });
-            textView = (TextView) v.findViewById(R.id.item_title);
-        }
-
-        TextView getTextView() {
-            return textView;
-        }
-    }
-
+    // TODO: 28/03/17 use meaningful names! StoreItemClickCallbacks context?
     public StoresAdapter(StoreItemClickCallbacks context) {
         mContext = context;
         mStores = new ArrayList<>();
@@ -69,7 +48,6 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         handler.post(r);
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext())
@@ -77,25 +55,45 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         return new ViewHolder(v);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         if(Config.IS_LOG_DEBUG){
             Log.d(LOG_TAG, "Element " + position + " set.");
         }
-        // Get element from your dataset at this position and replace the contents of the view
-        // with that element
+
         Store currentStore = mStores.get(position);
-        viewHolder.getTextView().setText(currentStore.getIncrementalCounter() + " " + currentStore.getName());
+        viewHolder.bind(currentStore);
     }
 
+    // TODO: 28/03/17 don't write/remove/avoid obvious comments
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mStores.size();
     }
 
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView textView;
+
+        ViewHolder(View v) {
+            super(v);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mContext.onStoreItemClick(getAdapterPosition());
+                }
+            });
+            textView = (TextView) v.findViewById(R.id.item_title);
+        }
+
+        public void bind(Store currentStore) {
+            textView.setText(currentStore.getIncrementalCounter() + " " + currentStore.getName());
+        }
+    }
+
+
     public interface StoreItemClickCallbacks{
-        void startStoreDetailActivity(int positionInAdapter);
+        void onStoreItemClick(int positionInAdapter);
     }
 }
