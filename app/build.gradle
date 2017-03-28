@@ -7,8 +7,8 @@ android {
         applicationId "com.vitaliyhtc.lcbo"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 8
-        versionName "1.00 Beta"
+        versionCode 9
+        versionName "1.09 Beta"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

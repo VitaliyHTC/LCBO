@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -21,13 +20,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.squareup.leakcanary.LeakCanary;
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
-import com.vitaliyhtc.lcbo.data.DatabaseHelper;
-import com.vitaliyhtc.lcbo.data.StoresDataManager;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
+import com.vitaliyhtc.lcbo.interfaces.MainActivityPresenterInterface;
+import com.vitaliyhtc.lcbo.interfaces.MainActivityView;
 import com.vitaliyhtc.lcbo.model.Store;
+import com.vitaliyhtc.lcbo.presenter.MainActivityPresenter;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
 import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
 import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
@@ -38,8 +37,9 @@ import java.util.List;
  * TODO: Rewrite to MVP.
  */
 public class MainActivity extends CoreActivity
-        implements StoresDataManager.DataManagerCallbacks, SearchView.OnQueryTextListener,
-        StoresAdapter.StoreItemClickCallbacks {
+        implements SearchView.OnQueryTextListener,
+        StoresAdapter.StoreItemClickCallbacks,
+        MainActivityView {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -55,7 +55,7 @@ public class MainActivity extends CoreActivity
 
     private StoresAdapter mStoresAdapter = new StoresAdapter(this);
 
-    private StoresDataManager mStoresDataManager;
+    private MainActivityPresenterInterface mMainActivityPresenter = new MainActivityPresenter(this);
 
     private EndlessRecyclerViewScrollListener mScrollListener;
 
@@ -85,7 +85,9 @@ public class MainActivity extends CoreActivity
 
         clearDbTables();
 
-        mStoresDataManager = getStoresDataManager();
+        // moved to presenter
+        mMainActivityPresenter.onCreate();
+
         initStoresSearchParameters();
 
         initStoresList();
@@ -102,7 +104,7 @@ public class MainActivity extends CoreActivity
         super.onDestroy();
 
         // Call to release resources
-        mStoresDataManager.onDestroy();
+        mMainActivityPresenter.onDestroy();
     }
 
     private void clearDbTables(){
@@ -110,20 +112,9 @@ public class MainActivity extends CoreActivity
         long lastClearTimeInMillis = sharedPreferences.getLong("dbLastClearTimeInMillis", 0);
         long currentTimeInMillis = System.currentTimeMillis();
         long delta = 24*60*60*1000;
-        final Context context = this;
         if(currentTimeInMillis - lastClearTimeInMillis >= delta){
 
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
-
-                    databaseHelper.clearStoresTable();
-                    databaseHelper.clearProductsTable();
-
-                    OpenHelperManager.releaseHelper();
-                }
-            });
+            mMainActivityPresenter.clearDbTables(this);
 
             lastClearTimeInMillis = System.currentTimeMillis();
         }
@@ -245,7 +236,7 @@ public class MainActivity extends CoreActivity
 
     private void performStoresSearch(StoresSearchParameters storesSearchParameters){
         mProgressBar.setVisibility(View.VISIBLE);
-        mStoresDataManager.performStoresSearch(storesSearchParameters);
+        mMainActivityPresenter.performStoresSearch(storesSearchParameters);
     }
 
     @Override
@@ -269,21 +260,8 @@ public class MainActivity extends CoreActivity
     private void onSearchViewCollapsed(){
         if(mIsInSearchState){
             mProgressBar.setVisibility(View.VISIBLE);
-            mStoresDataManager.getStoresPage(1, false);
+            mMainActivityPresenter.getStoresPage(1, false);
         }
-    }
-
-
-
-    /**
-     * When creating {@code new StoresDataManager()} - we need to pass context in it.
-     *
-     * @return instance of StoresDataManager
-     */
-    private StoresDataManager getStoresDataManager(){
-        StoresDataManager storesDataManager = new StoresDataManager(this);
-        storesDataManager.init();
-        return storesDataManager;
     }
 
 
@@ -302,7 +280,7 @@ public class MainActivity extends CoreActivity
      */
     private void initStoresList(){
         mProgressBar.setVisibility(View.VISIBLE);
-        mStoresDataManager.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
+        mMainActivityPresenter.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
     }
 
     @Override
@@ -365,15 +343,20 @@ public class MainActivity extends CoreActivity
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         mProgressBar.setVisibility(View.VISIBLE);
         if(!mIsInSearchState){
-            mStoresDataManager.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
+            mMainActivityPresenter.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
         }else{
-            mStoresDataManager.getSearchStoresPage(offset);// >>> onStoresSearchListLoaded Callback
+            mMainActivityPresenter.getSearchStoresPage(offset);// >>> onStoresSearchListLoaded Callback
         }
     }
 
     @Override
     public int getCountOfStoresInAdapter(){
         return mStoresAdapter.getItemCount();
+    }
+
+    @Override
+    public Context getContext() {
+        return this.getApplicationContext();
     }
 
     @Override

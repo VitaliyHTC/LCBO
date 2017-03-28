@@ -34,7 +34,8 @@ public class StoresDataManager {
 
     private static final String LOG_TAG = StoresDataManager.class.getSimpleName();
 
-    private DataManagerCallbacks mContext;
+    private DataManagerCallbacks dataManagerCallbacks;
+    private Context context;
 
     private List<Store> mStoresResult = new ArrayList<>();
     private List<Store> mListToAdd = new ArrayList<>();
@@ -45,15 +46,18 @@ public class StoresDataManager {
     private DatabaseHelper mDatabaseHelper = null;
 
     /**
-     * @param context MainActivity context
+     * 
+     * @param dataManagerCallbacks  - implementation of DataManagerCallbacks
+     * @param context               - Application Context
      */
-    public StoresDataManager(DataManagerCallbacks context) {
-        this.mContext = context;
+    public StoresDataManager(DataManagerCallbacks dataManagerCallbacks, Context context) {
+        this.dataManagerCallbacks = dataManagerCallbacks;
+        this.context = context;
     }
 
     public void init(){
         if (Config.LCBO_API_ACCESS_KEY.isEmpty()) {
-            Toast.makeText((Context)mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -72,7 +76,7 @@ public class StoresDataManager {
      */
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
-            mDatabaseHelper = OpenHelperManager.getHelper((Context)mContext, DatabaseHelper.class);
+            mDatabaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
         }
         return mDatabaseHelper;
     }
@@ -107,7 +111,7 @@ public class StoresDataManager {
                 }
                 @Override
                 protected void onPostExecute(Integer pagesLoaded) {
-                    Toast.makeText((Context)mContext, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "loadAndSaveStores() :: Loading started.", Toast.LENGTH_SHORT).show();
                     loadAndSaveStores(pagesLoaded+1);
                 }
             };
@@ -166,7 +170,7 @@ public class StoresDataManager {
                             }
                         }
                     });
-                    //Toast.makeText(mContext, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(dataManagerCallbacks, "loadAndSaveStores() :: Page: "+storesPage, Toast.LENGTH_SHORT).show();
                 }else{
                     Log.e(LOG_TAG, "loadAndSaveStores() - response problem.");
                 }
@@ -177,7 +181,7 @@ public class StoresDataManager {
                     int newOffset = offset+1;
                     loadAndSaveStores(newOffset);
                 } else {
-                    Toast.makeText((Context)mContext, "loadAndSaveStores() :: Loading finished.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "loadAndSaveStores() :: Loading finished.", Toast.LENGTH_SHORT).show();
                     getSearchStoresPage(1);
                 }
 
@@ -282,9 +286,9 @@ public class StoresDataManager {
             }
             @Override
             protected void onPostExecute(List<Store> stores) {
-                Toast.makeText((Context)mContext, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Search. Load from DataBase.", Toast.LENGTH_SHORT).show();
 
-                mContext.onStoresSearchListLoaded(stores, offset);
+                dataManagerCallbacks.onStoresSearchListLoaded(stores, offset);
             }
         };
         getSearchStoresPageAsyncTask.execute();
@@ -292,7 +296,6 @@ public class StoresDataManager {
 
 
 
-    // TODO: AsyncTask
     /**
      * Consumer must implement StoresDataManager.DataManagerCallbacks interface
      * for accepting of result. Method call one of two callback methods depending on
@@ -324,13 +327,13 @@ public class StoresDataManager {
             }
             @Override
             protected void onPostExecute(Integer storedInDatabaseCounter) {
-                if(mContext.getCountOfStoresInAdapter() < storedInDatabaseCounter){
+                if(dataManagerCallbacks.getCountOfStoresInAdapter() < storedInDatabaseCounter){
                     getStoresPageFromDb(offset, isInitialLoading);
                 } else if (getNetworkAvailability()) {
-                    Toast.makeText((Context)mContext, "Load from Network", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Load from Network", Toast.LENGTH_SHORT).show();
                     getStoresPageFromNetwork(offset, isInitialLoading);
                 } else {
-                    Toast.makeText((Context)mContext, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, ":( We no have more data in database, and no internet connection!", Toast.LENGTH_LONG).show();
                     onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
                 }
             }
@@ -360,7 +363,7 @@ public class StoresDataManager {
             }
             @Override
             protected void onPostExecute(List<Store> stores) {
-                Toast.makeText((Context)mContext, "Load from DataBase", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Load from DataBase", Toast.LENGTH_SHORT).show();
                 onStoresPageLoaded(offset, isInitialLoading, stores);
             }
         };
@@ -369,9 +372,9 @@ public class StoresDataManager {
 
     private void onStoresPageLoaded(int offset, boolean isInitialLoading, List<Store> stores){
         if(isInitialLoading){
-            mContext.onInitStoresListLoaded(stores, offset);
+            dataManagerCallbacks.onInitStoresListLoaded(stores, offset);
         }else{
-            mContext.onStoresListLoaded(stores, offset);
+            dataManagerCallbacks.onStoresListLoaded(stores, offset);
         }
     }
 
@@ -442,7 +445,7 @@ public class StoresDataManager {
 
 
     private boolean getNetworkAvailability() {
-        return Utils.isNetworkAvailable((Context)mContext);
+        return Utils.isNetworkAvailable(context);
     }
 
     /**
