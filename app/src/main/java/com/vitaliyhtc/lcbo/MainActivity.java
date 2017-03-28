@@ -67,6 +67,7 @@ public class MainActivity extends CoreActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TODO: 28/03/17 move leakCanary initialization to your application class
         if (LeakCanary.isInAnalyzerProcess(this.getApplication())) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -360,11 +361,16 @@ public class MainActivity extends CoreActivity
     }
 
     @Override
-    public void startStoreDetailActivity(int positionInAdapter){
+    public void onStoreItemClick(int positionInAdapter){
         Store store = mStoresAdapter.getStoreAtPosition(positionInAdapter);
         int storeId = store.getId();
 
+        startStoreDetailActivity(storeId);
+    }
+
+    private void startStoreDetailActivity(int storeId) {
         Intent intent = new Intent(this, StoreDetailActivity.class);
+        // TODO: 28/03/17 avoid hardcoded keys/args usage
         intent.putExtra("targetStoreId", storeId);
         intent.putExtra("activityFirst", StoreDetailActivity.ACTIVITY_MAIN);
         startActivity(intent);

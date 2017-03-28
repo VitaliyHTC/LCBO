@@ -30,6 +30,7 @@ import retrofit2.Response;
  * Load data from network or database, depending on network connection availability
  * and which data also saved to database.
  */
+// TODO: 28/03/17 provide access interface to control your data manager 
 public class StoresDataManager {
 
     private static final String LOG_TAG = StoresDataManager.class.getSimpleName();
@@ -181,6 +182,7 @@ public class StoresDataManager {
                     int newOffset = offset+1;
                     loadAndSaveStores(newOffset);
                 } else {
+                    // TODO: 28/03/17 don't show message for user, it is not ui layer 
                     Toast.makeText(context, "loadAndSaveStores() :: Loading finished.", Toast.LENGTH_SHORT).show();
                     getSearchStoresPage(1);
                 }
@@ -204,6 +206,7 @@ public class StoresDataManager {
     public void getSearchStoresPage(final int offset){
         mStoresResult.clear();
 
+        // TODO: 28/03/17 move all asynctask in separated classes
         AsyncTask<Void, Void, List<Store>> getSearchStoresPageAsyncTask = new AsyncTask<Void, Void, List<Store>>() {
             @Override
             protected List<Store> doInBackground(Void... params) {
@@ -216,6 +219,8 @@ public class StoresDataManager {
                     QueryBuilder<Store, Integer> queryBuilder = storeDao.queryBuilder();
 
                     Where where = null;
+                    // TODO: 28/03/17  where object depend on internal state of mStoresSearchParameters,
+                    // todo why mStoresSearchParameters.getWhere() or something similar not used?
                     boolean containsTrueValues = mStoresSearchParameters.containTrueValues();
                     String searchQuery = mStoresSearchParameters.getSearchStringQuery();
 
