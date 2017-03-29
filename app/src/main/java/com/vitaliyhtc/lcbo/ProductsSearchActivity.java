@@ -100,7 +100,7 @@ public class ProductsSearchActivity extends CoreActivity
 
 
 
-    // TODO: problem that SearchView don't submit empty query!
+    // !!! problem that SearchView don't submit empty query!
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -292,7 +292,7 @@ public class ProductsSearchActivity extends CoreActivity
         FragmentManager manager = getSupportFragmentManager();
         ProductDetailsDialog productDetailsDialog = new ProductDetailsDialog();
         productDetailsDialog.setContextAndProduct(this, mProductsAdapter.getProductAtPosition(position));
-        // TODO: 29/03/17 avoid hardcoded keys/args usage
+        // !!! avoid hardcoded keys/args usage
         productDetailsDialog.show(manager, "ProductDetailsDialog");
     }
 

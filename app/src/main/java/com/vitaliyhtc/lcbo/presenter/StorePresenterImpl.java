@@ -32,7 +32,7 @@ public class StorePresenterImpl
     @Override
     public void onDetachView() {
         mView = null;
-        // TODO: Review this place later. Cancel DataManager action and call onDestroy().
+        // !!! Review this place later. Cancel DataManager action and call onDestroy().
         mStoresDataManager.onDestroy();
     }
 

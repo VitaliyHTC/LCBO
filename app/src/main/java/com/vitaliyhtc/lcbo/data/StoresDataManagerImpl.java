@@ -1,7 +1,6 @@
 package com.vitaliyhtc.lcbo.data;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -44,20 +43,14 @@ public class StoresDataManagerImpl
 
     private StoresSearchParameters mStoresSearchParameters;
 
-    // You'll need this in your class to cache the helper in the class.
     private DatabaseHelper mDatabaseHelper = null;
 
-    /**
-     * 
-     * @param dataManagerCallbacks  - implementation of DataManagerCallbacks
-     * @param context               - Application Context
-     */
+
+
     public StoresDataManagerImpl(Context context, StoresDataManagerCallbacks dataManagerCallbacks) {
         this.dataManagerCallbacks = dataManagerCallbacks;
         this.context = context;
     }
-
-
 
     @Override
     public void onDestroy(){
@@ -66,8 +59,6 @@ public class StoresDataManagerImpl
             mDatabaseHelper = null;
         }
     }
-
-
 
     private DatabaseHelper getDatabaseHelper() {
         if (mDatabaseHelper == null) {
@@ -86,9 +77,7 @@ public class StoresDataManagerImpl
     public void performStoresSearch(StoresSearchParameters storesSearchParameters){
         mStoresSearchParameters = storesSearchParameters;
         if (getNetworkAvailability()) {
-            AsyncTask<Void, Void, Integer> performStoresSearchPageOffsetAsyncTask =
-                    new PerformStoresSearchPageOffsetAsyncTask(getDatabaseHelper(), this, LOG_TAG);
-            performStoresSearchPageOffsetAsyncTask.execute();
+            new PerformStoresSearchPageOffsetAsyncTask(getDatabaseHelper(), this, LOG_TAG).execute();
         } else {
             getSearchStoresPage(1);
         }
@@ -114,14 +103,7 @@ public class StoresDataManagerImpl
                     mStoresResult = storesResult.getResult();
                     final int storesPage = storesResult.getPager().getCurrentPage();
 
-                    AsyncTask<Void, Void, Void> loadAndSaveStoresSaveToDbAsyncTask =
-                            new StoresSaveToDbAsyncTask(
-                                    getDatabaseHelper(),
-                                    mStoresResult,
-                                    storesPage,
-                                    LOG_TAG
-                            );
-                    loadAndSaveStoresSaveToDbAsyncTask.execute();
+                    new StoresSaveToDbAsyncTask(getDatabaseHelper(), mStoresResult, storesPage, LOG_TAG).execute();
                 }else{
                     Log.e(LOG_TAG, "loadAndSaveStores() - response problem.");
                 }
@@ -134,32 +116,19 @@ public class StoresDataManagerImpl
                 } else {
                     getSearchStoresPage(1);
                 }
-
             }
-
             @Override
             public void onFailure(Call<StoresResult>call, Throwable t) {
-                // Log error here since request failed
                 Log.e(LOG_TAG, t.toString());
-
-                // Continue work.
                 getSearchStoresPage(1);
             }
         });
-
     }
 
     @Override
     public void getSearchStoresPage(final int offset){
-        AsyncTask<Void, Void, List<Store>> getSearchStoresPageAsyncTask =
-                new GetSearchStoresPageAsyncTask(
-                        getDatabaseHelper(),
-                        offset,
-                        mStoresSearchParameters,
-                        dataManagerCallbacks,
-                        LOG_TAG
-                );
-        getSearchStoresPageAsyncTask.execute();
+        new GetSearchStoresPageAsyncTask(getDatabaseHelper(), offset, mStoresSearchParameters, dataManagerCallbacks, LOG_TAG)
+                .execute();
     }
 
 
@@ -168,8 +137,6 @@ public class StoresDataManagerImpl
      * Consumer must implement StoresDataManagerImpl.DataManagerCallbacks interface
      * for accepting of result. Method call one of two callback methods depending on
      * {@code isInitialLoading} flag: {@code onInitStoresListLoaded} or {@code onStoresListLoaded}.
-     *
-     *
      *
      * @param offset            set from which page load Stores
      * @param isInitialLoading  set true - if loading first page, for initialization of adapter
@@ -180,32 +147,23 @@ public class StoresDataManagerImpl
     @Override
     public void getStoresPage(final int offset, final boolean isInitialLoading){
         mStoresResult.clear();
+        new GetStoresPageAsyncTask(getDatabaseHelper(), offset, isInitialLoading, this, LOG_TAG).execute();
+    }
 
-        AsyncTask<Void, Void, Integer> getStoresPageAsyncTask =
-                new GetStoresPageAsyncTask(
-                        getDatabaseHelper(),
-                        offset,
-                        isInitialLoading,
-                        mStoresResult,
-                        getNetworkAvailability(),
-                        dataManagerCallbacks,
-                        this,
-                        LOG_TAG
-                );
-        getStoresPageAsyncTask.execute();
+    @Override
+    public void onPostGetStoresPageAsyncTask(int storedInDatabaseCounter, int offset, boolean isInitialLoading){
+        if(dataManagerCallbacks.getCountOfStoresInAdapter() < storedInDatabaseCounter){
+            getStoresPageFromDb(offset, isInitialLoading);
+        } else if (getNetworkAvailability()) {
+            getStoresPageFromNetwork(offset, isInitialLoading);
+        } else {
+            onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
+        }
     }
 
     @Override
     public void getStoresPageFromDb(final int offset, final boolean isInitialLoading){
-        AsyncTask<Void, Void, List<Store>> getStoresPageFromDbAsyncTask =
-                new GetStoresPageFromDbAsyncTask(
-                        getDatabaseHelper(),
-                        offset,
-                        isInitialLoading,
-                        this,
-                        LOG_TAG
-                );
-        getStoresPageFromDbAsyncTask.execute();
+        new GetStoresPageFromDbAsyncTask(getDatabaseHelper(), offset, isInitialLoading, this, LOG_TAG).execute();
     }
 
     @Override
@@ -231,30 +189,18 @@ public class StoresDataManagerImpl
                     mStoresResult = storesResult.getResult();
                     final int storesPage = storesResult.getPager().getCurrentPage();
 
-                    AsyncTask<Void, Void, Void> loadAndSaveStoresSaveToDbAsyncTask =
-                            new StoresSaveToDbAsyncTask(
-                                    getDatabaseHelper(),
-                                    mStoresResult,
-                                    storesPage,
-                                    LOG_TAG
-                            );
-                    loadAndSaveStoresSaveToDbAsyncTask.execute();
+                    new StoresSaveToDbAsyncTask(getDatabaseHelper(), mStoresResult, storesPage, LOG_TAG).execute();
                 }else{
                     Log.e(LOG_TAG, "getStoresPageFromNetwork() - response problem.");
                 }
                 onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
             }
-
             @Override
             public void onFailure(Call<StoresResult>call, Throwable t) {
-                // Log error here since request failed
                 Log.e(LOG_TAG, t.toString());
-
-                // Continue work.
                 onStoresPageLoaded(offset, isInitialLoading, mStoresResult);
             }
         });
-
     }
 
 

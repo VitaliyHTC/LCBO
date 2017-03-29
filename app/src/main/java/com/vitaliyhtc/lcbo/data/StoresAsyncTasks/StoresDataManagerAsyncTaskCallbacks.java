@@ -10,5 +10,6 @@ public interface StoresDataManagerAsyncTaskCallbacks {
     void getStoresPageFromDb(int offset, boolean isInitialLoading);
     void getStoresPageFromNetwork(int offset, boolean isInitialLoading);
     void onStoresPageLoaded(int offset, boolean isInitialLoading, List<Store> stores);
+    void onPostGetStoresPageAsyncTask(int storedInDatabaseCounter, int offset, boolean isInitialLoading);
 
 }

@@ -33,9 +33,6 @@ import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 
 import java.util.List;
 
-/**
- * TODO: Rewrite to MVP.
- */
 public class MainActivity extends CoreActivity
         implements StoresAdapter.StoreItemClickCallbacks,
         StoresView {
@@ -131,7 +128,7 @@ public class MainActivity extends CoreActivity
 
 
 
-    // TODO: problem that SearchView don't submit empty query!
+    // !!! problem that SearchView don't submit empty query!
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
