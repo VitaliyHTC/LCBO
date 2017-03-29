@@ -33,6 +33,9 @@ import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends CoreActivity
         implements StoresAdapter.StoreItemClickCallbacks,
         StoresView {
@@ -55,7 +58,8 @@ public class MainActivity extends CoreActivity
 
     private EndlessRecyclerViewScrollListener mScrollListener;
 
-    private ProgressBar mProgressBar;
+    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
 
 
 
@@ -67,7 +71,7 @@ public class MainActivity extends CoreActivity
         initiateUserInterface();
         this.setTitle(R.string.activity_title_main_stores);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        ButterKnife.bind(this);
         mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
@@ -274,13 +278,13 @@ public class MainActivity extends CoreActivity
     }
 
     private void loadStores(List<Store> initialStoresList){
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        //RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view); initiated by ButterKnife
         //mStoresAdapter = new StoresAdapter(this); initiated at variables block
         mStoresAdapter.appendToStores(initialStoresList);
-        recyclerView.setAdapter(mStoresAdapter);
+        mRecyclerView.setAdapter(mStoresAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         // Retain an instance so that you can call `resetState()` for fresh searches
         mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -291,7 +295,7 @@ public class MainActivity extends CoreActivity
         };
         mScrollListener.setCounters(INITIAL_CURRENT_PAGE, INITIAL_PREVIOUS_TOTAL_ITEM_COUNT, INITIAL_STARTING_PAGE_INDEX);
 
-        recyclerView.addOnScrollListener(mScrollListener);
+        mRecyclerView.addOnScrollListener(mScrollListener);
     }
 
     public void loadNextDataFromApi(int offset) {
