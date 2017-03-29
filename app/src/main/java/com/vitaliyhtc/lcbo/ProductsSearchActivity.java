@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -32,8 +33,7 @@ import java.util.List;
 
 public class ProductsSearchActivity extends CoreActivity
         implements ProductsDataManager.DataManagerCallbacks,
-        ProductsAdapter.ProductItemClickCallbacks,
-        SearchView.OnQueryTextListener {
+        ProductsAdapter.ProductItemClickCallbacks {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -100,17 +100,35 @@ public class ProductsSearchActivity extends CoreActivity
 
 
 
-    // TODO: android searchview submit empty query !
+    // TODO: problem that SearchView don't submit empty query!
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
         final ImageButton searchOptionsButton = (ImageButton) getLayoutInflater().inflate(R.layout.search_view_options_button, null);
+        final Activity activity = this;
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // problem that SearchView don't submit empty query!
+                hideSoftKeyboard(activity);
+                if(".".equals(query)){
+                    mProductsSearchParameters.setSearchStringQuery("");
+                }else{
+                    mProductsSearchParameters.setSearchStringQuery(query);
+                }
+                performProductsSearch(mProductsSearchParameters);
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         LinearLayout searchViewSearchPlate = (LinearLayout) searchView.findViewById(R.id.search_plate);
         searchViewSearchPlate.addView(searchOptionsButton);
@@ -157,41 +175,7 @@ public class ProductsSearchActivity extends CoreActivity
         setProductsSearchParametersDialog.show(fragmentManager, "SetProductsSearchParametersDialog");
     }
 
-    /**
-     * Called when the user submits the query. This could be due to a key press on the
-     * keyboard or due to pressing a submit button.
-     * The listener can override the standard behavior by returning true
-     * to indicate that it has handled the submit request. Otherwise return false to
-     * let the SearchView handle the submission by launching any associated intent.
-     *
-     * @param query the query text that is to be submitted
-     * @return true if the query has been handled by the listener, false to let the
-     * SearchView perform the default action.
-     */
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // TODO: problem that SearchView don't submit empty query!
-        hideSoftKeyboard(this);
-        if(".".equals(query)){
-            mProductsSearchParameters.setSearchStringQuery("");
-        }else{
-            mProductsSearchParameters.setSearchStringQuery(query);
-        }
-        performProductsSearch(mProductsSearchParameters);
-        return true;
-    }
 
-    /**
-     * Called when the query text is changed by the user.
-     *
-     * @param newText the new content of the query text field.
-     * @return false if the SearchView should perform the default action of showing any
-     * suggestions if available, true if the action was handled by the listener.
-     */
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
 
     private void performProductsSearch(ProductsSearchParameters productsSearchParameters){
         mProgressBar.setVisibility(View.VISIBLE);
@@ -227,7 +211,6 @@ public class ProductsSearchActivity extends CoreActivity
 
     private ProductsDataManager getProductsDataManager(){
         ProductsDataManager productsDataManager = new ProductsDataManager(this);
-        productsDataManager.init();
         return productsDataManager;
     }
 
@@ -288,14 +271,7 @@ public class ProductsSearchActivity extends CoreActivity
         recyclerView.addOnScrollListener(mScrollListener);
     }
 
-    // Append the next page of data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
     public void loadNextDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         mProgressBar.setVisibility(View.VISIBLE);
         if(!mIsInSearchState){
             mProductsDataManager.getProductsPage(offset, false);// >>> onProductsListLoaded Callback
@@ -316,6 +292,7 @@ public class ProductsSearchActivity extends CoreActivity
         FragmentManager manager = getSupportFragmentManager();
         ProductDetailsDialog productDetailsDialog = new ProductDetailsDialog();
         productDetailsDialog.setContextAndProduct(this, mProductsAdapter.getProductAtPosition(position));
+        // TODO: 29/03/17 avoid hardcoded keys/args usage
         productDetailsDialog.show(manager, "ProductDetailsDialog");
     }
 
@@ -326,4 +303,5 @@ public class ProductsSearchActivity extends CoreActivity
         shoppingCartDialog.setContextAndProduct(this, mProductsAdapter.getProductAtPosition(position));
         shoppingCartDialog.show(manager, "ShoppingCartDialog");
     }
+
 }

@@ -1,5 +1,6 @@
 package com.vitaliyhtc.lcbo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,13 +21,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.squareup.leakcanary.LeakCanary;
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
-import com.vitaliyhtc.lcbo.interfaces.MainActivityPresenterInterface;
-import com.vitaliyhtc.lcbo.interfaces.MainActivityView;
+import com.vitaliyhtc.lcbo.presenter.StorePresenter;
+import com.vitaliyhtc.lcbo.interfaces.StoresView;
 import com.vitaliyhtc.lcbo.model.Store;
-import com.vitaliyhtc.lcbo.presenter.MainActivityPresenter;
+import com.vitaliyhtc.lcbo.presenter.StorePresenterImpl;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
 import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
 import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
@@ -37,9 +37,8 @@ import java.util.List;
  * TODO: Rewrite to MVP.
  */
 public class MainActivity extends CoreActivity
-        implements SearchView.OnQueryTextListener,
-        StoresAdapter.StoreItemClickCallbacks,
-        MainActivityView {
+        implements StoresAdapter.StoreItemClickCallbacks,
+        StoresView {
 
     //params for EndlessRecyclerViewScrollListener
     // The current offset index of data you have loaded
@@ -55,7 +54,7 @@ public class MainActivity extends CoreActivity
 
     private StoresAdapter mStoresAdapter = new StoresAdapter(this);
 
-    private MainActivityPresenterInterface mMainActivityPresenter = new MainActivityPresenter(this);
+    private StorePresenter mStorePresenter;
 
     private EndlessRecyclerViewScrollListener mScrollListener;
 
@@ -67,43 +66,35 @@ public class MainActivity extends CoreActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: 28/03/17 move leakCanary initialization to your application class
-        if (LeakCanary.isInAnalyzerProcess(this.getApplication())) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this.getApplication());
-        // Normal app init code...
-
         setContentView(R.layout.activity_main);
         initiateUserInterface();
-        this.setTitle(R.string.main_activity_stores_title);
+        this.setTitle(R.string.activity_title_main_stores);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
+        mStorePresenter = new StorePresenterImpl();
+        mStorePresenter.onAttachView(this);
         clearDbTables();
 
-        mMainActivityPresenter.onCreate();
+        initStoresList();
 
         initStoresSearchParameters();
-
-        initStoresList();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         setNavigationViewCheckedItem(R.id.nav_stores);
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
 
-        mMainActivityPresenter.onDestroy();
+        mStorePresenter.onDetachView();
     }
 
     private void clearDbTables(){
@@ -113,7 +104,7 @@ public class MainActivity extends CoreActivity
         long delta = 24*60*60*1000;
         if(currentTimeInMillis - lastClearTimeInMillis >= delta){
 
-            mMainActivityPresenter.clearDbTables(this);
+            mStorePresenter.clearDbTables();
 
             lastClearTimeInMillis = System.currentTimeMillis();
         }
@@ -140,17 +131,35 @@ public class MainActivity extends CoreActivity
 
 
 
-    // TODO: android searchview submit empty query !
+    // TODO: problem that SearchView don't submit empty query!
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
         final ImageButton searchOptionsButton = (ImageButton) getLayoutInflater().inflate(R.layout.search_view_options_button, null);
+        final Activity activity = this;
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // problem that SearchView don't submit empty query!
+                hideSoftKeyboard(activity);
+                if(".".equals(query)){
+                    mStoresSearchParameters.setSearchStringQuery("");
+                }else{
+                    mStoresSearchParameters.setSearchStringQuery(query);
+                }
+                performStoresSearch(mStoresSearchParameters);
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         LinearLayout searchViewSearchPlate = (LinearLayout) searchView.findViewById(R.id.search_plate);
         searchViewSearchPlate.addView(searchOptionsButton);
@@ -197,50 +206,12 @@ public class MainActivity extends CoreActivity
         setStoresSearchParametersDialog.show(fragmentManager, "SetStoresSearchParametersDialog");
     }
 
-    /**
-     * Called when the user submits the query. This could be due to a key press on the
-     * keyboard or due to pressing a submit button.
-     * The listener can override the standard behavior by returning true
-     * to indicate that it has handled the submit request. Otherwise return false to
-     * let the SearchView handle the submission by launching any associated intent.
-     *
-     * @param query the query text that is to be submitted
-     * @return true if the query has been handled by the listener, false to let the
-     * SearchView perform the default action.
-     */
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // TODO: problem that SearchView don't submit empty query!
-        hideSoftKeyboard(this);
-        if(".".equals(query)){
-            mStoresSearchParameters.setSearchStringQuery("");
-        }else{
-            mStoresSearchParameters.setSearchStringQuery(query);
-        }
-        performStoresSearch(mStoresSearchParameters);
-        return true;
-    }
-
-    /**
-     * Called when the query text is changed by the user.
-     *
-     * @param newText the new content of the query text field.
-     * @return false if the SearchView should perform the default action of showing any
-     * suggestions if available, true if the action was handled by the listener.
-     */
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
-
     private void performStoresSearch(StoresSearchParameters storesSearchParameters){
-        mProgressBar.setVisibility(View.VISIBLE);
-        mMainActivityPresenter.performStoresSearch(storesSearchParameters);
+        mStorePresenter.performStoresSearch(storesSearchParameters);
     }
 
     @Override
     public void onStoresSearchListLoaded(final List<Store> stores, final int offset){
-        mProgressBar.setVisibility(View.GONE);
         if(offset==1){
             mStoresAdapter.clearStoresList();
             mIsInSearchState=true;
@@ -258,8 +229,7 @@ public class MainActivity extends CoreActivity
 
     private void onSearchViewCollapsed(){
         if(mIsInSearchState){
-            mProgressBar.setVisibility(View.VISIBLE);
-            mMainActivityPresenter.getStoresPage(1, false);
+            mStorePresenter.getStoresPage(1, false);
         }
     }
 
@@ -278,19 +248,16 @@ public class MainActivity extends CoreActivity
      * onStoresListLoaded() - add stores to adapter and notify them.
      */
     private void initStoresList(){
-        mProgressBar.setVisibility(View.VISIBLE);
-        mMainActivityPresenter.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
+        mStorePresenter.getStoresPage(1, true);// >>> onInitStoresListLoaded Callback
     }
 
     @Override
     public void onInitStoresListLoaded(List<Store> stores, int offset){
-        mProgressBar.setVisibility(View.GONE);
         loadStores(stores);
     }
 
     @Override
     public void onStoresListLoaded(final List<Store> stores, final int offset){
-        mProgressBar.setVisibility(View.GONE);
 
         if(offset==1 || mIsInSearchState){
             mStoresAdapter.clearStoresList();
@@ -330,19 +297,11 @@ public class MainActivity extends CoreActivity
         recyclerView.addOnScrollListener(mScrollListener);
     }
 
-    // Append the next page of data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
     public void loadNextDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        mProgressBar.setVisibility(View.VISIBLE);
         if(!mIsInSearchState){
-            mMainActivityPresenter.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
+            mStorePresenter.getStoresPage(offset, false);// >>> onStoresListLoaded Callback
         }else{
-            mMainActivityPresenter.getSearchStoresPage(offset);// >>> onStoresSearchListLoaded Callback
+            mStorePresenter.getSearchStoresPage(offset);// >>> onStoresSearchListLoaded Callback
         }
     }
 
@@ -357,6 +316,16 @@ public class MainActivity extends CoreActivity
     }
 
     @Override
+    public void showLoadingProgress() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoadingProgress() {
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onStoreItemClick(int positionInAdapter){
         Store store = mStoresAdapter.getStoreAtPosition(positionInAdapter);
         int storeId = store.getId();
@@ -366,9 +335,8 @@ public class MainActivity extends CoreActivity
 
     private void startStoreDetailActivity(int storeId) {
         Intent intent = new Intent(this, StoreDetailActivity.class);
-        // TODO: 28/03/17 avoid hardcoded keys/args usage
-        intent.putExtra("targetStoreId", storeId);
-        intent.putExtra("activityFirst", StoreDetailActivity.ACTIVITY_MAIN);
+        intent.putExtra(StoreDetailActivity.KEY_TARGET_STORE_ID, storeId);
+        intent.putExtra(StoreDetailActivity.KEY_ACTIVITY_FIRST, StoreDetailActivity.ACTIVITY_MAIN);
         startActivity(intent);
     }
 

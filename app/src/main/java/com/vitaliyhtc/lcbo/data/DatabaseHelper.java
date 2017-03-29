@@ -78,33 +78,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
     }
 
-    /**
-     * Clear all data out of the stores table.
-     * WARNING: This is [obviously] very destructive and is unrecoverable.
-     */
-    public void clearStoresTable(){
-        try {
-            TableUtils.clearTable(getConnectionSource(), Store.class);
-            Log.i(LOG_TAG, "clearStoresTable complete!");
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Can't clear stores table", e);
-            e.printStackTrace();
-        }
-    }
 
-    /**
-     * Clear all data out of the products table.
-     * WARNING: This is [obviously] very destructive and is unrecoverable.
-     */
-    public void clearProductsTable(){
-        try {
-            TableUtils.clearTable(getConnectionSource(), Product.class);
-            Log.i(LOG_TAG, "clearProductsTable complete!");
-        } catch (SQLException e) {
-            Log.e(LOG_TAG, "Can't clear products table", e);
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Returns the Database Access Object (DAO) for our Store class. It will create it or just give the cached
@@ -192,6 +166,36 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         productRuntimeDao = null;
         favoriteStoresRuntimeDao = null;
         shoppingCartRuntimeDao = null;
+    }
+
+
+
+    /**
+     * Clear all data out of the stores table.
+     * WARNING: This is [obviously] very destructive and is unrecoverable.
+     */
+    public void clearStoresTable(){
+        try {
+            TableUtils.clearTable(getConnectionSource(), Store.class);
+            Log.i(LOG_TAG, "clearStoresTable complete!");
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Can't clear stores table", e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Clear all data out of the products table.
+     * WARNING: This is [obviously] very destructive and is unrecoverable.
+     */
+    public void clearProductsTable(){
+        try {
+            TableUtils.clearTable(getConnectionSource(), Product.class);
+            Log.i(LOG_TAG, "clearProductsTable complete!");
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, "Can't clear products table", e);
+            e.printStackTrace();
+        }
     }
 
 }

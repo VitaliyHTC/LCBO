@@ -42,6 +42,10 @@ public class StoreDetailActivity extends AppCompatActivity {
     public static final int ACTIVITY_MAIN = 380;
     public static final int ACTIVITY_FAVORITES = 381;
 
+    public static final String KEY_TARGET_STORE_ID = "targetStoreId";
+    public static final String KEY_ACTIVITY_FIRST = "activityFirst";
+    public static final String KEY_TARGET_STORE_NAME = "targetStoreName";
+
     private static final int REQUEST_PHONE_CALL = 0xB0B;
     private Intent makeCallIntent = null;
 
@@ -58,7 +62,7 @@ public class StoreDetailActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_store_detail);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int targetStoreId = getIntent().getExtras().getInt("targetStoreId");
+        int targetStoreId = getIntent().getExtras().getInt(KEY_TARGET_STORE_ID);
         getStoreById(targetStoreId);
     }
 
@@ -80,7 +84,7 @@ public class StoreDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent;
-                int activityFirst = getIntent().getExtras().getInt("activityFirst");
+                int activityFirst = getIntent().getExtras().getInt(KEY_ACTIVITY_FIRST);
                 if (activityFirst == ACTIVITY_MAIN){
                     intent = new Intent(this, MainActivity.class);
                 } else if (activityFirst == ACTIVITY_FAVORITES){
@@ -89,7 +93,7 @@ public class StoreDetailActivity extends AppCompatActivity {
                     intent = NavUtils.getParentActivityIntent(this);
                 }
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                NavUtils.navigateUpTo(this, intent);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -326,8 +330,8 @@ public class StoreDetailActivity extends AppCompatActivity {
 
     private void showProductsOfStore(){
         Intent intent = new Intent(this, ProductsByStoreActivity.class);
-        intent.putExtra("targetStoreId", mStore.getId());
-        intent.putExtra("targetStoreName", mStore.getName());
+        intent.putExtra(KEY_TARGET_STORE_ID, mStore.getId());
+        intent.putExtra(KEY_TARGET_STORE_NAME, mStore.getName());
         startActivity(intent);
     }
 

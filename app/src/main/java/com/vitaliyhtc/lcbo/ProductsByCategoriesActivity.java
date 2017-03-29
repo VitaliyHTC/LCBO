@@ -82,7 +82,6 @@ public class ProductsByCategoriesActivity extends CoreActivity
 
     private ProductsByCategoriesDataManager getProductsByCategoriesDataManager(){
         ProductsByCategoriesDataManager productsByCategoriesDataManager = new ProductsByCategoriesDataManager(this);
-        productsByCategoriesDataManager.init();
         return productsByCategoriesDataManager;
     }
 

@@ -18,13 +18,13 @@ import java.util.List;
 public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder> {
     private static final String LOG_TAG = "StoresAdapter";
 
-    private StoreItemClickCallbacks mContext;
+    private StoreItemClickCallbacks mStoreItemClickCallbacks;
     private List<Store> mStores;
 
 
-    // TODO: 28/03/17 use meaningful names! StoreItemClickCallbacks context?
-    public StoresAdapter(StoreItemClickCallbacks context) {
-        mContext = context;
+
+    public StoresAdapter(StoreItemClickCallbacks storeItemClickCallbacks) {
+        mStoreItemClickCallbacks = storeItemClickCallbacks;
         mStores = new ArrayList<>();
     }
 
@@ -60,17 +60,16 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         if(Config.IS_LOG_DEBUG){
             Log.d(LOG_TAG, "Element " + position + " set.");
         }
-
         Store currentStore = mStores.get(position);
         viewHolder.bind(currentStore);
     }
 
-    // TODO: 28/03/17 don't write/remove/avoid obvious comments
-    // Return the size of your dataset (invoked by the layout manager)
+
     @Override
     public int getItemCount() {
         return mStores.size();
     }
+
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -81,7 +80,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.onStoreItemClick(getAdapterPosition());
+                    mStoreItemClickCallbacks.onStoreItemClick(getAdapterPosition());
                 }
             });
             textView = (TextView) v.findViewById(R.id.item_title);
@@ -91,7 +90,6 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
             textView.setText(currentStore.getIncrementalCounter() + " " + currentStore.getName());
         }
     }
-
 
     public interface StoreItemClickCallbacks{
         void onStoreItemClick(int positionInAdapter);

@@ -43,8 +43,8 @@ public class ProductsByStoreActivity extends AppCompatActivity
         this.setContentView(R.layout.activity_products_by_store);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int targetStoreId = getIntent().getExtras().getInt("targetStoreId");
-        String storeName = getIntent().getExtras().getString("targetStoreName");
+        int targetStoreId = getIntent().getExtras().getInt(StoreDetailActivity.KEY_TARGET_STORE_ID);
+        String storeName = getIntent().getExtras().getString(StoreDetailActivity.KEY_TARGET_STORE_NAME);
         this.setTitle(storeName+" products");
 
         mProductsDataManager = getProductsDataManager(targetStoreId);
@@ -55,7 +55,6 @@ public class ProductsByStoreActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        // Release DatabaseHelper by calling DataManager onDestroy.
         mProductsDataManager.onDestroy();
     }
 
@@ -65,7 +64,7 @@ public class ProductsByStoreActivity extends AppCompatActivity
             case android.R.id.home:
                 Intent intent = NavUtils.getParentActivityIntent(this);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                NavUtils.navigateUpTo(this, intent);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -75,7 +74,6 @@ public class ProductsByStoreActivity extends AppCompatActivity
 
     private ProductsByStoreDataManager getProductsDataManager(int targetStoreId){
         ProductsByStoreDataManager dataManager = new ProductsByStoreDataManager(this, targetStoreId);
-        dataManager.init();
         return dataManager;
     }
 

@@ -9,9 +9,9 @@
     <string name="about_app_description">Some text about app.</string>
 
 
-    <string name="store_detail_activity_title">Store details</string>
-    <string name="main_activity_stores_title">Stores</string>
-    <string name="products_by_store_activity_title">Products by Store</string>
+    <string name="activity_title_store_detail">Store details</string>
+    <string name="activity_title_main_stores">Stores</string>
+    <string name="activity_title_products_by_store">Products by Store</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

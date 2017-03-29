@@ -69,12 +69,6 @@ public class ProductsByCategoriesDataManager {
         this.mContext = mContext;
     }
 
-    public void init(){
-        if (Config.LCBO_API_ACCESS_KEY.isEmpty()) {
-            Toast.makeText((Context)mContext, "Please obtain your API ACCESS_KEY first from lcboapi.com", Toast.LENGTH_LONG).show();
-        }
-    }
-
     /**
      * You'll need this in your class to release the helper when done.
      */
