@@ -1,5 +1,5 @@
 package com.vitaliyhtc.lcbo.data.StoresAsyncTasks;
-
+// TODO: 29/03/17 package name shouldn't be case sensitive can be renamed as "tasks"
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+//todo Get.. is bad name for class, should be noun ect SearchStorePageLoadingAsyncTask
 public class GetSearchStoresPageAsyncTask extends AsyncTask<Void, Void, List<Store>> {
 
     private DatabaseHelper mDatabaseHelper;
@@ -24,6 +25,10 @@ public class GetSearchStoresPageAsyncTask extends AsyncTask<Void, Void, List<Sto
     private StoresDataManagerCallbacks mDataManagerCallbacks;
     private String mLogTag;
 
+    // TODO: 29/03/17 you don't need logtag here
+    // TODO: 29/03/17 you don't need entire  StoresDataManagerCallbacks object here
+//    each asynctask is separated entity, do what they should do and return result via some listener
+    // TODO: 29/03/17 don't bother here about offset, stores per page, startRow, just send startPosition and count as arguments
     public GetSearchStoresPageAsyncTask(DatabaseHelper databaseHelper,
                                         int offset,
                                         StoresSearchParameters storesSearchParameters,
