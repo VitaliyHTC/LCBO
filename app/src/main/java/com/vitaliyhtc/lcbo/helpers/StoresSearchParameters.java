@@ -108,21 +108,6 @@ public class StoresSearchParameters {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public String getSearchStringQuery() {
         return searchStringQuery;
     }
