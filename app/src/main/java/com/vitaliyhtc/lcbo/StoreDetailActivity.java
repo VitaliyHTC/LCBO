@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,6 +31,9 @@ import com.vitaliyhtc.lcbo.util.Utils;
 
 import java.sql.SQLException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,12 +58,19 @@ public class StoreDetailActivity extends AppCompatActivity {
     // You'll need this in your class to cache the helper in the class.
     private DatabaseHelper mDatabaseHelper = null;
 
+
+
+    @BindView(R.id.main_error_relative_layout) RelativeLayout mMainErrorRelativeLayout;
+    @BindView(R.id.main_store_detail_linear_layout) LinearLayout mMainStoreDetailLinearLayout;
+    @BindView(R.id.store_favorite_star) CheckBox mFavoriteCheckBox;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_store_detail);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        ButterKnife.bind(this);
         int targetStoreId = getIntent().getExtras().getInt(KEY_TARGET_STORE_ID);
         getStoreById(targetStoreId);
     }
@@ -201,25 +210,20 @@ public class StoreDetailActivity extends AppCompatActivity {
     }
 
     private void onGetStoreByIdResult(Store store) {
-        RelativeLayout mainErrorRelativeLayout = (RelativeLayout) findViewById(R.id.main_error_relative_layout);
-        LinearLayout mainStoreDetailLinearLayout = (LinearLayout) findViewById(R.id.main_store_detail_linear_layout);
         if (store != null) {
-            mainErrorRelativeLayout.setVisibility(View.GONE);
-            mainStoreDetailLinearLayout.setVisibility(View.VISIBLE);
+            mMainErrorRelativeLayout.setVisibility(View.GONE);
+            mMainStoreDetailLinearLayout.setVisibility(View.VISIBLE);
             fillStoreDetailByData(store);
         } else {
             //Store not found
-            mainErrorRelativeLayout.setVisibility(View.VISIBLE);
-            mainStoreDetailLinearLayout.setVisibility(View.GONE);
+            mMainErrorRelativeLayout.setVisibility(View.VISIBLE);
+            mMainStoreDetailLinearLayout.setVisibility(View.GONE);
         }
     }
 
     private void fillStoreDetailByData(Store store) {
 
         mStore = store;
-        setMakeCallOnClickListener();
-        setShowProductsOnClickListener();
-        setOpenMapOnClickListener();
 
         setFavoriteStarState();
         setFavoriteStarOnClickListener();
@@ -280,16 +284,8 @@ public class StoreDetailActivity extends AppCompatActivity {
 
 
 
-    private void setMakeCallOnClickListener() {
-        final Button button = (Button) findViewById(R.id.store_make_call_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                makeCallToPhoneOfStore();
-            }
-        });
-    }
-
-    private void makeCallToPhoneOfStore() {
+    @OnClick(R.id.store_make_call_button)
+    void makeCallToPhoneOfStore() {
         String phoneNumber = mStore.getTelephone();
 
         makeCallIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
@@ -319,16 +315,9 @@ public class StoreDetailActivity extends AppCompatActivity {
     }
 
 
-    private void setShowProductsOnClickListener(){
-        final Button button = (Button) findViewById(R.id.store_show_products_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                showProductsOfStore();
-            }
-        });
-    }
 
-    private void showProductsOfStore(){
+    @OnClick(R.id.store_show_products_button)
+    void showProductsOfStore(){
         Intent intent = new Intent(this, ProductsByStoreActivity.class);
         intent.putExtra(KEY_TARGET_STORE_ID, mStore.getId());
         intent.putExtra(KEY_TARGET_STORE_NAME, mStore.getName());
@@ -337,16 +326,8 @@ public class StoreDetailActivity extends AppCompatActivity {
 
 
 
-    private void setOpenMapOnClickListener(){
-        final Button button = (Button) findViewById(R.id.store_open_map_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                openMapWithMarkerOfStore();
-            }
-        });
-    }
-
-    private void openMapWithMarkerOfStore(){
+    @OnClick(R.id.store_open_map_button)
+    void openMapWithMarkerOfStore(){
         String latitude = Double.toString(mStore.getLatitude());
         String longitude = Double.toString(mStore.getLongitude());
         String encodedLabel = Uri.encode(mStore.getName());
@@ -361,8 +342,7 @@ public class StoreDetailActivity extends AppCompatActivity {
 
 
     private void setFavoriteStarOnClickListener(){
-        final CheckBox button = (CheckBox) findViewById(R.id.store_favorite_star);
-        button.setOnClickListener(new View.OnClickListener() {
+        mFavoriteCheckBox.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onFavoriteStarClick();
             }
@@ -384,11 +364,10 @@ public class StoreDetailActivity extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(Boolean isStoreFavorite) {
-                CheckBox favoriteCheckBox = (CheckBox) findViewById(R.id.store_favorite_star);
                 if(isStoreFavorite){
-                    favoriteCheckBox.setChecked(false);
+                    mFavoriteCheckBox.setChecked(false);
                 } else {
-                    favoriteCheckBox.setChecked(true);
+                    mFavoriteCheckBox.setChecked(true);
                 }
             }
         };
@@ -403,11 +382,10 @@ public class StoreDetailActivity extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(Boolean isStoreFavorite) {
-                CheckBox favoriteCheckBox = (CheckBox) findViewById(R.id.store_favorite_star);
                 if(isStoreFavorite){
-                    favoriteCheckBox.setChecked(true);
+                    mFavoriteCheckBox.setChecked(true);
                 } else {
-                    favoriteCheckBox.setChecked(false);
+                    mFavoriteCheckBox.setChecked(false);
                 }
             }
         };

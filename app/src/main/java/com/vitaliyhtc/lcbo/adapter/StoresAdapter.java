@@ -15,6 +15,9 @@ import com.vitaliyhtc.lcbo.model.Store;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder> {
     private static final String LOG_TAG = "StoresAdapter";
 
@@ -73,7 +76,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+        @BindView(R.id.item_title) TextView textView;
 
         ViewHolder(View v) {
             super(v);
@@ -83,7 +86,8 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
                     mStoreItemClickCallbacks.onStoreItemClick(getAdapterPosition());
                 }
             });
-            textView = (TextView) v.findViewById(R.id.item_title);
+            //textView = (TextView) v.findViewById(R.id.item_title);
+            ButterKnife.bind(this, v);
         }
 
         public void bind(Store currentStore) {
