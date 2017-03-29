@@ -80,6 +80,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
 
         ViewHolder(View v) {
             super(v);
+            // TODO: 29/03/17 use ButterKnife
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

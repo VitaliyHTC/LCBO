@@ -22,13 +22,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
+import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
-import com.vitaliyhtc.lcbo.presenter.StorePresenter;
 import com.vitaliyhtc.lcbo.interfaces.StoresView;
 import com.vitaliyhtc.lcbo.model.Store;
+import com.vitaliyhtc.lcbo.presenter.StorePresenter;
 import com.vitaliyhtc.lcbo.presenter.StorePresenterImpl;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
-import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
+import com.vitaliyhtc.lcbo.util.MainThreadUtils;
 import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 
 import java.util.List;
@@ -166,6 +167,7 @@ public class MainActivity extends CoreActivity
         searchViewSearchPlate.addView(searchOptionsButton);
         searchOptionsButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        // TODO: 29/03/17 use ButterKnife
         searchOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,13 +221,20 @@ public class MainActivity extends CoreActivity
             mScrollListener.resetState();
         }
         mStoresAdapter.appendToStores(stores);
-        Handler handler = new Handler();
-        final Runnable r = new Runnable() {
+        // TODO: 29/03/17 check this variant, global handler to post events on with ui thread
+        MainThreadUtils.post(new Runnable() {
+            @Override
             public void run() {
                 mStoresAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, stores.size());
             }
-        };
-        handler.post(r);
+        });
+//        Handler handler = new Handler();
+//        final Runnable r = new Runnable() {
+//            public void run() {
+//
+//            }
+//        };
+//        handler.post(r);
     }
 
     private void onSearchViewCollapsed(){
