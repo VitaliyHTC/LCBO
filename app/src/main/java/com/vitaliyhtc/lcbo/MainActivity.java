@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -22,13 +21,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.vitaliyhtc.lcbo.activity.CoreActivity;
+import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
-import com.vitaliyhtc.lcbo.presenter.StorePresenter;
 import com.vitaliyhtc.lcbo.interfaces.StoresView;
 import com.vitaliyhtc.lcbo.model.Store;
+import com.vitaliyhtc.lcbo.presenter.StorePresenter;
 import com.vitaliyhtc.lcbo.presenter.StorePresenterImpl;
 import com.vitaliyhtc.lcbo.util.EndlessRecyclerViewScrollListener;
-import com.vitaliyhtc.lcbo.adapter.StoresAdapter;
+import com.vitaliyhtc.lcbo.util.MainThreadUtils;
 import com.vitaliyhtc.lcbo.util.SetStoresSearchParametersDialog;
 
 import java.util.List;
@@ -166,10 +166,13 @@ public class MainActivity extends CoreActivity
         searchViewSearchPlate.addView(searchOptionsButton);
         searchOptionsButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        // 29/03/17 use ButterKnife - looks like not possible to implement.
+        // Options button added after onCreate() call,
+        // so it is not available for butterKnife.
         searchOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSearchOptionsButtonClicked(v);
+                onSearchOptionsButtonClicked();
             }
         });
 
@@ -200,7 +203,7 @@ public class MainActivity extends CoreActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void onSearchOptionsButtonClicked(View view){
+    private void onSearchOptionsButtonClicked(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         SetStoresSearchParametersDialog setStoresSearchParametersDialog = new SetStoresSearchParametersDialog();
         setStoresSearchParametersDialog.setStoresSearchParameters(this, mStoresSearchParameters);
@@ -219,13 +222,13 @@ public class MainActivity extends CoreActivity
             mScrollListener.resetState();
         }
         mStoresAdapter.appendToStores(stores);
-        Handler handler = new Handler();
-        final Runnable r = new Runnable() {
+
+        MainThreadUtils.post(new Runnable() {
+            @Override
             public void run() {
                 mStoresAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, stores.size());
             }
-        };
-        handler.post(r);
+        });
     }
 
     private void onSearchViewCollapsed(){
@@ -268,13 +271,12 @@ public class MainActivity extends CoreActivity
 
         mStoresAdapter.appendToStores(stores);
 
-        Handler handler = new Handler();
-        final Runnable r = new Runnable() {
+        MainThreadUtils.post(new Runnable() {
+            @Override
             public void run() {
                 mStoresAdapter.notifyItemRangeInserted((offset-1)*Config.STORES_PER_PAGE, stores.size());
             }
-        };
-        handler.post(r);
+        });
     }
 
     private void loadStores(List<Store> initialStoresList){

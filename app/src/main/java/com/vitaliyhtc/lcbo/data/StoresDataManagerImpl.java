@@ -5,12 +5,11 @@ import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.vitaliyhtc.lcbo.Config;
-import com.vitaliyhtc.lcbo.data.StoresAsyncTasks.GetSearchStoresPageAsyncTask;
-import com.vitaliyhtc.lcbo.data.StoresAsyncTasks.GetStoresPageAsyncTask;
-import com.vitaliyhtc.lcbo.data.StoresAsyncTasks.GetStoresPageFromDbAsyncTask;
-import com.vitaliyhtc.lcbo.data.StoresAsyncTasks.StoresSaveToDbAsyncTask;
-import com.vitaliyhtc.lcbo.data.StoresAsyncTasks.PerformStoresSearchPageOffsetAsyncTask;
-import com.vitaliyhtc.lcbo.data.StoresAsyncTasks.StoresDataManagerAsyncTaskCallbacks;
+import com.vitaliyhtc.lcbo.data.tasks.StoresSearchPageAsyncTask;
+import com.vitaliyhtc.lcbo.data.tasks.StoresPageAsyncTask;
+import com.vitaliyhtc.lcbo.data.tasks.StoresPageFromDbAsyncTask;
+import com.vitaliyhtc.lcbo.data.tasks.StoresSaveToDbAsyncTask;
+import com.vitaliyhtc.lcbo.data.tasks.StoresSearchPageOffsetAsyncTask;
 import com.vitaliyhtc.lcbo.helpers.StoresSearchParameters;
 import com.vitaliyhtc.lcbo.model.Store;
 import com.vitaliyhtc.lcbo.model.StoresResult;
@@ -31,8 +30,7 @@ import retrofit2.Response;
  * and which data also saved to database.
  */
 public class StoresDataManagerImpl
-        implements StoresDataManager,
-        StoresDataManagerAsyncTaskCallbacks {
+        implements StoresDataManager {
 
     private static final String LOG_TAG = StoresDataManagerImpl.class.getSimpleName();
 
@@ -77,7 +75,14 @@ public class StoresDataManagerImpl
     public void performStoresSearch(StoresSearchParameters storesSearchParameters){
         mStoresSearchParameters = storesSearchParameters;
         if (getNetworkAvailability()) {
-            new PerformStoresSearchPageOffsetAsyncTask(getDatabaseHelper(), this, LOG_TAG).execute();
+            new StoresSearchPageOffsetAsyncTask(
+                    getDatabaseHelper(),
+                    new StoresSearchPageOffsetAsyncTask.ProcessResult() {
+                        @Override
+                        public void onProcessResult(Integer pagesLoaded) {
+                            loadAndSaveStores(pagesLoaded+1);
+                        }
+                    }).execute();
         } else {
             getSearchStoresPage(1);
         }
@@ -88,8 +93,7 @@ public class StoresDataManagerImpl
     /**
      * @param offset    from which page start load data, including provided number.
      */
-    @Override
-    public void loadAndSaveStores(final int offset){
+    private void loadAndSaveStores(final int offset){
         mStoresResult.clear();
         ApiInterface apiService = RetrofitApiClient.getClient().create(ApiInterface.class);
 
@@ -103,7 +107,7 @@ public class StoresDataManagerImpl
                     mStoresResult = storesResult.getResult();
                     final int storesPage = storesResult.getPager().getCurrentPage();
 
-                    new StoresSaveToDbAsyncTask(getDatabaseHelper(), mStoresResult, storesPage, LOG_TAG).execute();
+                    new StoresSaveToDbAsyncTask(getDatabaseHelper(), mStoresResult, storesPage).execute();
                 }else{
                     Log.e(LOG_TAG, "loadAndSaveStores() - response problem.");
                 }
@@ -127,7 +131,19 @@ public class StoresDataManagerImpl
 
     @Override
     public void getSearchStoresPage(final int offset){
-        new GetSearchStoresPageAsyncTask(getDatabaseHelper(), offset, mStoresSearchParameters, dataManagerCallbacks, LOG_TAG)
+        long storesPerPage = Config.STORES_PER_PAGE;
+        long startRow = (offset - 1) * storesPerPage;
+        new StoresSearchPageAsyncTask(
+                getDatabaseHelper(),
+                startRow,
+                storesPerPage,
+                mStoresSearchParameters,
+                new StoresSearchPageAsyncTask.ProcessResult() {
+                    @Override
+                    public void onProcessResult(List<Store> stores) {
+                        dataManagerCallbacks.onStoresSearchListLoaded(stores, offset);
+                    }
+                })
                 .execute();
     }
 
@@ -147,11 +163,18 @@ public class StoresDataManagerImpl
     @Override
     public void getStoresPage(final int offset, final boolean isInitialLoading){
         mStoresResult.clear();
-        new GetStoresPageAsyncTask(getDatabaseHelper(), offset, isInitialLoading, this, LOG_TAG).execute();
+        new StoresPageAsyncTask(
+                getDatabaseHelper(),
+                new StoresPageAsyncTask.ProcessResult() {
+                    @Override
+                    public void onProcessResult(Integer storedInDatabaseCounter) {
+                        onPostGetStoresPageAsyncTask(storedInDatabaseCounter, offset, isInitialLoading);
+                    }
+                }
+        ).execute();
     }
 
-    @Override
-    public void onPostGetStoresPageAsyncTask(int storedInDatabaseCounter, int offset, boolean isInitialLoading){
+    private void onPostGetStoresPageAsyncTask(int storedInDatabaseCounter, int offset, boolean isInitialLoading){
         if(dataManagerCallbacks.getCountOfStoresInAdapter() < storedInDatabaseCounter){
             getStoresPageFromDb(offset, isInitialLoading);
         } else if (getNetworkAvailability()) {
@@ -161,13 +184,19 @@ public class StoresDataManagerImpl
         }
     }
 
-    @Override
-    public void getStoresPageFromDb(final int offset, final boolean isInitialLoading){
-        new GetStoresPageFromDbAsyncTask(getDatabaseHelper(), offset, isInitialLoading, this, LOG_TAG).execute();
+    private void getStoresPageFromDb(final int offset, final boolean isInitialLoading){
+        new StoresPageFromDbAsyncTask(
+                getDatabaseHelper(),
+                offset,
+                new StoresPageFromDbAsyncTask.ProcessResult() {
+                    @Override
+                    public void onProcessResult(List<Store> stores) {
+                        onStoresPageLoaded(offset, isInitialLoading, stores);
+                    }
+                }).execute();
     }
 
-    @Override
-    public void onStoresPageLoaded(int offset, boolean isInitialLoading, List<Store> stores){
+    private void onStoresPageLoaded(int offset, boolean isInitialLoading, List<Store> stores){
         if(isInitialLoading){
             dataManagerCallbacks.onInitStoresListLoaded(stores, offset);
         }else{
@@ -175,8 +204,7 @@ public class StoresDataManagerImpl
         }
     }
 
-    @Override
-    public void getStoresPageFromNetwork(final int offset, final boolean isInitialLoading){
+    private void getStoresPageFromNetwork(final int offset, final boolean isInitialLoading){
         mStoresResult.clear();
         ApiInterface apiService = RetrofitApiClient.getClient().create(ApiInterface.class);
 
@@ -189,7 +217,7 @@ public class StoresDataManagerImpl
                     mStoresResult = storesResult.getResult();
                     final int storesPage = storesResult.getPager().getCurrentPage();
 
-                    new StoresSaveToDbAsyncTask(getDatabaseHelper(), mStoresResult, storesPage, LOG_TAG).execute();
+                    new StoresSaveToDbAsyncTask(getDatabaseHelper(), mStoresResult, storesPage).execute();
                 }else{
                     Log.e(LOG_TAG, "getStoresPageFromNetwork() - response problem.");
                 }
