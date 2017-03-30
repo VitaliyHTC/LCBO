@@ -1,7 +1,6 @@
-package com.vitaliyhtc.lcbo.data.StoresAsyncTasks;
+package com.vitaliyhtc.lcbo.data.tasks;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.vitaliyhtc.lcbo.Config;
@@ -18,13 +17,11 @@ public class StoresSaveToDbAsyncTask extends AsyncTask<Void, Void, Void> {
     private List<Store> mStoresToDb = new ArrayList<>();
     private List<Store> mListToAdd = new ArrayList<>();
     private int mStoresPage;
-    private String mLogTag;
 
-    public StoresSaveToDbAsyncTask(DatabaseHelper databaseHelper, List<Store> storesToDb, int storesPage, String logTag) {
+    public StoresSaveToDbAsyncTask(DatabaseHelper databaseHelper, List<Store> storesToDb, int storesPage) {
         this.mDatabaseHelper = databaseHelper;
         this.mStoresToDb.addAll(storesToDb);
         this.mStoresPage = storesPage;
-        this.mLogTag = logTag;
     }
 
     @Override
@@ -47,7 +44,6 @@ public class StoresSaveToDbAsyncTask extends AsyncTask<Void, Void, Void> {
             }
             storeDao.create(mListToAdd);
         } catch (SQLException e) {
-            Log.e(mLogTag, "Database exception", e);
             e.printStackTrace();
         }
         return null;

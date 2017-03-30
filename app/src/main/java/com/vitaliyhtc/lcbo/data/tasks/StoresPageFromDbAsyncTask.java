@@ -1,7 +1,6 @@
-package com.vitaliyhtc.lcbo.data.StoresAsyncTasks;
+package com.vitaliyhtc.lcbo.data.tasks;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -13,24 +12,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetStoresPageFromDbAsyncTask extends AsyncTask<Void, Void, List<Store>> {
+public class StoresPageFromDbAsyncTask extends AsyncTask<Void, Void, List<Store>> {
 
     private DatabaseHelper mDatabaseHelper;
     private int mOffset;
-    private boolean mIsInitialLoading;
-    private StoresDataManagerAsyncTaskCallbacks mStoresDataManager;
-    private String mLogTag;
+    private ProcessResult mProcessResult;
 
-    public GetStoresPageFromDbAsyncTask(DatabaseHelper databaseHelper,
-                                        int offset,
-                                        boolean isInitialLoading,
-                                        StoresDataManagerAsyncTaskCallbacks storesDataManager,
-                                        String logTag) {
+
+    public StoresPageFromDbAsyncTask(DatabaseHelper databaseHelper,
+                                     int offset,
+                                     ProcessResult processResult) {
         this.mDatabaseHelper = databaseHelper;
         this.mOffset = offset;
-        this.mIsInitialLoading = isInitialLoading;
-        this.mStoresDataManager = storesDataManager;
-        this.mLogTag = logTag;
+        this.mProcessResult = processResult;
     }
 
     @Override
@@ -46,13 +40,16 @@ public class GetStoresPageFromDbAsyncTask extends AsyncTask<Void, Void, List<Sto
             queryBuilder.limit((long)Config.STORES_PER_PAGE);
             stores.addAll(storeDao.query(queryBuilder.prepare()));
         } catch (SQLException e) {
-            Log.e(mLogTag, "Database exception in getStoresPageFromDbAsyncTask()", e);
             e.printStackTrace();
         }
         return stores;
     }
     @Override
     protected void onPostExecute(List<Store> stores) {
-        mStoresDataManager.onStoresPageLoaded(mOffset, mIsInitialLoading, stores);
+        mProcessResult.onProcessResult(stores);
+    }
+
+    public interface ProcessResult{
+        void onProcessResult(List<Store> stores);
     }
 }

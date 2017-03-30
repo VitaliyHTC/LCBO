@@ -1,6 +1,5 @@
 package com.vitaliyhtc.lcbo.adapter;
 
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,12 +10,14 @@ import android.widget.TextView;
 import com.vitaliyhtc.lcbo.Config;
 import com.vitaliyhtc.lcbo.R;
 import com.vitaliyhtc.lcbo.model.Store;
+import com.vitaliyhtc.lcbo.util.MainThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder> {
     private static final String LOG_TAG = "StoresAdapter";
@@ -42,13 +43,12 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
     public void clearStoresList(){
         final int oldItemsCount = getItemCount();
         mStores.clear();
-        Handler handler = new Handler();
-        final Runnable r = new Runnable() {
+        MainThreadUtils.post(new Runnable() {
+            @Override
             public void run() {
                 notifyItemRangeRemoved(0, oldItemsCount);
             }
-        };
-        handler.post(r);
+        });
     }
 
     @Override
@@ -67,7 +67,6 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
         viewHolder.bind(currentStore);
     }
 
-
     @Override
     public int getItemCount() {
         return mStores.size();
@@ -80,16 +79,15 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.ViewHolder
 
         ViewHolder(View v) {
             super(v);
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mStoreItemClickCallbacks.onStoreItemClick(getAdapterPosition());
-                }
-            });
             ButterKnife.bind(this, v);
         }
 
-        public void bind(Store currentStore) {
+        @OnClick(R.id.main_list_item)
+        void onItemClick() {
+            mStoreItemClickCallbacks.onStoreItemClick(getAdapterPosition());
+        }
+
+        void bind(Store currentStore) {
             textView.setText(currentStore.getIncrementalCounter() + " " + currentStore.getName());
         }
     }
